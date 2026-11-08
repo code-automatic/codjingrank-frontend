@@ -1,0 +1,101 @@
+:root {
+  font-family: Arial, sans-serif;
+  color: #171717;
+  background: #f7f7f5;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 12px 30px #17171712;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin: 16px 0 6px;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #a3a3a3;
+  border-radius: 8px;
+  font: inherit;
+}
+button {
+  margin-top: 20px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #171717;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:focus,
+input:focus {
+  outline: 3px solid #a16207;
+  outline-offset: 2px;
+}
+.error {
+  color: #b42318;
+  margin-top: 12px;
+}
+.muted {
+  color: #475569;
+}
+a {
+  color: #7c4a03;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+input,
+button {
+  min-height: 44px;
+}
+small {
+  display: block;
+  margin-top: 8px;
+  color: #475569;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+p {
+  overflow-wrap: anywhere;
+}
+a:focus-visible {
+  outline: 3px solid #a16207;
+  outline-offset: 4px;
+}
+button:hover:not(:disabled) {
+  background: #404040;
+}

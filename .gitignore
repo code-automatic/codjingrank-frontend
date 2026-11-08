@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+coverage/
+# Existing reference material, not frontend source
+srs/
+*.sql
+*.xlsx
