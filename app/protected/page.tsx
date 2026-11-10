@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/features/auth/session";
 import { SessionNotice } from "@/features/auth/SessionNotice";
 import { errorText } from "@/lib/api/client";
+import { useApiClient } from "@/lib/api/useApiClient";
 export default function Protected() {
   const router = useRouter();
   const { status, user, store } = useSession();
+  const api = useApiClient();
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -16,7 +18,7 @@ export default function Protected() {
     setBusy(true);
     setError("");
     try {
-      await store.me();
+      await api.account.getMe();
     } catch (e) {
       setError(errorText(e));
     } finally {
