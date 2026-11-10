@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { ProblemWorkspacePage } from "@/features/editor/ProblemWorkspacePage";
+import { ProblemPage } from "@/features/problems/ProblemPage";
 import { isSlug } from "@/lib/api/guards";
 
-export const metadata = { title: "Luyện tập · Codjingrank" };
+export const metadata = { title: "Chi tiết bài tập · Codjingrank" };
 
 export default async function Page({
   params,
@@ -11,5 +11,5 @@ export default async function Page({
 }) {
   const { slug } = await params;
   if (!isSlug(slug)) notFound();
-  return <ProblemWorkspacePage slug={slug} />;
+  return <ProblemPage slug={slug} />;
 }

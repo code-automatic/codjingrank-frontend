@@ -2,11 +2,11 @@
 
 Branch: `feature/sprint-2-thinh-problem-detail-template`, nền master `115bf55`.
 
-## Cập nhật khi ghép master
+## Trạng thái hiện tại sau khi gỡ merge Tùng
 
-Master đã có editor của Tùng qua PR #3. Route `/problems/[slug]` dùng `ProblemWorkspacePage` hiện có để giữ editor/reset/nháp, kết hợp `Statement` memoized của Thịnh, tags/samples và đủ time/memory/output limits. Không mount đồng thời hai resource nên không gọi API trùng. Deadline 15 giây được tách thành `lib/api/deadline.ts` và dùng cho cả hai controller; workspace kiểm tra slug, unlocked, identity template và xóa đề khi template trả 401/LEVEL_LOCKED. Guard key theo user/slug. Các mô tả bản xem chỉ đọc bên dưới là lịch sử nhánh độc lập trước khi ghép.
+Theo yêu cầu của Thịnh, merge PR #3 của Tùng được revert bằng commit mới, không viết lại lịch sử master. Route `/problems/[slug]` trở về `features/problems/ProblemPage.tsx`: đề, tags/samples, đủ time/memory/output limits và starter template chỉ đọc. Editor/reset/nháp của Tùng và demo đa ngôn ngữ được gỡ khỏi bản master hiện tại. Deadline 15 giây vẫn dùng helper `lib/api/deadline.ts`; memo Markdown và kiểm tra session/identity/race của Thịnh vẫn giữ nguyên.
 
-Kiểm tra tích hợp: lint/typecheck/tests/build; bộ test gồm cả regression editor/reset/nháp của Tùng và detail/template của Thịnh. Mock áp dụng sửa UUID trước khi tạo payload demo để không bị mất thay đổi khi ghép. Không xác nhận backend live hay toàn bộ Sprint 2 của Huy từ lần merge này.
+Các file Sprint 1 bị di chuyển trong PR #3 được trả về thư mục `sprint-1/`. Code Tùng vẫn có trong lịch sử Git để review/tích hợp lại sau; không xóa nhánh GitHub. Không kết luận code Tùng có lỗi chỉ vì gỡ merge; đây là thay đổi phạm vi tích hợp theo yêu cầu. Backend live và phần Run của Huy chưa được nghiệm thu trong thay đổi này.
 
 Phạm vi task: kết nối đề, sample, giới hạn, tag và template theo language; không hiển thị driver code/hidden test. Contract: learner `2.1.0-contract` trong `contracts/openapi_fe.yaml`, tài liệu công bố tại https://code-automatic.github.io/codjingrank-backend/learner.html. Đây là target để mock, không xác nhận Gateway live.
 

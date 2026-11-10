@@ -19,79 +19,6 @@ const AUTH_ONLY_PATHS = new Set([
   "/api/v1/users/me",
 ]);
 
-// Local demo only: the contract example exposes one language, which makes the
-// Sprint 2 language switch impossible to try by hand. This opt-in override adds
-// C++/Java and matching starters for the `sum-two` example. It never runs by
-// default and is not a claim about the Gateway contract.
-const DEMO_LANGUAGES = [
-  {
-    id: "11111111-1111-4111-8111-111111111111",
-    slug: "python3",
-    name: "Python 3",
-    runtimeVersion: "3.12",
-    fileExtension: ".py",
-  },
-  {
-    id: "22222222-2222-4222-8222-222222222222",
-    slug: "cpp",
-    name: "C++",
-    runtimeVersion: "17",
-    fileExtension: ".cpp",
-  },
-  {
-    id: "33333333-3333-4333-8333-333333333333",
-    slug: "java",
-    name: "Java",
-    runtimeVersion: "17",
-    fileExtension: ".java",
-  },
-];
-
-const DEMO_STARTERS = {
-  [DEMO_LANGUAGES[0].id]: {
-    starterCode: "a, b = map(int, input().split())\nprint(a + b)\n",
-    fileName: "main.py",
-  },
-  [DEMO_LANGUAGES[1].id]: {
-    starterCode:
-      "#include <iostream>\n\nint main() {\n    long long a, b;\n    std::cin >> a >> b;\n    std::cout << a + b << '\\n';\n    return 0;\n}\n",
-    fileName: "main.cpp",
-  },
-  [DEMO_LANGUAGES[2].id]: {
-    starterCode:
-      "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        long a = scanner.nextLong();\n        long b = scanner.nextLong();\n        System.out.println(a + b);\n    }\n}\n",
-    fileName: "Main.java",
-  },
-};
-
-function applyEditorDemo(payload, pathname, searchParams) {
-  if (process.env.MOCK_EDITOR_DEMO !== "1") return payload;
-  if (!payload || payload.status !== "success" || !payload.data) return payload;
-
-  const languages = DEMO_LANGUAGES.map((language) => ({ ...language }));
-  if (pathname === "/api/v1/problems/sum-two") {
-    return { ...payload, data: { ...payload.data, languages } };
-  }
-  if (pathname === "/api/v1/problems/sum-two/languages") {
-    return { ...payload, data: { items: languages } };
-  }
-  if (pathname === "/api/v1/problems/sum-two/template") {
-    const requestedId = searchParams.get("languageId");
-    const starter =
-      DEMO_STARTERS[requestedId] ?? DEMO_STARTERS[DEMO_LANGUAGES[0].id];
-    return {
-      ...payload,
-      data: {
-        ...payload.data,
-        languageId: requestedId ?? payload.data.languageId,
-        starterCode: starter.starterCode,
-        fileName: starter.fileName,
-      },
-    };
-  }
-  return payload;
-}
-
 function resolveOperation(pathname, method) {
   const lowerMethod = method.toLowerCase();
   if (process.env.MOCK_AUTH_ONLY === "1" && !AUTH_ONLY_PATHS.has(pathname)) {
@@ -151,8 +78,7 @@ createServer((req, res) => {
     return;
   }
 
-  const url = new URL(req.url || "/", "http://localhost");
-  const pathname = url.pathname;
+  const pathname = new URL(req.url || "/", "http://localhost").pathname;
   const operation = resolveOperation(pathname, req.method || "GET");
 
   if (!operation) {
@@ -213,7 +139,6 @@ createServer((req, res) => {
     };
   }
 
-  const payload = applyEditorDemo(example, pathname, url.searchParams);
   const extraHeaders =
     code === "429"
       ? { "Content-Type": "application/json", "Retry-After": "10" }
@@ -224,8 +149,8 @@ createServer((req, res) => {
     code === "204"
       ? undefined
       : JSON.stringify(
-          payload !== undefined
-            ? payload
+          example !== undefined
+            ? example
             : {
                 status: "error",
                 code: Number(code),
