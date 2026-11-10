@@ -2,11 +2,9 @@
 
 Branch: `feature/sprint-2-thinh-problem-detail-template`, nền master `115bf55`.
 
-## Trạng thái hiện tại sau khi gỡ merge Tùng
+## Trạng thái tích hợp ngày 2026-11-11
 
-Theo yêu cầu của Thịnh, merge PR #3 của Tùng được revert bằng commit mới, không viết lại lịch sử master. Route `/problems/[slug]` trở về `features/problems/ProblemPage.tsx`: đề, tags/samples, đủ time/memory/output limits và starter template chỉ đọc. Editor/reset/nháp của Tùng và demo đa ngôn ngữ được gỡ khỏi bản master hiện tại. Deadline 15 giây vẫn dùng helper `lib/api/deadline.ts`; memo Markdown và kiểm tra session/identity/race của Thịnh vẫn giữ nguyên.
-
-Các file Sprint 1 bị di chuyển trong PR #3 được trả về thư mục `sprint-1/`. Code Tùng vẫn có trong lịch sử Git để review/tích hợp lại sau; không xóa nhánh GitHub. Không kết luận code Tùng có lỗi chỉ vì gỡ merge; đây là thay đổi phạm vi tích hợp theo yêu cầu. Backend live và phần Run của Huy chưa được nghiệm thu trong thay đổi này.
+Editor Tùng từ `feat/tung-T4-06-editor-language-draft` (`272ae9a`) đã được review lại sau lần revert `215d612`. Route hiện dùng `features/editor/ProblemWorkspacePage.tsx`, giữ Markdown an toàn, tags/samples, time/memory/output limits và kiểm tra quyền/identity của Thịnh. Chi tiết kết quả, sửa lỗi và giới hạn nghiệm thu ở [TUNG_EDITOR_REVIEW.md](TUNG_EDITOR_REVIEW.md). Tài liệu Sprint 1 giữ tại `sprint-1/`; không khôi phục các báo cáo Sprint 3/5 trong merge cũ.
 
 Phạm vi task: kết nối đề, sample, giới hạn, tag và template theo language; không hiển thị driver code/hidden test. Contract: learner `2.1.0-contract` trong `contracts/openapi_fe.yaml`, tài liệu công bố tại https://code-automatic.github.io/codjingrank-backend/learner.html. Đây là target để mock, không xác nhận Gateway live.
 
