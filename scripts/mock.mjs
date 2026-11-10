@@ -117,10 +117,27 @@ createServer((req, res) => {
   const namedExample = preferredExample
     ? content?.examples?.[preferredExample]?.value
     : undefined;
-  const example =
+  let example =
     namedExample !== undefined
       ? namedExample
       : (content?.example ?? Object.values(content?.examples || {})[0]?.value);
+
+  // The source examples use different problem UUIDs for detail and template.
+  // Keep their fixture references coherent; this remains a stateless example.
+  if (
+    operation.operationId === "getTemplate" &&
+    code === "200" &&
+    example?.data
+  ) {
+    const detail =
+      spec.paths["/api/v1/problems/{slug}"].get.responses["200"].content[
+        "application/json"
+      ].example.data;
+    example = {
+      ...example,
+      data: { ...example.data, problemId: detail.problem.id },
+    };
+  }
 
   const extraHeaders =
     code === "429"
