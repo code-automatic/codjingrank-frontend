@@ -125,6 +125,8 @@ export function createTransport(base: string, fetcher: typeof fetch = fetch) {
   };
 }
 export function errorText(e: unknown) {
+  if (e instanceof ApiError && e.code === "REQUEST_TIMEOUT")
+    return "Yêu cầu quá thời gian chờ. Vui lòng thử lại.";
   if (!(e instanceof ApiError) || e.status === 0 || e.status >= 500) {
     if (
       e instanceof ApiError &&

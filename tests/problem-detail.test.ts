@@ -72,6 +72,77 @@ function withTwoLanguages(): ProblemDetailModel {
 }
 
 describe("problem resource against learner contract", () => {
+  it("does not refetch or notify when selecting the same loading/ready language", async () => {
+    const pending = deferred<CodeTemplateModel>();
+    const getTemplate = vi.fn(() => pending.promise);
+    const { resource } = setup({ getTemplate });
+    const load = resource.load();
+    await vi.waitFor(() => expect(getTemplate).toHaveBeenCalledTimes(1));
+    const listener = vi.fn();
+    resource.subscribe(listener);
+    await resource.selectLanguage(language1);
+    expect(listener).not.toHaveBeenCalled();
+    pending.resolve(template);
+    await load;
+    listener.mockClear();
+    await resource.selectLanguage(language1);
+    expect(listener).not.toHaveBeenCalled();
+    expect(getTemplate).toHaveBeenCalledTimes(1);
+  });
+
+  it("bounds a hung detail request, ignores late data and allows retry", async () => {
+    vi.useFakeTimers();
+    try {
+      const pending = deferred<ProblemDetailModel>();
+      const { catalog } = setup({
+        getProblem: vi
+          .fn()
+          .mockReturnValueOnce(pending.promise)
+          .mockResolvedValueOnce(detail),
+      });
+      const resource = createProblemResource({ catalog }, "sum-two", 100);
+      const load = resource.load();
+      await vi.advanceTimersByTimeAsync(100);
+      await load;
+      expect(resource.getSnapshot()).toMatchObject({
+        status: "error",
+        detail: null,
+        error: { code: "REQUEST_TIMEOUT" },
+      });
+      pending.resolve(detail);
+      await Promise.resolve();
+      expect(resource.getSnapshot().status).toBe("error");
+      await resource.load();
+      expect(resource.getSnapshot().template).toEqual(template);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("bounds a hung template and releases timers on cancellation", async () => {
+    vi.useFakeTimers();
+    try {
+      const { catalog } = setup({
+        getTemplate: vi.fn(() => new Promise<CodeTemplateModel>(() => {})),
+      });
+      const resource = createProblemResource({ catalog }, "sum-two", 100);
+      const load = resource.load();
+      await vi.advanceTimersByTimeAsync(100);
+      await load;
+      expect(resource.getSnapshot()).toMatchObject({
+        status: "ready",
+        templateStatus: "error",
+        templateError: { code: "REQUEST_TIMEOUT" },
+      });
+      const retry = resource.selectLanguage(language1);
+      resource.cancel();
+      await retry;
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it("waits for detail, loads its first supported language, and preserves exact starter whitespace", async () => {
     const pending = deferred<ProblemDetailModel>();
     const { resource, catalog } = setup({

@@ -15,10 +15,38 @@ export type ProblemState = {
   templateError: unknown;
 };
 
+// Bound waits even for a transport that ignores abort; release timers/listeners
+// on completion and unmount rather than leaving pending work behind.
+async function withDeadline<T>(
+  controller: AbortController,
+  request: () => Promise<T>,
+  timeoutMs: number,
+): Promise<T> {
+  if (controller.signal.aborted)
+    throw new DOMException("Aborted", "AbortError");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let onAbort = () => {};
+  const interrupted = new Promise<never>((_, reject) => {
+    onAbort = () => reject(new DOMException("Aborted", "AbortError"));
+    controller.signal.addEventListener("abort", onAbort, { once: true });
+    timer = setTimeout(() => {
+      reject(new ApiError(0, "REQUEST_TIMEOUT"));
+      controller.abort();
+    }, timeoutMs);
+  });
+  try {
+    return await Promise.race([request(), interrupted]);
+  } finally {
+    clearTimeout(timer);
+    controller.signal.removeEventListener("abort", onAbort);
+  }
+}
+
 // One resource per mounted problem/user. No persistent or shared user cache.
 export function createProblemResource(
   api: Pick<ApiClient, "catalog">,
   slug: string,
+  timeoutMs = 15_000,
 ) {
   let state: ProblemState = {
     status: "loading",
@@ -59,6 +87,11 @@ export function createProblemResource(
       !detail.languages.some((language) => language.id === languageId)
     )
       return;
+    if (
+      state.languageId === languageId &&
+      (state.templateStatus === "loading" || state.templateStatus === "ready")
+    )
+      return;
     templateAbort?.abort();
     const controller = new AbortController();
     templateAbort = controller;
@@ -71,9 +104,14 @@ export function createProblemResource(
       templateError: null,
     });
     try {
-      const template = await api.catalog.getTemplate(slug, languageId, {
-        signal: controller.signal,
-      });
+      const template = await withDeadline(
+        controller,
+        () =>
+          api.catalog.getTemplate(slug, languageId, {
+            signal: controller.signal,
+          }),
+        timeoutMs,
+      );
       if (
         controller.signal.aborted ||
         epoch !== generation ||
@@ -89,7 +127,8 @@ export function createProblemResource(
       publish({ templateStatus: "ready", template });
     } catch (error) {
       if (
-        controller.signal.aborted ||
+        (controller.signal.aborted &&
+          !(error instanceof ApiError && error.code === "REQUEST_TIMEOUT")) ||
         epoch !== generation ||
         revision !== templateRevision
       )
@@ -112,9 +151,11 @@ export function createProblemResource(
     detailAbort = controller;
     publish(initial);
     try {
-      const detail = await api.catalog.getProblem(slug, {
-        signal: controller.signal,
-      });
+      const detail = await withDeadline(
+        controller,
+        () => api.catalog.getProblem(slug, { signal: controller.signal }),
+        timeoutMs,
+      );
       if (controller.signal.aborted || epoch !== generation) return;
       if (detail.problem.slug !== slug)
         throw new ApiError(200, "INVALID_CONTRACT_DATA");
@@ -123,7 +164,12 @@ export function createProblemResource(
       const language = detail.languages[0];
       if (language) await selectLanguage(language.id);
     } catch (error) {
-      if (controller.signal.aborted || epoch !== generation) return;
+      if (
+        (controller.signal.aborted &&
+          !(error instanceof ApiError && error.code === "REQUEST_TIMEOUT")) ||
+        epoch !== generation
+      )
+        return;
       publish({ ...initial, status: "error", error });
     }
   }

@@ -59,6 +59,13 @@ Kết quả lần kiểm tra 2026-11-11: lint, typecheck, 67 tests và productio
 
 **Chưa tích hợp live:** cần Gateway triển khai `/api/v1/problems/{slug}` và template UUID DTO, enforce level lock trước nội dung, assigned active languages, loại hidden/driver code; Auth refresh rotation, Set-Cookie, CORS/Origin, cookie Path/SameSite/Secure theo deployment. Không dùng domain GitHub Pages làm Gateway origin. Chưa thể đánh dấu toàn bộ Sprint 2 của ba thành viên done chỉ từ nhánh này.
 
+## Tối ưu sau review
+
+- `Statement` dùng React.memo: không parse/render lại Markdown khi chỉ thay đổi trạng thái template hoặc ngôn ngữ; nội dung đề đổi vẫn cập nhật bình thường.
+- Chọn lại cùng ngôn ngữ đang tải hoặc đã ready không gọi API và không thông báo render dư. Sau lỗi vẫn được retry; chuyển sang ngôn ngữ khác vẫn lấy template mới, không cache quyền truy cập qua session.
+- Mỗi request detail/template có deadline 15 giây, hủy transport khi hết hạn và hiển thị lỗi có nút thử lại. Deadline bao gồm thời gian refresh nếu request cần refresh; không tự retry vô hạn. Timer/listener được dọn khi xong hoặc unmount. Phản hồi cũ vẫn bị chặn bởi generation/revision.
+- Bộ test tăng từ 67 lên 70, kiểm tra request trùng chỉ gọi một lần, timeout detail/template, phản hồi muộn và dọn timer. Đây là xác nhận giảm công việc dư và giới hạn chờ, không phải benchmark latency backend hoặc cam kết tốc độ mạng.
+
 ## Mẫu báo cáo thành viên
 
 “Thịnh đã hoàn thành phần problem detail/starter template theo learner contract trên nhánh feature/sprint-2-thinh-problem-detail-template. Huy ghép link theo problem.slug; Tùng ghép editor theo problemId/languageId và nhận starterCode khi template ready. Chưa có Run/Submit; chưa nghiệm thu live. Trước khi merge cần review diff cả ba phần và chạy lại lint/typecheck/tests/build trên nhánh tích hợp.”

@@ -1,6 +1,12 @@
 import Markdown from "react-markdown";
+import { memo } from "react";
 
-export function Statement({ children }: { children: string }) {
+// Parsing the statement is independent of template loading/language changes.
+export const Statement = memo(function Statement({
+  children,
+}: {
+  children: string;
+}) {
   return (
     <div className="problem-markdown">
       <Markdown
@@ -14,4 +20,4 @@ export function Statement({ children }: { children: string }) {
       </Markdown>
     </div>
   );
-}
+});
