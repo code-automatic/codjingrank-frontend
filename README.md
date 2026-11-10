@@ -72,3 +72,20 @@ Test có điều khiển bằng transport injected: bootstrap, concurrent/late 4
 Đã đọc snapshot local của learner OpenAPI 2.1.0-contract, FRONTEND_API_CONTRACT.md, fe/AUTH_FLOW.md, fe/RESPONSE_CONTRACT.md và DECISIONS.md tại `srs/srs/docs/` trước khi viết code. Copy nguyên learner OpenAPI sang `contracts/` để mock có thể chạy sau clone. URL GitHub được cung cấp trả 404 khi truy cập raw; chưa xác minh revision upstream. Cần backend cung cấp revision/URL truy cập được trước live.
 
 Thư mục ban đầu không có `.git` hoặc mã FE, chỉ có SRS/SQL/Excel. Đã khởi tạo Git local branch `feat/auth-refresh-session`; không có remote, không push/merge. Tài liệu có sẵn giữ nguyên, được exclude khỏi Git FE.
+
+## Sprint 2: đề bài và editor
+
+Mở `/problems/sum-two` sau khi đăng nhập mock. Đề/Markdown, tags, samples, limits và editor dùng learner UUID contract; chỉ gọi Gateway. Editor hỗ trợ đổi ngôn ngữ, reset starter, loading/error/retry và tự lưu nháp sau 500 ms.
+
+Nháp local được tách theo **tài khoản + problem UUID + language UUID**. Reload khôi phục nháp sau khi xác thực lại; đăng xuất/hết phiên xóa nháp tài khoản trong tab hiện tại. Không đọc/migrate nháp legacy không có chủ sở hữu. Không lưu token vào storage. Khi browser chặn storage/quota, editor giữ mã trong memory qua đổi ngôn ngữ và báo lỗi; reload/rời trang có thể mất nháp chưa lưu. Local drafts không đồng bộ đa thiết bị/đa tab; nếu browser chặn xóa storage, không đảm bảo xóa bền vững.
+
+Để demo Python/C++/Java, trong terminal mock chạy:
+
+```powershell
+$env:MOCK_EDITOR_DEMO='1'
+npm run mock
+```
+
+Biến demo chỉ thêm fixture, mặc định tắt; không xác nhận language runtime thực. Có thể đổi cổng mock bằng `MOCK_PORT`, origin FE bằng `MOCK_ORIGIN`; cập nhật `NEXT_PUBLIC_GATEWAY_URL` rồi restart FE tương ứng. Live vẫn dùng origin Gateway, không dùng GitHub Pages. Các endpoint problem/template hiện là contract đích, cần backend implement trước nghiệm thu live.
+
+Kết quả review và hướng dẫn báo cáo: [Sprint 2 Tùng](sprint-2/TUNG_EDITOR_REVIEW.md). Chỉ phần FE Thịnh/Tùng được kiểm duyệt trong lần này; chưa xác nhận toàn bộ Sprint 2 của Huy hoặc Auth/judge live.
