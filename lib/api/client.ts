@@ -97,7 +97,12 @@ export function createTransport(base: string, fetcher: typeof fetch = fetch) {
         credentials: "include",
         cache: "no-store",
       });
-    } catch {
+    } catch (error) {
+      if (
+        init.signal?.aborted ||
+        (error instanceof Error && error.name === "AbortError")
+      )
+        throw error;
       throw new ApiError(0, "NETWORK_ERROR");
     }
     if (r.status === 204) return undefined as T;

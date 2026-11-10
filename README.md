@@ -16,7 +16,7 @@ npm run dev
 
 Mở http://localhost:3000. `NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010` là origin mock, không chứa `/api/v1`, credentials hoặc secret. Biến NEXT_PUBLIC được nhúng lúc build; đổi môi trường cần rebuild.
 
-Mock tích hợp đọc trực tiếp examples từ `contracts/openapi_fe.yaml`, chỉ phục vụ 5 operation auth/current-user. Refresh mặc định 401 để mở form đăng nhập; đăng nhập/đăng ký trả example cố định, không lưu dữ liệu. Dùng dữ liệu giả như `learner@example.com` / `Coding2026`. Không nhập mật khẩu thật.
+Mock tích hợp đọc trực tiếp examples từ `contracts/openapi_fe.yaml`, phục vụ 42 operation learner từ contract. Đặt `MOCK_AUTH_ONLY=1` để giới hạn ở auth/current-user. Refresh mặc định 401 để mở form đăng nhập; đăng nhập/đăng ký trả example cố định, không lưu dữ liệu. Dùng dữ liệu giả như `learner@example.com` / `Coding2026`. Không nhập mật khẩu thật.
 
 Để minh hoạ bootstrap thành công, chạy `$env:MOCK_REFRESH_STATUS='200'; npm run mock` (reload luôn authenticated, kể cả sau logout — đây là mock stateless). Header `Prefer: code=503`/`401` chọn error response khi gọi mock trực tiếp. Mock tích hợp không validate request; test frontend kiểm tra payload/validation. Có thể dùng Prism để validate schema:
 
