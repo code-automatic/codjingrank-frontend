@@ -1,6 +1,6 @@
-# Codjingrank frontend — Auth và refresh session
+# Codjingrank frontend — Auth, refresh session và editor Sprint 2
 
-Ứng dụng Next.js App Router + TypeScript tối thiểu: `/login`, `/register`, `/protected`. Không có dashboard/catalog/forum/leaderboard hoặc Repo/GitHub legacy. Chỉ kết nối Gateway, prefix cố định `/api/v1`.
+Ứng dụng Next.js App Router + TypeScript tối thiểu: `/login`, `/register`, `/protected`, `/problems/[slug]`. Không có dashboard/catalog/forum/leaderboard hoặc Repo/GitHub legacy. Chỉ kết nối Gateway, prefix cố định `/api/v1`.
 
 ## Chạy mock
 
@@ -26,6 +26,12 @@ npx @stoplight/prism-cli mock contracts/openapi_fe.yaml -p 4010
 
 Prism cũng stateless và có thể trả refresh success mặc định; dùng mock tích hợp để thử form với bootstrap anonymous. CORS mock chỉ cho `http://localhost:3000`.
 
+## Editor và nháp Sprint 2
+
+Mở `http://localhost:3000/problems/sum-two` sau khi đăng nhập. Trang tải problem + starter template qua Gateway, chỉ hiện ngôn ngữ bài hỗ trợ, đổi ngôn ngữ nạp starter hoặc nháp riêng, nút Reset trả về đúng starter, và tự lưu nháp vào `localStorage` theo `(problemId, languageId)` với key `codjingrank:draft:v1:...`. Xem [sprint-2/README.md](sprint-2/README.md) cho phạm vi, trạng thái loading/error, test và cách kiểm tra tay.
+
+Mock mặc định chỉ trả một ngôn ngữ theo example của contract. Để thử đổi ngôn ngữ bằng tay, chạy mock với `$env:MOCK_EDITOR_DEMO='1'` (mock thêm C++/Java cục bộ cho `sum-two`, không phải hợp đồng).
+
 ## Session và lỗi
 
 - Access token nằm trong closure memory, không ở localStorage/sessionStorage, React state, log hoặc URL. Refresh token chỉ do backend đặt HttpOnly cookie; mọi request dùng `credentials: include`.
@@ -46,7 +52,7 @@ npm run build
 
 Test có điều khiển bằng transport injected: bootstrap, concurrent/late 401, retry cap, refresh 401/network/503, logout race, stale profile, auth exclusions, envelope, 204, credentials/header, UUID và UTF-8 password. React form dùng native validation + kiểm tra username/password bytes/fullName, label, autocomplete, focus error và trạng thái pending.
 
-**Đạt với mock**: client/session unit tests, scaffold, UI contract và các kiểm tra phía FE. **Chưa tích hợp live**: stateless mock không chứng minh cookie rotation, session persistence, JWT validation, ownership hoặc CORS/cookie thực trên deployment. Unit tests không thay thế browser E2E/live tests.
+**Đạt với mock**: client/session unit tests, scaffold, UI contract, editor/nháp Sprint 2 và các kiểm tra phía FE. **Chưa tích hợp live**: stateless mock không chứng minh cookie rotation, session persistence, JWT validation, ownership hoặc CORS/cookie thực trên deployment. Unit tests không thay thế browser E2E/live tests.
 
 ## Dependency backend trước khi nghiệm thu live
 
