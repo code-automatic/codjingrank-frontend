@@ -37,7 +37,12 @@ function language(id: string, slug: string, name: string): LanguageModel {
   };
 }
 
-function makeProblem(languages = [language(PYTHON_ID, "python3", "Python 3"), language(CPP_ID, "cpp", "C++")]): ProblemDetailModel {
+function makeProblem(
+  languages = [
+    language(PYTHON_ID, "python3", "Python 3"),
+    language(CPP_ID, "cpp", "C++"),
+  ],
+): ProblemDetailModel {
   return {
     problem: {
       id: PROBLEM_ID,
@@ -85,13 +90,12 @@ type CatalogCalls = {
   templates: string[];
 };
 
-function fakeCatalog(handlers: {
-  problem?: (slug: string) => Promise<ProblemDetailModel>;
-  template?: (
-    slug: string,
-    languageId: string,
-  ) => Promise<CodeTemplateModel>;
-} = {}): WorkspaceCatalogApi & { calls: CatalogCalls } {
+function fakeCatalog(
+  handlers: {
+    problem?: (slug: string) => Promise<ProblemDetailModel>;
+    template?: (slug: string, languageId: string) => Promise<CodeTemplateModel>;
+  } = {},
+): WorkspaceCatalogApi & { calls: CatalogCalls } {
   const calls: CatalogCalls = { problems: [], templates: [] };
   return {
     calls,
@@ -154,10 +158,64 @@ function makeController(
 }
 
 describe("problem workspace controller", () => {
+  it("does not project a successful detail payload for a locked or different problem", async () => {
+    for (const change of [{ unlocked: false }, { slug: "another-problem" }]) {
+      const problem = makeProblem();
+      const catalog = fakeCatalog({
+        problem: async () => ({
+          ...problem,
+          problem: { ...problem.problem, ...change },
+        }),
+      });
+      const controller = makeController(
+        catalog,
+        createDraftStore(memoryStorage()),
+      );
+      try {
+        await controller.open("sum-two");
+        expect(controller.getSnapshot().phase).toBe("error");
+        expect(controller.getSnapshot().problem).toBeNull();
+        expect(catalog.calls.templates).toHaveLength(0);
+      } finally {
+        controller.dispose();
+      }
+    }
+  });
+
+  it("removes detail and editor data when template access is revoked", async () => {
+    for (const error of [
+      new ApiError(401, "UNAUTHORIZED"),
+      new ApiError(403, "LEVEL_LOCKED"),
+    ]) {
+      const catalog = fakeCatalog({
+        template: async () => {
+          throw error;
+        },
+      });
+      const controller = makeController(
+        catalog,
+        createDraftStore(memoryStorage()),
+      );
+      try {
+        await controller.open("sum-two");
+        expect(controller.getSnapshot()).toMatchObject({
+          phase: "error",
+          problem: null,
+          code: "",
+          starterCode: "",
+        });
+      } finally {
+        controller.dispose();
+      }
+    }
+  });
   it("loads the problem and restores a draft for the default language", async () => {
     const catalog = fakeCatalog();
     const drafts = createDraftStore(memoryStorage());
-    drafts.write(PROBLEM_ID, PYTHON_ID, { code: "print('draft')", savedAt: 50 });
+    drafts.write(PROBLEM_ID, PYTHON_ID, {
+      code: "print('draft')",
+      savedAt: 50,
+    });
 
     const controller = makeController(catalog, drafts);
     try {
@@ -190,14 +248,18 @@ describe("problem workspace controller", () => {
 
       controller.changeCode("print('saved py')");
       controller.flushDraft();
-      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe("print('saved py')");
+      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe(
+        "print('saved py')",
+      );
 
       await controller.selectLanguage(CPP_ID);
       let snapshot = controller.getSnapshot();
       expect(snapshot.selectedLanguageId).toBe(CPP_ID);
       expect(snapshot.code).toBe("int main() {}");
       expect(snapshot.draftRestored).toBe(false);
-      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe("print('saved py')");
+      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe(
+        "print('saved py')",
+      );
       expect(drafts.readPreferredLanguage(PROBLEM_ID)).toBe(CPP_ID);
 
       controller.changeCode("int main() { return 0; }");

@@ -8,7 +8,7 @@ import { ProblemWorkspace } from "./ProblemWorkspace";
 
 export function ProblemWorkspacePage({ slug }: { slug: string }) {
   const router = useRouter();
-  const { status } = useSession();
+  const { status, user } = useSession();
 
   useEffect(() => {
     if (status === "anonymous") router.replace("/login");
@@ -31,5 +31,5 @@ export function ProblemWorkspacePage({ slug }: { slug: string }) {
     );
   }
 
-  return <ProblemWorkspace slug={slug} />;
+  return <ProblemWorkspace key={`${user?.id}:${slug}`} slug={slug} />;
 }

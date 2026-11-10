@@ -4,6 +4,7 @@ import type {
   ProblemDetailModel,
 } from "@/lib/api/adapters/catalog";
 import { ApiError, type RequestOptions } from "@/lib/api/client";
+import { withDeadline } from "@/lib/api/deadline";
 import { assertSlugParam } from "@/lib/api/domains/preflight";
 import { isUuid } from "@/lib/api/guards";
 import type { DraftStore } from "./draft-store";
@@ -20,22 +21,13 @@ export type WorkspaceCatalogApi = {
   ): Promise<CodeTemplateModel>;
 };
 
-export type WorkspaceErrorKind =
-  | "locked"
-  | "not_found"
-  | "invalid"
-  | "generic";
+export type WorkspaceErrorKind = "locked" | "not_found" | "invalid" | "generic";
 
 export type WorkspacePhase = "loading" | "ready" | "error";
 export type TemplatePhase = "idle" | "loading" | "ready" | "error";
 
 export type DraftSaveState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "starter"
-  | "error"
-  | "unavailable";
+  "idle" | "saving" | "saved" | "starter" | "error" | "unavailable";
 
 export type WorkspaceSnapshot = {
   phase: WorkspacePhase;
@@ -205,10 +197,13 @@ export function createWorkspaceController(
     });
 
     try {
-      const template = await catalog.getTemplate(
-        problem.problem.slug,
-        language.id,
-        { signal: abort.signal },
+      const template = await withDeadline(
+        abort,
+        () =>
+          catalog.getTemplate(problem.problem.slug, language.id, {
+            signal: abort.signal,
+          }),
+        15_000,
       );
       if (requestId !== templateEpoch) return;
       if (
@@ -234,6 +229,19 @@ export function createWorkspaceController(
       });
     } catch (error) {
       if (requestId !== templateEpoch || isAbortError(error)) return;
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 ||
+          (error.status === 403 && error.code === "LEVEL_LOCKED"))
+      ) {
+        patch({
+          ...createInitial(drafts.available),
+          phase: "error",
+          problemError: error,
+          errorKind: classifyProblemError(error),
+        });
+        return;
+      }
       patch({
         templatePhase: "error",
         templateError: error,
@@ -273,10 +281,18 @@ export function createWorkspaceController(
     problemAbort = abort;
 
     try {
-      const problem = await catalog.getProblem(cleanSlug, {
-        signal: abort.signal,
-      });
+      const problem = await withDeadline(
+        abort,
+        () =>
+          catalog.getProblem(cleanSlug, {
+            signal: abort.signal,
+          }),
+        15_000,
+      );
       if (requestId !== problemEpoch) return;
+      if (problem.problem.slug !== cleanSlug)
+        throw new ApiError(200, "INVALID_CONTRACT_DATA");
+      if (!problem.problem.unlocked) throw new ApiError(403, "LEVEL_LOCKED");
 
       if (problem.languages.length === 0) {
         throw new ApiError(200, "INVALID_CONTRACT_DATA", {
