@@ -52,16 +52,38 @@ export function createSession(send: ReturnType<typeof createTransport>) {
   const check = (n: number) => {
     if (n !== epoch) throw new ApiError(0, "SESSION_CHANGED");
   };
+  const assertValidUser = (user: User | null | undefined): User => {
+    if (
+      !user ||
+      !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(user.id ?? "")
+    ) {
+      throw new ApiError(200, "INVALID_AUTH_DATA");
+    }
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      fullName: user.fullName ?? null,
+      avatarUrl: user.avatarUrl ?? null,
+      bio: user.bio ?? null,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  };
   const accept = (d: AuthData, n: number) => {
     check(n);
-    if (
-      !d?.accessToken ||
-      !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(d.user?.id ?? "")
-    )
-      throw new ApiError(200, "INVALID_AUTH_DATA");
+    if (!d?.accessToken) throw new ApiError(200, "INVALID_AUTH_DATA");
+    const validUser = assertValidUser(d.user);
     token = d.accessToken;
     revision++;
-    pub({ status: "authenticated", user: d.user, error: null, expired: false });
+    pub({
+      status: "authenticated",
+      user: validUser,
+      error: null,
+      expired: false,
+    });
   };
   function refresh() {
     if (logoutFlight || state.loggingOut)
@@ -154,12 +176,18 @@ export function createSession(send: ReturnType<typeof createTransport>) {
     register: (b: Register) => auth("register", b),
     logout,
     request,
+    replaceUser: (user: User) => {
+      if (state.status !== "authenticated" || state.loggingOut) return;
+      const validUser = assertValidUser(user);
+      pub({ user: validUser });
+    },
     me: async () => {
       const n = epoch;
       const d = await request<{ user: User }>("/api/v1/users/me");
       check(n);
-      pub({ user: d.user });
-      return d.user;
+      const validUser = assertValidUser(d?.user);
+      pub({ user: validUser });
+      return validUser;
     },
   };
 }

@@ -384,4 +384,130 @@ describe("API client transport, routing, and domain endpoints", () => {
     await expect(client.community.deletePost(UUID1)).resolves.toBeUndefined();
     expect(signals[0]).toBe(controller.signal);
   });
+
+  it("validates getMe() through account adapter and syncs getMe()/updateMe() to session store via replaceUser", async () => {
+    let serverUser = { ...authData.user };
+    let returnInvalidPayload = false;
+
+    const fetcher = vi.fn(
+      async (url: RequestInfo | URL, init?: RequestInit) => {
+        if (String(url).endsWith("/api/v1/auth/login")) {
+          return envelopeResponse({
+            accessToken: authData.accessToken,
+            user: serverUser,
+          });
+        }
+        if (String(url).endsWith("/api/v1/users/me")) {
+          if (returnInvalidPayload) {
+            return envelopeResponse({
+              user: { ...serverUser, id: 123 },
+            });
+          }
+          if (init?.method === "PATCH") {
+            const body = JSON.parse(String(init.body)) as {
+              fullName?: string | null;
+              bio?: string | null;
+            };
+            serverUser = {
+              ...serverUser,
+              fullName:
+                body.fullName !== undefined
+                  ? body.fullName
+                  : serverUser.fullName,
+              bio: body.bio !== undefined ? body.bio : serverUser.bio,
+              updatedAt: "2026-11-10T03:30:00Z",
+            };
+          }
+          return envelopeResponse({ user: serverUser });
+        }
+        throw new Error(`Unhandled URL: ${url}`);
+      },
+    );
+
+    const send = createTransport("http://gateway", fetcher);
+    const store = createSession(send);
+    await store.login({ email: "learner@example.com", password: "Coding2026" });
+
+    const client = createApiClient({
+      authRequest: store.request,
+      publicRequest: (path, init) => send(path, init),
+      isAuthenticated: () => store.getSnapshot().status === "authenticated",
+      onUserUpdated: store.replaceUser,
+    });
+
+    // Fix #2: updateMe() must immediately update session store user without reload
+    const updated = await client.account.updateMe({
+      fullName: "Luong Hoang Huy",
+      bio: "Day 1 fix verified",
+    });
+    expect(updated.fullName).toBe("Luong Hoang Huy");
+    expect(store.getSnapshot().user?.fullName).toBe("Luong Hoang Huy");
+    expect(store.getSnapshot().user?.bio).toBe("Day 1 fix verified");
+
+    // Fix #1: invalid /users/me payload (e.g., integer id) must throw INVALID_CONTRACT_DATA
+    // and keep session store uncorrupted
+    returnInvalidPayload = true;
+    await expect(client.account.getMe()).rejects.toMatchObject({
+      code: "INVALID_CONTRACT_DATA",
+    });
+    expect(store.getSnapshot().user?.id).toBe(UUID1);
+    expect(store.getSnapshot().user?.fullName).toBe("Luong Hoang Huy");
+
+    // Subsequent valid getMe() syncs fresh profile back into session store
+    returnInvalidPayload = false;
+    serverUser = { ...serverUser, fullName: "Huy Synced" };
+    const refreshed = await client.account.getMe();
+    expect(refreshed.fullName).toBe("Huy Synced");
+    expect(store.getSnapshot().user?.fullName).toBe("Huy Synced");
+  });
+
+  it("prevents in-flight updateMe() from restoring user after logout", async () => {
+    let releasePatch!: (res: Response) => void;
+    const patchPromise = new Promise<Response>((resolve) => {
+      releasePatch = resolve;
+    });
+
+    const fetcher = vi.fn(
+      (url: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        if (String(url).endsWith("/api/v1/auth/login")) {
+          return Promise.resolve(envelopeResponse(authData));
+        }
+        if (String(url).endsWith("/api/v1/auth/logout")) {
+          return Promise.resolve(new Response(null, { status: 204 }));
+        }
+        if (
+          String(url).endsWith("/api/v1/users/me") &&
+          init?.method === "PATCH"
+        ) {
+          return patchPromise;
+        }
+        throw new Error(`Unhandled URL: ${url}`);
+      },
+    );
+
+    const send = createTransport("http://gateway", fetcher);
+    const store = createSession(send);
+    await store.login({ email: "learner@example.com", password: "Coding2026" });
+
+    const client = createApiClient({
+      authRequest: store.request,
+      publicRequest: (path, init) => send(path, init),
+      isAuthenticated: () => store.getSnapshot().status === "authenticated",
+      onUserUpdated: store.replaceUser,
+    });
+
+    const pendingUpdate = client.account
+      .updateMe({ fullName: "Ghost User" })
+      .catch(() => {});
+    await store.logout();
+    releasePatch(
+      envelopeResponse({
+        user: { ...authData.user, fullName: "Ghost User" },
+      }),
+    );
+    await pendingUpdate;
+
+    expect(store.getSnapshot().status).toBe("anonymous");
+    expect(store.getSnapshot().user).toBeNull();
+  });
 });

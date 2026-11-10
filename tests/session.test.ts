@@ -194,6 +194,36 @@ describe("session", () => {
     await p;
     expect(store.getSnapshot().user).toBeNull();
   });
+  it("me rejects invalid non-UUID user id without modifying user", async () => {
+    const { store } = setup((url) =>
+      url.endsWith("/me") ? ok({ user: { ...data.user, id: 123 } }) : ok(),
+    );
+    await store.login({ email: "a@b.com", password: "Coding2026" });
+    await expect(store.me()).rejects.toMatchObject({
+      code: "INVALID_AUTH_DATA",
+    });
+    expect(store.getSnapshot().user?.id).toBe(data.user.id);
+  });
+  it("replaceUser updates authenticated user and ignores anonymous or logged-out sessions", async () => {
+    const { store } = setup((url) =>
+      url.endsWith("/logout") ? new Response(null, { status: 204 }) : ok(),
+    );
+    store.replaceUser({ ...data.user, fullName: "Ignored Before Auth" });
+    expect(store.getSnapshot().user).toBeNull();
+
+    await store.login({ email: "a@b.com", password: "Coding2026" });
+    store.replaceUser({ ...data.user, fullName: "Updated Full Name" });
+    expect(store.getSnapshot().user?.fullName).toBe("Updated Full Name");
+
+    expect(() =>
+      store.replaceUser({ ...data.user, id: 123 as unknown as string }),
+    ).toThrow(ApiError);
+    expect(store.getSnapshot().user?.id).toBe(data.user.id);
+
+    await store.logout();
+    store.replaceUser({ ...data.user, fullName: "Revived User" });
+    expect(store.getSnapshot().user).toBeNull();
+  });
 });
 describe("transport and validation", () => {
   it("204 does not parse JSON, credentials included, untrusted headers removed", async () => {

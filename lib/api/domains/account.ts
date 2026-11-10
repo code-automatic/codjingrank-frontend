@@ -27,6 +27,7 @@ function toRequestInit(
 export function createAccountClient(deps: {
   authRequest: Requester;
   publicRequest: Requester;
+  onUserUpdated?: (user: UserModel) => void;
 }) {
   return {
     async getMe(options?: RequestOptions): Promise<UserModel> {
@@ -34,7 +35,9 @@ export function createAccountClient(deps: {
         "/api/v1/users/me",
         toRequestInit(options),
       );
-      return adaptUserData(raw);
+      const user = adaptUserData(raw);
+      deps.onUserUpdated?.(user);
+      return user;
     },
 
     async updateMe(
@@ -49,7 +52,9 @@ export function createAccountClient(deps: {
           body: JSON.stringify(valid),
         }),
       );
-      return adaptUserData(raw);
+      const user = adaptUserData(raw);
+      deps.onUserUpdated?.(user);
+      return user;
     },
 
     async changePassword(

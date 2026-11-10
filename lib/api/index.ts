@@ -1,4 +1,5 @@
 import { createTransport, type Requester } from "@/lib/api/client";
+import type { UserModel } from "@/lib/api/adapters/shared";
 import { createAccountClient } from "@/lib/api/domains/account";
 import { createCatalogClient } from "@/lib/api/domains/catalog";
 import { createCommunityClient } from "@/lib/api/domains/community";
@@ -34,6 +35,7 @@ export type ApiClientDeps = {
   authRequest: Requester;
   publicRequest: Requester;
   isAuthenticated?: () => boolean;
+  onUserUpdated?: (user: UserModel) => void;
 };
 
 export function createApiClient(deps: ApiClientDeps) {
@@ -59,6 +61,7 @@ export function createApiClient(deps: ApiClientDeps) {
     account: createAccountClient({
       authRequest: deps.authRequest,
       publicRequest: deps.publicRequest,
+      onUserUpdated: deps.onUserUpdated,
     }),
   };
 }
@@ -67,6 +70,7 @@ export function createStandaloneApiClient(
   gatewayOrigin: string,
   fetcher: typeof fetch = fetch,
   getToken?: () => string | undefined,
+  onUserUpdated?: (user: UserModel) => void,
 ) {
   const send = createTransport(gatewayOrigin, fetcher);
   const authRequest: Requester = <T>(path: string, init?: RequestInit) =>
@@ -75,6 +79,7 @@ export function createStandaloneApiClient(
     authRequest,
     publicRequest: <T>(path: string, init?: RequestInit) => send<T>(path, init),
     isAuthenticated: () => Boolean(getToken?.()),
+    onUserUpdated,
   });
 }
 

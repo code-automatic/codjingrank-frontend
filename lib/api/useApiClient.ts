@@ -17,6 +17,7 @@ export function useApiClient(): ApiClient {
       publicRequest: <T>(path: string, init?: RequestInit) =>
         publicSend<T>(path, init),
       isAuthenticated: () => store.getSnapshot().status === "authenticated",
+      onUserUpdated: store.replaceUser,
     });
   }, [store]);
 }
