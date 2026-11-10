@@ -1,6 +1,14 @@
 # Codjingrank frontend — Auth và refresh session
 
-Ứng dụng Next.js App Router + TypeScript tối thiểu: `/login`, `/register`, `/protected`. Không có dashboard/catalog/forum/leaderboard hoặc Repo/GitHub legacy. Chỉ kết nối Gateway, prefix cố định `/api/v1`.
+Ứng dụng Next.js App Router + TypeScript: `/login`, `/register`, `/protected` và `/problems/[slug]` (Sprint 2 của Thịnh). Chỉ kết nối Gateway, prefix cố định `/api/v1`.
+
+## Sprint 2 — Problem detail và starter template
+
+Đăng nhập với mock rồi chọn **Mở bài tập mẫu** trong trang tài khoản để mở `/problems/sum-two`. Trang hiển thị đề Markdown, tags, độ khó, trạng thái đã giải, giới hạn thực thi, samples và starter template theo ngôn ngữ hỗ trợ của bài. Chi tiết bàn giao, cách ghép với Huy/Tùng và kiểm thử: [sprint-2/THINH_HANDOFF.md](sprint-2/THINH_HANDOFF.md).
+
+Chỉ dùng `GET /api/v1/problems/{slug}` và `GET /api/v1/problems/{slug}/template?languageId=<UUID>` qua session client. Samples/languages lấy từ detail, không gọi trùng endpoint. Starter code hiện là bản xem chỉ đọc để ghép editor của Tùng; Run/Submit thuộc Sprint 3. Không dựng catalog của Huy trong phần này.
+
+`react-markdown` hiển thị đề, bỏ HTML thô, lọc URL không an toàn; ảnh Markdown hiển thị alt text thay vì tải tài nguyên ngoài. Mock OpenAPI có một ngôn ngữ Python; các ca nhiều ngôn ngữ, phản hồi trễ, khóa bài và lỗi mạng được kiểm tra bằng transport/resource có điều khiển. Mock local điều chỉnh `problemId` trong example template cho khớp detail vì example nguồn dùng hai UUID khác nhau; không thay đổi contract hoặc nới kiểm tra client.
 
 ## Chạy mock
 
