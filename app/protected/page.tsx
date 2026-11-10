@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/features/auth/session";
 import { SessionNotice } from "@/features/auth/SessionNotice";
@@ -43,10 +44,16 @@ export default function Protected() {
               </p>
             )}
             <div className="actions">
+              <Link href="/problems/sum-two" className="btn-link">
+                Mở bài tập mẫu (Chạy thử Run)
+              </Link>
               <button disabled={busy} onClick={() => void me()}>
                 {busy ? "Đang tải…" : "Tải lại thông tin tài khoản"}
               </button>
-              <button onClick={() => void store.logout().catch(() => {})}>
+              <button
+                className="btn-secondary"
+                onClick={() => void store.logout().catch(() => {})}
+              >
                 Đăng xuất
               </button>
             </div>
