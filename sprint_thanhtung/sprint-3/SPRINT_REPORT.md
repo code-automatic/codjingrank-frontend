@@ -1,17 +1,15 @@
 # Sprint 3 — 2026-11-15 — Báo cáo kiểm thử
 
-|                       |                                                                           |
-| --------------------- | ------------------------------------------------------------------------- |
-| **Sprint**            | Sprint 3                                                                  |
-| **Hạn theo kế hoạch** | 15/11/2026                                                                |
-| **Người thực hiện**   | Phùng Thanh Tùng                                                          |
-| **Nhánh / commit**    | test(s3)/docs(s5)/judge-pipeline-verification+/contract-handoff-sync      |
-| **Phạm vi**           | Piston, Redis, worker, verdict, anti-spam, ownership, hidden test         |
-| **Trạng thái**        | Chưa đủ evidence nghiệm thu — người thực hiện tự xác nhận ngày 11/11/2026 |
+|                       |                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------- |
+| **Sprint**            | Sprint 3                                                                        |
+| **Hạn theo kế hoạch** | 15/11/2026                                                                      |
+| **Người thực hiện**   | Phùng Thanh Tùng                                                                |
+| **Nhánh / commit**    | test(s3)/docs(s5)/judge-pipeline-verification+/contract-handoff-sync            |
+| **Phạm vi**           | Piston, Redis, worker, verdict, anti-spam, ownership, hidden test               |
+| **Trạng thái**        | Done theo quyết định nghiệm thu của Thịnh ngày 11/11/2026; FE/mock đạt kiểm tra |
 
-> **Review 11/11/2026:** Giữ lại lời xác nhận của người thực hiện, nhưng chưa công nhận PASS khi chưa có test/log theo từng case. Các ô bên dưới được trả về trạng thái chưa xác minh; không suy ra backend đã thất bại.
-> Cột Evidence và link log/PR/ảnh vẫn cần được điền trước khi gửi reviewer;
-> không dùng mock để kết luận backend live.
+> **Chốt nghiệm thu 11/11/2026:** Thịnh yêu cầu chấp nhận Done phần test BE. Các mục BE được chốt theo quyết định này; reviewer chưa chạy backend live và chưa nhận test/log BE. Kết quả FE/HTTP mock được ghi riêng trong báo cáo review, không dùng để chứng minh Judge live.
 
 Nguồn: [`DECISIONS.md`](https://github.com/code-automatic/codjingrank-backend/blob/main/docs/DECISIONS.md),
 [`NEXT_STEPS.md`](https://github.com/code-automatic/codjingrank-backend/blob/main/docs/NEXT_STEPS.md),
@@ -28,18 +26,18 @@ Nguồn: [`DECISIONS.md`](https://github.com/code-automatic/codjingrank-backend/
 
 ## 2. Trạng thái hiện tại
 
-| Hạng mục              | Trạng thái                                  | Evidence |
-| --------------------- | ------------------------------------------- | -------- |
-| Piston Python         | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Piston C++17          | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Piston Java 17        | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Redis enqueue/dequeue | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Worker + polling      | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Verdict mapping       | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Anti-spam Run         | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Anti-spam Submit      | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Ownership             | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
-| Hidden test leakage   | Chưa xác minh (tự xác nhận; thiếu evidence) |          |
+| Hạng mục              | Trạng thái                 | Evidence                                        |
+| --------------------- | -------------------------- | ----------------------------------------------- |
+| Piston Python         | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Piston C++17          | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Piston Java 17        | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Redis enqueue/dequeue | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Worker + polling      | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Verdict mapping       | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Anti-spam Run         | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Anti-spam Submit      | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Ownership             | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
+| Hidden test leakage   | Done theo quyết định Thịnh | Quyết định nghiệm thu của Thịnh; chưa có log BE |
 
 ## 3. Ma trận kiểm thử
 
@@ -130,16 +128,14 @@ redis-cli LLEN submission_jobs
 redis-cli LRANGE submission_jobs 0 -1
 ```
 
-## 5. Định nghĩa hoàn thành (chưa nghiệm thu)
+## 5. Chốt hoàn thành theo phạm vi nghiệm thu
 
-- [ ] Tất cả case Must ở mục 3 có evidence kiểm thử đính kèm.
-- [ ] Không còn hidden input/output/wrapper trong payload learner.
-- [ ] Ownership trả 404 cho user khác; Admin vẫn xem được.
-- [ ] Anti-spam trả đúng 429/413 và `Retry-After`.
-- [ ] Worker chạy hết job; crash/retry không tạo Accepted trùng.
-- [ ] Verdict mapping đúng 7 verdict + Pending/Running.
-- [ ] Đính kèm test/log/PR để reviewer xác nhận.
-- [ ] Ghi rõ case nào chưa đạt và blocker (nếu có, bổ sung khi nộp).
+- [x] Thịnh quyết định chấp nhận Done phần kiểm thử BE (Piston, Redis/worker, verdict, anti-spam, ownership, hidden test).
+- [x] Đồng bộ với master và giải quyết xung đột trên nhánh Tùng.
+- [x] FE: lint, typecheck, 199 tests / 14 files và build PASS.
+- [x] Integration: 28 tests / 2 files PASS; gồm 10 kịch bản HTTP mock, không phải browser/Judge E2E.
+- [x] Giữ rõ nguồn kết luận BE là quyết định của Thịnh; không ghi reviewer đã test live.
+- [ ] Evidence BE theo từng case chưa được nộp; lưu như hồ sơ bổ sung, không chặn Done theo quyết định trên.
 
 ## 6. Rủi ro / điểm cần chốt
 
@@ -155,7 +151,7 @@ redis-cli LRANGE submission_jobs 0 -1
   lỗi biên dịch phải trả CE, không phải RE.
 - **Mock frontend** không chứng minh bất kỳ mục nào ở trên.
 
-## 7. Checklist bàn giao
+## 7. Hồ sơ kiểm chứng độc lập có thể bổ sung sau
 
 - [ ] Điền tên, branch, commit backend và frontend liên quan.
 - [ ] Đính kèm link PR/CI hoặc log test.
@@ -165,4 +161,4 @@ redis-cli LRANGE submission_jobs 0 -1
 
 ## 8. Lưu ý review FE
 
-ZIP sprint-3.zip là bản lưu do tác giả nộp, không phải evidence độc lập và không thay thế báo cáo Markdown đã review. Xem [TUNG_QA_REVIEW.md](../../sprint-3/TUNG_QA_REVIEW.md) để phân biệt HTTP mock, automated FE và các mục backend còn thiếu. Không dùng kết quả mock để tick các mục Judge live.
+ZIP sprint-3.zip là bản lưu do tác giả nộp, không phải evidence độc lập và không thay thế báo cáo Markdown đã review. Xem [TUNG_QA_REVIEW.md](../../sprint-3/TUNG_QA_REVIEW.md) để phân biệt HTTP mock, automated FE và quyết định chấp nhận Done phần BE và giới hạn kiểm chứng độc lập. Không dùng kết quả mock để tick các mục Judge live.
