@@ -70,7 +70,8 @@ export function createPackagesResource(
     activeAbort = controller;
 
     publish({
-      phase: state.data ? "ready" : "loading",
+      phase: "loading",
+      data: null,
       refreshing: Boolean(state.data),
       error: null,
     });
@@ -190,6 +191,8 @@ export function createPackageDetailResource(
   }
 
   async function loadPackageHeader() {
+    levelsGen++;
+    levelsAbort?.abort();
     packageAbort?.abort();
     const epoch = ++packageGen;
     const controller = new AbortController();
@@ -197,6 +200,7 @@ export function createPackageDetailResource(
 
     publish({
       packagePhase: "loading",
+      refreshingLevels: false,
       packageError: null,
       levelsError: null,
       levelsNotice: "",
@@ -234,6 +238,7 @@ export function createPackageDetailResource(
       ) {
         problemsGen++;
         problemsAbort?.abort();
+        publish({ problemsPage: null, problemsRefreshing: false });
       }
       publish({
         packagePhase: "error",
@@ -283,7 +288,8 @@ export function createPackageDetailResource(
     };
 
     publish({
-      problemsPhase: state.problemsPage ? "ready" : "loading",
+      problemsPhase: "loading",
+      problemsPage: null,
       problemsRefreshing: Boolean(state.problemsPage),
       problemsError: null,
     });
@@ -322,7 +328,11 @@ export function createPackageDetailResource(
   }
 
   async function refreshLevels(queryState?: ProblemsQueryState) {
+    packageGen++;
+    packageAbort?.abort();
     levelsAbort?.abort();
+    // Do not let this refresh later restore an older filter after navigation.
+    const listEpoch = problemsGen;
     const epoch = ++levelsGen;
     const controller = new AbortController();
     levelsAbort = controller;
@@ -354,7 +364,7 @@ export function createPackageDetailResource(
         levelsError: null,
         levelsNotice: "Đã cập nhật trạng thái cấp độ mới nhất từ máy chủ.",
       });
-      if (queryState) {
+      if (queryState && listEpoch === problemsGen) {
         await loadProblems(queryState);
       }
     } catch (error) {
@@ -365,8 +375,15 @@ export function createPackageDetailResource(
         return;
       }
       if (epoch !== levelsGen) return;
-      if (isUnauthorizedError(error)) {
+      if (
+        isUnauthorizedError(error) ||
+        (error instanceof ApiError && error.status === 404)
+      ) {
+        problemsGen++;
+        problemsAbort?.abort();
         publish({
+          problemsPage: null,
+          problemsRefreshing: false,
           packagePhase: "error",
           packageDetail: null,
           packageError: error,
@@ -436,7 +453,7 @@ export function createProblemsResource(
   let listGen = 0;
   let metaGen = 0;
   let listAbort: AbortController | undefined;
-  let metaAbort: AbortController | undefined;
+  let metaAborts: AbortController[] = [];
 
   function publish(patch: Partial<ProblemsResourceState>) {
     state = { ...state, ...patch };
@@ -447,14 +464,15 @@ export function createProblemsResource(
     listGen++;
     metaGen++;
     listAbort?.abort();
-    metaAbort?.abort();
+    metaAborts.forEach((controller) => controller.abort());
   }
 
   async function loadMetadata() {
-    metaAbort?.abort();
+    metaAborts.forEach((controller) => controller.abort());
     const epoch = ++metaGen;
-    const controller = new AbortController();
-    metaAbort = controller;
+    const tagsController = new AbortController();
+    const packagesController = new AbortController();
+    metaAborts = [tagsController, packagesController];
 
     publish({
       tagsError: null,
@@ -463,22 +481,23 @@ export function createProblemsResource(
 
     const [tagsResult, packagesResult] = await Promise.allSettled([
       withDeadline(
-        controller,
-        () => api.catalog.listTags({ signal: controller.signal }),
+        tagsController,
+        () => api.catalog.listTags({ signal: tagsController.signal }),
         timeoutMs,
       ),
       withDeadline(
-        controller,
+        packagesController,
         () =>
           api.catalog.listPackages(
             { page: 1, size: 100 },
-            { signal: controller.signal },
+            { signal: packagesController.signal },
           ),
         timeoutMs,
       ),
     ]);
 
-    if (controller.signal.aborted || epoch !== metaGen) return;
+    // A deadline abort is an error to display; only superseded/disposed work is ignored.
+    if (epoch !== metaGen) return;
 
     const nextPatch: Partial<ProblemsResourceState> = {};
 
@@ -513,7 +532,8 @@ export function createProblemsResource(
     listAbort = controller;
 
     publish({
-      phase: state.data ? "ready" : "loading",
+      phase: "loading",
+      data: null,
       refreshing: Boolean(state.data),
       error: null,
     });

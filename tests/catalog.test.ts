@@ -585,6 +585,147 @@ describe("catalog async resources, race safety, error states, and refresh", () =
   });
 });
 
+describe("catalog request race regressions", () => {
+  it.each(["tags", "packages"])(
+    "reports a %s timeout without losing the other metadata result",
+    async (hung) => {
+      const resource = createProblemsResource(
+        {
+          catalog: {
+            listTags: () =>
+              hung === "tags"
+                ? new Promise(() => {})
+                : Promise.resolve(sampleTags),
+            listPackages: () =>
+              hung === "packages"
+                ? new Promise(() => {})
+                : Promise.resolve(samplePackagesPage),
+          } as unknown as ApiClient["catalog"],
+        },
+        15,
+      );
+      await resource.loadMetadata();
+      const state = resource.getSnapshot();
+      expect(
+        hung === "tags" ? state.tagsError : state.packagesError,
+      ).toMatchObject({ code: "REQUEST_TIMEOUT" });
+      expect(hung === "tags" ? state.packages : state.tags).toEqual(
+        hung === "tags" ? samplePackagesPage.items : sampleTags,
+      );
+      expect(
+        hung === "tags" ? state.packagesError : state.tagsError,
+      ).toBeNull();
+    },
+  );
+
+  it("hides the previous list during navigation and ignores responses after disposal", async () => {
+    const pending = deferred<PaginatedData<ProblemSummaryModel>>();
+    const resource = createProblemsResource({
+      catalog: {
+        listProblems: vi
+          .fn()
+          .mockResolvedValueOnce(sampleProblemsPage)
+          .mockReturnValueOnce(pending.promise),
+      } as unknown as ApiClient["catalog"],
+    });
+    await resource.loadProblems(
+      parseProblemsSearchParams(new URLSearchParams()),
+    );
+    const loading = resource.loadProblems(
+      parseProblemsSearchParams(new URLSearchParams("q=new&page=2")),
+    );
+    expect(resource.getSnapshot()).toMatchObject({
+      phase: "loading",
+      data: null,
+    });
+    resource.dispose();
+    const snapshot = resource.getSnapshot();
+    pending.resolve(sampleProblemsPage);
+    await loading;
+    expect(resource.getSnapshot()).toBe(snapshot);
+  });
+
+  it("does not replay an old filter after a level refresh", async () => {
+    const pending = deferred<PackageDetailModel>();
+    const listProblems = vi.fn().mockResolvedValue(sampleProblemsPage);
+    const resource = createPackageDetailResource(
+      {
+        catalog: {
+          getPackageLevels: () => pending.promise,
+          listProblems,
+        } as unknown as ApiClient["catalog"],
+      },
+      "arrays",
+    );
+    const refresh = resource.refreshLevels(
+      parseProblemsSearchParams(new URLSearchParams("difficulty=easy")),
+    );
+    await resource.loadProblems(
+      parseProblemsSearchParams(new URLSearchParams("difficulty=hard")),
+    );
+    pending.resolve(samplePackageDetail);
+    await refresh;
+    expect(listProblems).toHaveBeenCalledTimes(1);
+    expect(listProblems.mock.calls[0][0]).toMatchObject({
+      difficulty: "hard",
+      package: "arrays",
+    });
+  });
+
+  it("ignores an older level response when reloading the package header", async () => {
+    const pending = deferred<PackageDetailModel>();
+    const resource = createPackageDetailResource(
+      {
+        catalog: {
+          getPackage: () => Promise.resolve(samplePackageDetail),
+          getPackageLevels: () => pending.promise,
+        } as unknown as ApiClient["catalog"],
+      },
+      "arrays",
+    );
+    const refresh = resource.refreshLevels();
+    await resource.loadPackageHeader();
+    pending.resolve({ ...samplePackageDetail, completionPercent: 99 });
+    await refresh;
+    expect(resource.getSnapshot().packageDetail).toBe(samplePackageDetail);
+    expect(resource.getSnapshot().refreshingLevels).toBe(false);
+  });
+
+  it.each([401, 404])(
+    "clears package data and invalidates pending list work on level refresh HTTP %s",
+    async (status) => {
+      const pending = deferred<PaginatedData<ProblemSummaryModel>>();
+      const resource = createPackageDetailResource(
+        {
+          catalog: {
+            getPackage: () => Promise.resolve(samplePackageDetail),
+            getPackageLevels: () =>
+              Promise.reject(new ApiError(status, "UNAVAILABLE")),
+            listProblems: vi
+              .fn()
+              .mockResolvedValueOnce(sampleProblemsPage)
+              .mockReturnValueOnce(pending.promise),
+          } as unknown as ApiClient["catalog"],
+        },
+        "arrays",
+      );
+      const query = parseProblemsSearchParams(new URLSearchParams());
+      await resource.loadPackageHeader();
+      await resource.loadProblems(query);
+      const loading = resource.loadProblems(query);
+      await resource.refreshLevels(query);
+      pending.resolve(sampleProblemsPage);
+      await loading;
+      expect(resource.getSnapshot()).toMatchObject({
+        packagePhase: "error",
+        packageDetail: null,
+        problemsPage: null,
+        problemsRefreshing: false,
+      });
+    },
+  );
+});
+
 describe("UI rendering coverage across all catalog states", () => {
   it("renders exact 3 server levels, locked vs open problems linking to /problems/[slug], loading, empty, error, and pagination", () => {
     const levelsMarkup = renderToStaticMarkup(

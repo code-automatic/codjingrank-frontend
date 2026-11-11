@@ -217,6 +217,15 @@ function AuthenticatedProblemsDirectory() {
         </div>
       </CatalogSearchBar>
 
+      {state.packagesTotal > state.packages.length && (
+        <p className="muted catalog-soft-note">
+          Bộ lọc đang gợi ý {state.packages.length}/{state.packagesTotal} gói
+          đầu tiên.{" "}
+          <Link href="/packages">Tìm thêm gói trong danh sách gói bài</Link>.
+          Chọn gói tại đó để xem đầy đủ bài trong gói.
+        </p>
+      )}
+
       {(Boolean(state.tagsError) || Boolean(state.packagesError)) && (
         <p className="muted catalog-soft-note" role="status">
           Không tải đủ tùy chọn gói/thẻ (
