@@ -194,6 +194,74 @@ describe("createRunController contract & lifecycle guards", () => {
     expect(snap.resultLanguageId).toBe(UUID1);
   });
 
+  it.each(RUN_VERDICTS)(
+    "treats HTTP 200 %s as a completed synchronous Run",
+    async (status) => {
+      const fetcher = vi.fn(async () =>
+        makeEnvelope({
+          status,
+          passed: status === "Accepted" ? 1 : 0,
+          total: 1,
+          results: [
+            {
+              testCaseId: UUID1,
+              status,
+              inputData: "1 2\n",
+              expectedOutput: "3\n",
+              actualOutput: "",
+              runtimeMs: null,
+              errorMessage: null,
+              errorType: null,
+              stderr: null,
+            },
+          ],
+        }),
+      );
+      const controller = createRunController(makeApi(fetcher), {
+        userId: USER_ID,
+        problemId: UUID1,
+      });
+      await controller.run({
+        problemId: UUID1,
+        languageId: UUID1,
+        code: "print(1)",
+      });
+      expect(controller.getSnapshot().phase).toBe("completed");
+      expect(controller.getSnapshot().result?.status).toBe(status);
+      expect(controller.getSnapshot().error).toBeNull();
+      expect(fetcher).toHaveBeenCalledTimes(1);
+      controller.dispose();
+    },
+  );
+
+  it("never restores results after logout/dispose followed by reactivation", async () => {
+    let resolve!: (response: Response) => void;
+    const api = makeApi(
+      () =>
+        new Promise<Response>((done) => {
+          resolve = done;
+        }),
+    );
+    const controller = createRunController(api, {
+      userId: USER_ID,
+      problemId: UUID1,
+    });
+    const pending = controller.run({
+      problemId: UUID1,
+      languageId: UUID1,
+      code: "print(1)",
+    });
+    controller.dispose();
+    controller.activate();
+    resolve(
+      makeEnvelope({ status: "Accepted", passed: 1, total: 1, results: [] }),
+    );
+    await pending;
+    expect(controller.getSnapshot().result).toBeNull();
+    expect(controller.getSnapshot().phase).toBe("idle");
+    controller.dispose();
+  });
+
   it("blocks blank and oversize source client-side without calling fetch and clears client error on edit", async () => {
     const fetcher = vi.fn(async () => makeEnvelope({}));
     const controller = createRunController(makeApi(fetcher), {
@@ -638,9 +706,19 @@ describe("Run HTTP integration with local Sprint 3 mock", () => {
       const user = session.getSnapshot().user!;
       const detail = await api.catalog.getProblem("sum-two");
       expect(detail.languages.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(detail.languages.map((item) => item.id)).size).toBe(
+        detail.languages.length,
+      );
       const pythonLang = detail.languages[0];
       const cppLang = detail.languages[1];
       const template = await api.catalog.getTemplate("sum-two", pythonLang.id);
+      expect(template.fileName).toBe("main.py");
+      const beforeHistory = await api.judge.listMySubmissions({
+        problemId: detail.problem.id,
+      });
+      const beforeLevels = await api.catalog.getPackageLevels(
+        detail.problem.packageSlug,
+      );
 
       controller = createRunController(api, {
         userId: user.id,
@@ -665,6 +743,8 @@ describe("Run HTTP integration with local Sprint 3 mock", () => {
       expect(controller.getSnapshot().result).toBeNull();
 
       const cppTemplate = await api.catalog.getTemplate("sum-two", cppLang.id);
+      expect(cppTemplate.fileName).toBe("main.cpp");
+      expect(cppLang.id).not.toBe(pythonLang.id);
       await controller.run({
         problemId: detail.problem.id,
         languageId: cppLang.id,
@@ -672,6 +752,14 @@ describe("Run HTTP integration with local Sprint 3 mock", () => {
       });
       expect(controller.getSnapshot().phase).toBe("completed");
       expect(controller.getSnapshot().resultLanguageId).toBe(cppLang.id);
+
+      const afterHistory = await api.judge.listMySubmissions({
+        problemId: detail.problem.id,
+      });
+      expect(afterHistory.total).toBe(beforeHistory.total);
+      expect(
+        await api.catalog.getPackageLevels(detail.problem.packageSlug),
+      ).toEqual(beforeLevels);
 
       const preflight = await fetch(`${url}/api/v1/run`, {
         method: "OPTIONS",

@@ -82,6 +82,33 @@ describe("opt-in submission demo", () => {
         .data.levels[1].unlocked,
     ).toBe(false);
   });
+  it("preserves distinct C++ and Java demo languages for Submit after changing editor language", async () => {
+    const old = process.env.MOCK_EDITOR_DEMO;
+    process.env.MOCK_EDITOR_DEMO = "1";
+    try {
+      let now = Date.now();
+      const demo = createSubmissionDemo(spec, { now: () => now });
+      const ids = [
+        "22222222-2222-4222-8222-222222222222",
+        "33333333-3333-4333-8333-333333333333",
+      ];
+      for (const [index, languageId] of ids.entries()) {
+        const created = await call(demo, "/api/v1/submit", {
+          ...payload,
+          problemId: problem.id,
+          languageId,
+        });
+        expect(created.status).toBe(201);
+        const row = adaptSubmissionData(created.body.data);
+        expect(row.languageId).toBe(languageId);
+        expect(row.languageSlug).toBe(index === 0 ? "cpp" : "java");
+        now += 10000;
+      }
+    } finally {
+      if (old === undefined) delete process.env.MOCK_EDITOR_DEMO;
+      else process.env.MOCK_EDITOR_DEMO = old;
+    }
+  });
   it("starts without persistence and does not intercept unrelated operations", async () => {
     const demo = createSubmissionDemo(spec);
     expect(

@@ -90,7 +90,15 @@ export function createSubmissionDemo(
         typeof payload.code !== "string" ||
         !payload.code.trim() ||
         payload.problemId !== problem.id ||
-        payload.languageId !== seed.languageId
+        ![
+          seed.languageId,
+          ...(process.env.MOCK_EDITOR_DEMO === "1"
+            ? [
+                "22222222-2222-4222-8222-222222222222",
+                "33333333-3333-4333-8333-333333333333",
+              ]
+            : []),
+        ].includes(payload.languageId)
       )
         return error(422, "VALIDATION_ERROR");
       if (Buffer.byteLength(payload.code, "utf8") > 102400)
@@ -111,6 +119,12 @@ export function createSubmissionDemo(
         userId: user.id,
         problemId: problem.id,
         languageId: payload.languageId,
+        languageSlug:
+          payload.languageId === "22222222-2222-4222-8222-222222222222"
+            ? "cpp"
+            : payload.languageId === "33333333-3333-4333-8333-333333333333"
+              ? "java"
+              : seed.languageSlug,
         problemSlug: problem.slug,
         problemTitle: problem.title,
         code: payload.code,

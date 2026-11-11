@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { memo, useEffect, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
 import type { WorkspaceSnapshot } from "@/features/editor/workspace";
 import { MAX_EXECUTE_CODE_BYTES } from "@/lib/api/domains/preflight";
@@ -119,19 +119,20 @@ export function RunResultView({
                 <div className="run-io-grid">
                   <div className="run-io-col">
                     <p className="sample-label">Đầu vào (stdin)</p>
-                    <pre className="run-pre">
+                    <pre className="run-pre" tabIndex={0}>
                       {formatOutputText(item.inputData)}
                     </pre>
                   </div>
                   <div className="run-io-col">
                     <p className="sample-label">Output mong đợi</p>
-                    <pre className="run-pre">
+                    <pre className="run-pre" tabIndex={0}>
                       {formatOutputText(item.expectedOutput)}
                     </pre>
                   </div>
                   <div className="run-io-col">
                     <p className="sample-label">Output thực tế</p>
                     <pre
+                      tabIndex={0}
                       className={
                         mismatch ? "run-pre run-pre--mismatch" : "run-pre"
                       }
@@ -161,7 +162,7 @@ export function RunResultView({
                       </p>
                     )}
                     {item.stderr && (
-                      <pre className="run-pre run-pre--error">
+                      <pre className="run-pre run-pre--error" tabIndex={0}>
                         {item.stderr}
                       </pre>
                     )}
@@ -175,6 +176,8 @@ export function RunResultView({
     </div>
   );
 }
+
+const MemoRunResultView = memo(RunResultView);
 
 export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
   const api = useApiClient();
@@ -280,7 +283,7 @@ export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
               className="button-secondary"
               onClick={() => controller.cancel()}
             >
-              ⏹ Hủy chạy
+              ⏹ Dừng chờ kết quả
             </button>
           )}
         </div>
@@ -312,7 +315,7 @@ export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
         </p>
       )}
 
-      <RunResultView
+      <MemoRunResultView
         state={state}
         languageLabel={selectedLanguage?.displayLabel}
         isCodeEditedAfterRun={isCodeEditedAfterRun}

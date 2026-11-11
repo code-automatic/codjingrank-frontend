@@ -167,7 +167,8 @@ export function createRunController(
       resultCode: null,
       error: null,
       validationMessage: null,
-      notice: "Đã hủy lượt chạy thử mẫu.",
+      notice:
+        "Đã hủy chờ kết quả trên trình duyệt. Máy chủ có thể vẫn đang chạy mẫu.",
     });
   }
 
