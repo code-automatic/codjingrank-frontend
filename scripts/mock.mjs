@@ -1,3 +1,4 @@
+import { createSubmissionDemo } from "./submission-demo.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
@@ -18,6 +19,86 @@ const AUTH_ONLY_PATHS = new Set([
   "/api/v1/auth/logout",
   "/api/v1/users/me",
 ]);
+
+// Local demo only: the contract example exposes one language, which makes the
+// Sprint 2 language switch impossible to try by hand. This opt-in override adds
+// C++/Java and matching starters for the `sum-two` example. It never runs by
+// default and is not a claim about the Gateway contract.
+const DEMO_LANGUAGES = [
+  {
+    id: "11111111-1111-4111-8111-111111111111",
+    slug: "python3",
+    name: "Python 3",
+    runtimeVersion: "3.12",
+    fileExtension: ".py",
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222222",
+    slug: "cpp",
+    name: "C++",
+    runtimeVersion: "17",
+    fileExtension: ".cpp",
+  },
+  {
+    id: "33333333-3333-4333-8333-333333333333",
+    slug: "java",
+    name: "Java",
+    runtimeVersion: "17",
+    fileExtension: ".java",
+  },
+];
+
+const DEMO_STARTERS = {
+  [DEMO_LANGUAGES[0].id]: {
+    starterCode: "a, b = map(int, input().split())\nprint(a + b)\n",
+    fileName: "main.py",
+  },
+  [DEMO_LANGUAGES[1].id]: {
+    starterCode:
+      "#include <iostream>\n\nint main() {\n    long long a, b;\n    std::cin >> a >> b;\n    std::cout << a + b << '\\n';\n    return 0;\n}\n",
+    fileName: "main.cpp",
+  },
+  [DEMO_LANGUAGES[2].id]: {
+    starterCode:
+      "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner scanner = new Scanner(System.in);\n        long a = scanner.nextLong();\n        long b = scanner.nextLong();\n        System.out.println(a + b);\n    }\n}\n",
+    fileName: "Main.java",
+  },
+};
+
+function applyEditorDemo(payload, pathname, searchParams) {
+  if (process.env.MOCK_EDITOR_DEMO !== "1") return payload;
+  if (!payload || payload.status !== "success" || !payload.data) return payload;
+
+  const languages = DEMO_LANGUAGES.map((language) => ({ ...language }));
+  if (pathname === "/api/v1/problems/sum-two") {
+    return { ...payload, data: { ...payload.data, languages } };
+  }
+  if (pathname === "/api/v1/problems/sum-two/languages") {
+    return { ...payload, data: { items: languages } };
+  }
+  if (pathname === "/api/v1/problems/sum-two/template") {
+    const requestedId = searchParams.get("languageId");
+    const starter = DEMO_STARTERS[requestedId];
+    if (!starter)
+      return {
+        status: "error",
+        code: 422,
+        message: "Language not supported",
+        error: "LANGUAGE_NOT_SUPPORTED",
+        details: null,
+      };
+    return {
+      ...payload,
+      data: {
+        ...payload.data,
+        languageId: requestedId ?? payload.data.languageId,
+        starterCode: starter.starterCode,
+        fileName: starter.fileName,
+      },
+    };
+  }
+  return payload;
+}
 
 function resolveOperation(pathname, method) {
   const lowerMethod = method.toLowerCase();
@@ -61,8 +142,18 @@ function resolveOperation(pathname, method) {
   return candidates[0]?.op ?? null;
 }
 
-createServer((req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+const submissionDemo =
+  process.env.MOCK_SUBMISSION_DEMO === "1"
+    ? createSubmissionDemo(spec, {
+        verdict: process.env.MOCK_SUBMISSION_VERDICT || "Accepted",
+      })
+    : null;
+
+const server = createServer(async (req, res) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    process.env.MOCK_ORIGIN || "http://localhost:3000",
+  );
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -78,7 +169,8 @@ createServer((req, res) => {
     return;
   }
 
-  const pathname = new URL(req.url || "/", "http://localhost").pathname;
+  const url = new URL(req.url || "/", "http://localhost");
+  const pathname = url.pathname;
   const operation = resolveOperation(pathname, req.method || "GET");
 
   if (!operation) {
@@ -92,6 +184,31 @@ createServer((req, res) => {
       }),
     );
     return;
+  }
+
+  if (submissionDemo && !req.headers.prefer) {
+    try {
+      const fixture = await submissionDemo(req, url);
+      if (fixture) {
+        res.writeHead(fixture.status, {
+          "Content-Type": "application/json",
+          ...fixture.headers,
+        });
+        res.end(JSON.stringify(fixture.body));
+        return;
+      }
+    } catch {
+      res.writeHead(500, { "Content-Type": "application/json" }).end(
+        JSON.stringify({
+          status: "error",
+          code: 500,
+          message: "Demo failure",
+          error: "INTERNAL_ERROR",
+          details: null,
+        }),
+      );
+      return;
+    }
   }
 
   const preferHeader = String(req.headers.prefer || "");
@@ -117,23 +234,44 @@ createServer((req, res) => {
   const namedExample = preferredExample
     ? content?.examples?.[preferredExample]?.value
     : undefined;
-  const example =
+  let example =
     namedExample !== undefined
       ? namedExample
       : (content?.example ?? Object.values(content?.examples || {})[0]?.value);
 
+  // The source examples use different problem UUIDs for detail and template.
+  // Keep their fixture references coherent; this remains a stateless example.
+  if (
+    operation.operationId === "getTemplate" &&
+    code === "200" &&
+    example?.data
+  ) {
+    const detail =
+      spec.paths["/api/v1/problems/{slug}"].get.responses["200"].content[
+        "application/json"
+      ].example.data;
+    example = {
+      ...example,
+      data: { ...example.data, problemId: detail.problem.id },
+    };
+  }
+
+  const payload = applyEditorDemo(example, pathname, url.searchParams);
   const extraHeaders =
     code === "429"
       ? { "Content-Type": "application/json", "Retry-After": "10" }
       : { "Content-Type": "application/json" };
 
-  res.writeHead(Number(code), extraHeaders);
+  res.writeHead(
+    payload?.status === "error" ? Number(payload.code) : Number(code),
+    extraHeaders,
+  );
   res.end(
     code === "204"
       ? undefined
       : JSON.stringify(
-          example !== undefined
-            ? example
+          payload !== undefined
+            ? payload
             : {
                 status: "error",
                 code: Number(code),
@@ -143,8 +281,8 @@ createServer((req, res) => {
               },
         ),
   );
-}).listen(4010, "127.0.0.1", () =>
+}).listen(Number(process.env.MOCK_PORT || 4010), "127.0.0.1", () =>
   console.log(
-    "Stateless OpenAPI learner mock (42 endpoints): http://localhost:4010",
+    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}): http://localhost:${server.address().port}`,
   ),
 );

@@ -97,7 +97,12 @@ export function createTransport(base: string, fetcher: typeof fetch = fetch) {
         credentials: "include",
         cache: "no-store",
       });
-    } catch {
+    } catch (error) {
+      if (
+        init.signal?.aborted ||
+        (error instanceof Error && error.name === "AbortError")
+      )
+        throw error;
       throw new ApiError(0, "NETWORK_ERROR");
     }
     if (r.status === 204) return undefined as T;
@@ -120,6 +125,8 @@ export function createTransport(base: string, fetcher: typeof fetch = fetch) {
   };
 }
 export function errorText(e: unknown) {
+  if (e instanceof ApiError && e.code === "REQUEST_TIMEOUT")
+    return "Yêu cầu quá thời gian chờ. Vui lòng thử lại.";
   if (!(e instanceof ApiError) || e.status === 0 || e.status >= 500) {
     if (
       e instanceof ApiError &&

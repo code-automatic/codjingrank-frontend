@@ -1,10 +1,15 @@
-import { ProblemRunWorkspace } from "@/features/problem-run/ProblemRunWorkspace";
+import { notFound } from "next/navigation";
+import { ProblemWorkspacePage } from "@/features/editor/ProblemWorkspacePage";
+import { isSlug } from "@/lib/api/guards";
 
-export default async function ProblemPage({
+export const metadata = { title: "Luyện tập · Codjingrank" };
+
+export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <ProblemRunWorkspace slug={slug} />;
+  if (!isSlug(slug)) notFound();
+  return <ProblemWorkspacePage slug={slug} />;
 }

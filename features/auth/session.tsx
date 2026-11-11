@@ -9,6 +9,7 @@ import {
 } from "react";
 import { createTransport } from "@/lib/api/client";
 import { createSession } from "./store";
+import { clearBrowserDrafts } from "@/features/editor/draft-store";
 const C = createContext<ReturnType<typeof createSession> | null>(null);
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [s] = useState(() =>
@@ -19,7 +20,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     ),
   );
   useEffect(() => {
+    let previousUserId = s.getSnapshot().user?.id;
+    const unsubscribe = s.subscribe(() => {
+      const nextUserId = s.getSnapshot().user?.id;
+      if (previousUserId && previousUserId !== nextUserId)
+        clearBrowserDrafts(previousUserId);
+      previousUserId = nextUserId;
+    });
     void s.bootstrap().catch(() => {});
+    return () => {
+      unsubscribe();
+    };
   }, [s]);
   return <C.Provider value={s}>{children}</C.Provider>;
 }

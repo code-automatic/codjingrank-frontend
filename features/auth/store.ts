@@ -1,4 +1,5 @@
 import { ApiError, createTransport } from "@/lib/api/client";
+import { adaptUser } from "@/lib/api/adapters/shared";
 export type User = {
   id: string;
   email: string;
@@ -59,22 +60,18 @@ export function createSession(send: ReturnType<typeof createTransport>) {
     ) {
       throw new ApiError(200, "INVALID_AUTH_DATA");
     }
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      fullName: user.fullName ?? null,
-      avatarUrl: user.avatarUrl ?? null,
-      bio: user.bio ?? null,
-      role: user.role,
-      isActive: user.isActive,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    try {
+      const { displayName: _displayName, ...validated } = adaptUser(user);
+      void _displayName;
+      return validated;
+    } catch {
+      throw new ApiError(200, "INVALID_AUTH_DATA");
+    }
   };
   const accept = (d: AuthData, n: number) => {
     check(n);
-    if (!d?.accessToken) throw new ApiError(200, "INVALID_AUTH_DATA");
+    if (typeof d?.accessToken !== "string" || !d.accessToken.trim())
+      throw new ApiError(200, "INVALID_AUTH_DATA");
     const validUser = assertValidUser(d.user);
     token = d.accessToken;
     revision++;
