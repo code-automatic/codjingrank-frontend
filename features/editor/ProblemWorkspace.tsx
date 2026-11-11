@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { RunPanel } from "@/features/problem-run/RunPanel";
 import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
 import { Statement } from "@/features/problems/Statement";
 import type { SampleModel } from "@/lib/api/adapters/catalog";
@@ -307,6 +308,7 @@ function WorkspaceReady({
           </div>
         </section>
       </div>
+      <RunPanel key={`run:${problem.problem.id}`} workspace={snapshot} />
       <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
     </main>
   );
