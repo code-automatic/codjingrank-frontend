@@ -1,101 +1,135 @@
-# Codjingrank frontend — Auth và refresh session
+# Codjingrank frontend — Sprint 3
 
-Ứng dụng Next.js App Router + TypeScript: `/login`, `/register`, `/protected` và `/problems/[slug]` (Sprint 2 của Thịnh). Chỉ kết nối Gateway, prefix cố định `/api/v1`.
+Ứng dụng Next.js App Router + TypeScript cho luồng học và giải bài: Auth/refresh session, danh sách gói và bài tập, đề bài/editor, Run sample, Submit/polling, lịch sử và tiến độ. FE chỉ gọi API Gateway với prefix `/api/v1`, UUID và response envelope theo learner OpenAPI.
 
-## Sprint 2 — Problem detail và starter template
+## Trạng thái master
 
-Đăng nhập với mock rồi chọn **Mở bài tập mẫu** trong trang tài khoản để mở `/problems/sum-two`. Trang hiển thị đề Markdown, tags, độ khó, trạng thái đã giải, giới hạn thực thi, samples và starter template theo ngôn ngữ hỗ trợ của bài. Chi tiết bàn giao, cách ghép với Huy/Tùng và kiểm thử: [sprint-2/THINH_HANDOFF.md](sprint-2/THINH_HANDOFF.md).
+Sprint 3 đã được merge vào `master` và chốt Done theo phạm vi Thịnh chấp nhận ngày 11/11/2026.
 
-Chỉ dùng `GET /api/v1/problems/{slug}` và `GET /api/v1/problems/{slug}/template?languageId=<UUID>` qua session client. Samples/languages lấy từ detail, không gọi trùng endpoint. Starter code hiện là bản xem chỉ đọc để ghép editor của Tùng; Run/Submit thuộc Sprint 3. Không dựng catalog của Huy trong phần này.
+| Thành viên | Phần đã tích hợp                                                                          | Bàn giao                                         |
+| ---------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Thịnh      | Submit, polling, verdict/pass count, history và progress theo server                      | [Sprint 3 Submit](sprint-3/THINH_SUBMISSIONS.md) |
+| Huy        | Run sample đồng bộ, kết quả từng sample, runtime/output/diagnostics; không tạo submission | [Sprint 3 Run](sprint-3/HUY_RUN_REVIEW.md)       |
+| Tùng       | QA review, đồng bộ master, ma trận HTTP mock cho bảy verdict và ba ngôn ngữ               | [Sprint 3 QA](sprint-3/TUNG_QA_REVIEW.md)        |
 
-`react-markdown` hiển thị đề, bỏ HTML thô, lọc URL không an toàn; ảnh Markdown hiển thị alt text thay vì tải tài nguyên ngoài. Mock OpenAPI có một ngôn ngữ Python; các ca nhiều ngôn ngữ, phản hồi trễ, khóa bài và lỗi mạng được kiểm tra bằng transport/resource có điều khiển. Mock local điều chỉnh `problemId` trong example template cho khớp detail vì example nguồn dùng hai UUID khác nhau; không thay đổi contract hoặc nới kiểm tra client.
+**Kết quả FE/mock đã chạy:** lint, typecheck, 199 tests / 14 files, bộ integration 28 tests / 2 files và production build PASS. Trong bộ integration có 10 kịch bản HTTP mock (9 Submit + 1 Run); các test còn lại kiểm tra model/controller/markup, không phải 28 browser E2E. Đây là kết quả kiểm tra bản code đã merge, không phải CI tự cập nhật.
 
-## Chạy mock
+**Nguồn nghiệm thu:** Thịnh đã xác nhận test tay luồng Run/master ổn định. Công cụ reviewer chưa kiểm chứng browser E2E/mobile thực đầy đủ. Phần test BE của task Tùng được chấp nhận Done theo quyết định Thịnh; reviewer chưa chạy Judge/backend live độc lập. Quyết định chốt sprint không phải bằng chứng toàn bộ FE đã tích hợp live.
 
-Yêu cầu Node.js 20.9+ (đã kiểm tra Node 24), npm.
+Các báo cáo sprint giữ lịch sử tại thời điểm viết; phần trạng thái master trong README này và quyết định nghiệm thu bổ sung trong [review Tùng](sprint-3/TUNG_QA_REVIEW.md) phản ánh lần chốt mới nhất. Sprint 4/5 không được tính Done bởi lần bàn giao này.
+
+## Chạy mock Sprint 3 trong VSCode
+
+Yêu cầu Node.js 20.9+ (đã kiểm tra Node 24) và npm. Mở terminal tại thư mục dự án. Nếu cần cập nhật bản mới, chỉ `git pull --ff-only origin master` khi đang ở master và đã kiểm tra/lưu các thay đổi local.
+
+Cài dependency lần đầu hoặc sau khi package.json/package-lock.json thay đổi:
 
 ```powershell
 npm ci
-Copy-Item .env.example .env.local
-npm run mock
-# terminal khác
+```
+
+FE mặc định dùng Gateway mock `http://localhost:4010`. Có thể tạo `.env.local` từ `.env.example` nếu chưa có, không ghi đè cấu hình local đang dùng:
+
+```powershell
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
+```
+
+Dừng FE/mock cũ bằng Ctrl+C trước khi chạy lại cùng cổng. Chỉ chạy một Next dev server trên cùng checkout.
+
+Terminal 1:
+
+```powershell
+npm run mock:sprint3
+```
+
+Terminal 2:
+
+```powershell
+$env:NEXT_PUBLIC_GATEWAY_URL='http://localhost:4010'
 npm run dev
 ```
 
-Mở http://localhost:3000. `NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010` là origin mock, không chứa `/api/v1`, credentials hoặc secret. Biến NEXT_PUBLIC được nhúng lúc build; đổi môi trường cần rebuild.
+Mở [trang gói](http://localhost:3000/packages), [kho bài](http://localhost:3000/problems) hoặc [bài mẫu sum-two](http://localhost:3000/problems/sum-two). Nếu được chuyển tới login, dùng tài khoản giả `learner@example.com` / `Coding2026`, rồi mở lại bài mẫu. Không nhập mật khẩu/source thật vào fixture.
 
-Mock tích hợp đọc trực tiếp examples từ `contracts/openapi_fe.yaml`, phục vụ 42 operation learner từ contract. Đặt `MOCK_AUTH_ONLY=1` để giới hạn ở auth/current-user. Refresh mặc định 401 để mở form đăng nhập; đăng nhập/đăng ký trả example cố định, không lưu dữ liệu. Dùng dữ liệu giả như `learner@example.com` / `Coding2026`. Không nhập mật khẩu thật.
+1. Chọn Python3/C++/Java; thử sửa mã, đổi ngôn ngữ và reset starter.
+2. Bấm Run để xem kết quả sample. Run không tạo history hoặc tăng progress.
+3. Bấm Nộp bài: mock chuyển Pending → Running → verdict; kiểm tra lịch sử và tiến độ.
+4. Đổi verdict Submit bằng cách dừng mock và chạy lại terminal 1 như dưới đây. Restart mock sẽ xóa history/progress demo.
 
-Để minh hoạ bootstrap thành công, chạy `$env:MOCK_REFRESH_STATUS='200'; npm run mock` (reload luôn authenticated, kể cả sau logout — đây là mock stateless). Header `Prefer: code=503`/`401` chọn error response khi gọi mock trực tiếp. Mock tích hợp không validate request; test frontend kiểm tra payload/validation. Có thể dùng Prism để validate schema:
+```powershell
+$env:MOCK_SUBMISSION_VERDICT='Wrong Answer'
+npm run mock:sprint3
+```
+
+Có thể dùng một trong bảy verdict: Accepted, Wrong Answer, Time Limit Exceeded, Memory Limit Exceeded, Compilation Error, Runtime Error, Internal Error. Quay về mặc định:
+
+```powershell
+Remove-Item Env:MOCK_SUBMISSION_VERDICT -ErrorAction SilentlyContinue
+```
+
+`mock:sprint3` bật fixture editor và Submit in-memory cho một learner/bài mẫu, tối đa 100 lượt nộp. Run trả example cố định; fixture không thực thi hoặc chấm source. Code sai vẫn có thể nhận Accepted fixture. Không chứng minh Piston, Redis, worker, database, JWT/ownership hoặc session persistence thực.
+
+Chế độ `npm run mock` đọc examples từ `contracts/openapi_fe.yaml` và mặc định stateless, phù hợp kiểm tra contract/form. `MOCK_AUTH_ONLY=1` giới hạn auth/current-user; `MOCK_EDITOR_DEMO=1` thêm fixture nhiều ngôn ngữ. `MOCK_REFRESH_STATUS=200` chỉ minh họa bootstrap thành công: reload có thể authenticated ngay cả sau logout, không dùng làm bằng chứng cookie rotation. Refresh mặc định 401 để mở login.
+
+Mock mặc định cho origin `http://localhost:3000`; có thể đổi bằng `MOCK_ORIGIN`, đổi cổng bằng `MOCK_PORT`. Cập nhật Gateway URL tương ứng khi đổi cổng. Header Prefer chọn named examples/error khi gọi mock trực tiếp. Nếu cần schema validation có thể dùng Prism thay cho server mock trên cùng cổng:
 
 ```powershell
 npx @stoplight/prism-cli mock contracts/openapi_fe.yaml -p 4010
 ```
 
-Prism cũng stateless và có thể trả refresh success mặc định; dùng mock tích hợp để thử form với bootstrap anonymous. CORS mock chỉ cho `http://localhost:3000`.
+Prism stateless, không mô phỏng tiến trình chấm hoặc cookie/session thật.
 
-## Session và lỗi
+## Chức năng hiện có
 
-- Access token nằm trong closure memory, không ở localStorage/sessionStorage, React state, log hoặc URL. Refresh token chỉ do backend đặt HttpOnly cookie; mọi request dùng `credentials: include`.
-- Bootstrap refresh giữ trạng thái `initializing` cho đến có kết quả. Lỗi mạng/5xx giữ màn hình thử lại; 401 chuyển `anonymous`. Guard chỉ redirect khi anonymous.
-- Single-flight cho concurrent refresh; revision ngăn 401 đến trễ tạo refresh dư. Request gốc retry tối đa một lần. Login/register/refresh/logout không đi vào refresh đệ quy.
-- Logout xoá token/user ngay, tăng generation để kết quả cũ không phục hồi session. Chờ rotation đang chạy hoàn tất rồi gửi logout để backend xoá cookie mới. Lỗi logout hiển thị nút thử lại: chưa thể cam kết cookie đã bị thu hồi nếu mạng lỗi. Không có cache user riêng ngoài store.
-- Envelope kiểm tra status/code/data; 204 không parse JSON. Logic dùng HTTP status và machine error, không dùng message. Chặn `X-User-*`; không fallback root route hoặc integer-ID DTO.
-- Giới hạn single-flight trong một provider/tab. Phối hợp refresh giữa nhiều tab cần test với chính sách rotation backend trước khi mở rộng.
+- Auth: `/login`, `/register`, `/protected`; access token chỉ trong memory, refresh qua HttpOnly cookie do backend quản lý. Request có `credentials: include`; không gửi `X-User-*`.
+- Session: initializing/authenticated/anonymous; bootstrap không redirect trước khi refresh hoàn tất; concurrent 401 dùng chung refresh và retry tối đa một lần. Logout xóa session ngay; phản hồi cũ không khôi phục user. Lỗi mạng/5xx có thể thử lại.
+- Catalog: `/packages`, `/packages/[slug]`, `/problems`; đề bài tại `/problems/[slug]`, Markdown/samples/limits và template theo ngôn ngữ.
+- Editor: đổi ngôn ngữ, reset starter, loading/error/retry; lưu draft theo tài khoản + problem UUID + language UUID. Logout/hết phiên xóa draft của tài khoản trong tab; storage bị chặn thì giữ mã trong memory và báo giới hạn. Draft không chứa token và không đồng bộ đa thiết bị.
+- Run: đồng bộ sample, hiển thị từng test/runtime/output/lỗi; hủy chờ trên trình duyệt không cam kết dừng thực thi server.
+- Submit: single POST, poll tuần tự 1,5 giây, pause/resume và giới hạn theo dõi; terminal verdict dừng poll. POST mất phản hồi yêu cầu đối chiếu latest trước khi nộp lại, không tự resend. Accepted không đợi AI; progress/unlock lấy từ server.
+- HTTP: success `{status,code,message,data}`, error `{status,code,message,error,details}`; 204 không parse JSON. Logic dựa HTTP status/machine error, không dựa message. Không fallback root routes hay integer DTO cũ.
 
-## Kiểm tra
+## Kiểm tra tự động
+
+Chạy từng lệnh và xem kết quả trước khi chạy lệnh tiếp theo:
 
 ```powershell
 npm run lint
 npm run typecheck
 npm test
+npm run test:integration
 npm run build
 ```
 
-Test có điều khiển bằng transport injected: bootstrap, concurrent/late 401, retry cap, refresh 401/network/503, logout race, stale profile, auth exclusions, envelope, 204, credentials/header, UUID và UTF-8 password. React form dùng native validation + kiểm tra username/password bytes/fullName, label, autocomplete, focus error và trạng thái pending.
+HTTP integration tự mở mock ở cổng trống và dọn process sau test, không cần bật mock thủ công, không dùng dữ liệu demo ở 4010. Tests bao phủ session/refresh/logout race, envelope/204/UUID/UTF-8 limits, validation, double-click, stale response, cancel/language switch, polling/reconciliation/history/progress và các verdict. Mock test không thay thế browser hoặc backend integration.
 
-**Đạt với mock**: client/session unit tests, scaffold, UI contract và các kiểm tra phía FE. **Chưa tích hợp live**: stateless mock không chứng minh cookie rotation, session persistence, JWT validation, ownership hoặc CORS/cookie thực trên deployment. Unit tests không thay thế browser E2E/live tests.
+## Chạy live và dependency backend
 
-## Dependency backend trước khi nghiệm thu live
-
-1. Gateway triển khai `/api/v1/auth/{register,login,refresh,logout}` và `/api/v1/users/me`; target UUID DTO/camelCase, envelope, validation đăng ký 8–72 ký tự và tối đa 72 byte.
-2. Login/register/refresh trả `{accessToken,user}`, current user trả `{user}`, logout 204. JWT validation ở Gateway; không tin client `X-User-*`.
-3. Refresh rotation/reuse detection/revocation hoạt động; Gateway forward `Set-Cookie` và logout revoke cookie.
-4. CORS allow origin FE cụ thể + credentials (không wildcard), allow Authorization/Content-Type và preflight; kiểm tra Origin/CSRF.
-5. Cookie HttpOnly, `Path=/` phủ `/api/v1`; xoá cookie cũ `Path=/auth`. SameSite=Lax cho same-site; cross-site cần chính sách thích hợp (thường SameSite=None; Secure), HTTPS/Secure production và domain đúng deployment.
-6. Chạy browser live: login/register → reload → current user; expiry/concurrent 401; refresh 401/5xx; logout khi refresh đang chạy; reload sau logout. Chỉ khi này mới đánh dấu Auth live đạt.
-
-Để chuyển live: đặt `NEXT_PUBLIC_GATEWAY_URL` thành origin Gateway (ví dụ http://localhost:8080), restart/rebuild. Không sửa repository backend.
-
-## Nguồn contract và trạng thái Git
-
-Đã đọc snapshot local của learner OpenAPI 2.1.0-contract, FRONTEND_API_CONTRACT.md, fe/AUTH_FLOW.md, fe/RESPONSE_CONTRACT.md và DECISIONS.md tại `srs/srs/docs/` trước khi viết code. Copy nguyên learner OpenAPI sang `contracts/` để mock có thể chạy sau clone. URL GitHub được cung cấp trả 404 khi truy cập raw; chưa xác minh revision upstream. Cần backend cung cấp revision/URL truy cập được trước live.
-
-Thư mục ban đầu không có `.git` hoặc mã FE, chỉ có SRS/SQL/Excel. Đã khởi tạo Git local branch `feat/auth-refresh-session`; không có remote, không push/merge. Tài liệu có sẵn giữ nguyên, được exclude khỏi Git FE.
-
-## Sprint 2: đề bài và editor
-
-Mở `/problems/sum-two` sau khi đăng nhập mock. Đề/Markdown, tags, samples, limits và editor dùng learner UUID contract; chỉ gọi Gateway. Editor hỗ trợ đổi ngôn ngữ, reset starter, loading/error/retry và tự lưu nháp sau 500 ms.
-
-Nháp local được tách theo **tài khoản + problem UUID + language UUID**. Reload khôi phục nháp sau khi xác thực lại; đăng xuất/hết phiên xóa nháp tài khoản trong tab hiện tại. Không đọc/migrate nháp legacy không có chủ sở hữu. Không lưu token vào storage. Khi browser chặn storage/quota, editor giữ mã trong memory qua đổi ngôn ngữ và báo lỗi; reload/rời trang có thể mất nháp chưa lưu. Local drafts không đồng bộ đa thiết bị/đa tab; nếu browser chặn xóa storage, không đảm bảo xóa bền vững.
-
-Để demo Python/C++/Java, trong terminal mock chạy:
+`NEXT_PUBLIC_GATEWAY_URL` phải là origin Gateway, không chứa `/api/v1`, credentials hoặc secret. Biến NEXT_PUBLIC được nhúng lúc build: đổi môi trường cần restart dev hoặc rebuild production. Không dùng GitHub Pages tài liệu làm API server.
 
 ```powershell
-$env:MOCK_EDITOR_DEMO='1'
-npm run mock
+$env:NEXT_PUBLIC_GATEWAY_URL='http://localhost:8080'
+npm run dev
 ```
 
-Biến demo chỉ thêm fixture, mặc định tắt; không xác nhận language runtime thực. Có thể đổi cổng mock bằng `MOCK_PORT`, origin FE bằng `MOCK_ORIGIN`; cập nhật `NEXT_PUBLIC_GATEWAY_URL` rồi restart FE tương ứng. Live vẫn dùng origin Gateway, không dùng GitHub Pages. Các endpoint problem/template hiện là contract đích, cần backend implement trước nghiệm thu live.
+Chỉ dùng cấu hình này khi team BE đã xác nhận Gateway origin và các operation tương ứng. Không giả định endpoint hoạt động từ tài liệu hoặc mock. Không sửa repository backend để chạy FE.
 
-Kết quả review và hướng dẫn báo cáo: [Sprint 2 Tùng](sprint-2/TUNG_EDITOR_REVIEW.md). Chỉ phần FE Thịnh/Tùng được kiểm duyệt trong lần này; chưa xác nhận toàn bộ Sprint 2 của Huy hoặc Auth/judge live.
+Trước khi xác nhận tích hợp live độc lập cần:
 
-## Sprint 3 Thịnh: Submit, polling, history và progress
+1. `/api/v1` Auth/catalog/Run/Submit/detail/history/latest/progress đúng UUID DTO/camelCase/envelope; không dùng alias root/integer payload cũ.
+2. Auth refresh rotation/reuse detection/revocation; Gateway giữ Set-Cookie, logout bodyless 204 và current user đúng contract.
+3. CORS origin cụ thể + credentials, Authorization/Content-Type/preflight, Origin/CSRF; cookie HttpOnly/Path/SameSite/Secure/domain đúng deployment và xóa cookie cũ nếu cần.
+4. PostgreSQL/Redis/Piston/runtime; worker recovery/idempotence, persist verdict/progress, ownership owner/admin, hidden-test redaction, rate/size/time/output limits và Retry-After.
+5. Browser live: login/register → reload → current user, concurrent 401, refresh 401/5xx, logout khi refresh đang chạy; Run/Submit/history/progress qua Gateway deployment thật.
 
-Bài làm nằm trên `feat/submit-poll-history-progress`; xem [hướng dẫn chạy và báo cáo Sprint 3](sprint-3/THINH_SUBMISSIONS.md). Trang `/problems/sum-two` bổ sung Nộp bài, verdict/pass count, lịch sử cá nhân theo bài và tiến độ server. Polling tuần tự 1,5 giây, có pause/resume và giới hạn đợt theo dõi; không đợi AI mới hiện Accepted. Lỗi POST không rõ kết quả yêu cầu kiểm tra latest trước khi nộp lại.
+**Đạt với mock** là kết quả FE/controller/envelope/fixture. **Đã tích hợp live** cần kết quả thực trên deployment; README này không tuyên bố hoàn tất kiểm chứng đó. Phần BE được chốt Done theo quyết định nghiệm thu đã ghi ở trên.
 
-Để tự thao tác, bật `$env:MOCK_SUBMISSION_DEMO='1'; $env:MOCK_EDITOR_DEMO='1'; npm run mock` ở terminal mock rồi chạy FE như cũ. Đây là fixture in-memory tùy chọn: Pending → Running → verdict, history/progress cho một learner/bài mẫu, mất dữ liệu khi restart; không thực thi code hay chứng minh judge/session/ownership live. Mock mặc định khi không bật biến vẫn stateless. Đổi verdict qua `MOCK_SUBMISSION_VERDICT` trước khi khởi động mock. Full v1 Auth/history/latest và triển khai Gateway cần xác nhận trước khi nghiệm thu live.
+## Tài liệu và lịch sử sprint
 
-Có thể chạy gọn chế độ demo bằng `npm run mock:sprint3` (mặc định 4010). FE ở terminal thứ hai dùng `NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010` và `npm run dev`. Dừng mock cũ trước nếu cổng 4010 đang được sử dụng. `npm run test:integration` tự mở mock ở cổng trống, chạy HTTP thật qua session/API client/controller cho Accepted, Wrong Answer và Compilation Error, rồi tự dọn server test; không cần mở mock thủ công và không tác động dữ liệu demo đang chạy.
+- [Phân công task các sprint](tasks-coding-judge-v2.0_2026-11-06_to_2026-11-22.xlsx).
+- Sprint 2: [Thịnh — đề bài/template](sprint-2/THINH_HANDOFF.md), [Huy — catalog](sprint-2/HUY_CATALOG_REVIEW.md), [Tùng — editor](sprint-2/TUNG_EDITOR_REVIEW.md). Các phần này đã là nền của Sprint 3, không còn trạng thái editor chỉ đọc hoặc chờ ghép Run/Submit.
+- Sprint 3: [Thịnh — Submit](sprint-3/THINH_SUBMISSIONS.md), [Huy — Run](sprint-3/HUY_RUN_REVIEW.md), [Tùng — QA và quyết định chốt Done](sprint-3/TUNG_QA_REVIEW.md), [báo cáo task Tùng](sprint_thanhtung/sprint-3/SPRINT_REPORT.md).
+- [API design công bố](https://code-automatic.github.io/codjingrank-backend/), [learner OpenAPI upstream](https://github.com/code-automatic/codjingrank-backend/blob/main/docs/openapi_fe.yaml), [contract/compatibility](https://github.com/code-automatic/codjingrank-backend/blob/main/docs/FRONTEND_API_CONTRACT.md), [quyết định](https://github.com/code-automatic/codjingrank-backend/blob/main/docs/DECISIONS.md).
+- [Snapshot learner OpenAPI dùng cho mock](contracts/openapi_fe.yaml). Snapshot là contract đích; không suy ra runtime availability hoặc tự đổi schema nếu upstream cập nhật.
 
-Review Run của Huy: [báo cáo Sprint 3 Run](sprint-3/HUY_RUN_REVIEW.md). Trên nhánh `feature/t067c36-run-sample-results`, editor có Run sample đồng bộ riêng với Submit; `npm run test:integration` bao gồm cả kiểm tra Run. `npm run mock:sprint3` dùng chung fixture demo cho Run/editor/Submit; Run trả example cố định và không tạo history/progress. Bản review chưa merge master, chưa xác nhận browser/live.
+Không đưa agents.md/AGENTS.md, secret hoặc file local không liên quan vào commit/push. Các ZIP của tác giả được giữ như bản nộp lịch sử; báo cáo Markdown đã review là nguồn trạng thái bàn giao hiện hành.
