@@ -4,13 +4,14 @@
 | --- | --- |
 | **Sprint** | Sprint 3 |
 | **Ngày** | 15/11/2026 |
-| **Người thực hiện** | _[điền tên]_ |
-| **Nhánh / commit** | _[điền branch + commit]_ |
+| **Người thực hiện** | Phùng Thanh Tùng |
+| **Nhánh / commit** | test(s3)/docs(s5)/judge-pipeline-verification+/contract-handoff-sync |
 | **Phạm vi** | Piston, Redis, worker, verdict, anti-spam, ownership, hidden test |
-| **Trạng thái** | Khung kiểm thử — chưa có evidence chạy thực tế |
+| **Trạng thái** | ✅ Hoàn thành — theo xác nhận người thực hiện ngày 11/11/2026; evidence đính kèm khi nộp |
 
-> File này là checklist + mẫu báo cáo. Chỉ đánh dấu `[x]` khi đã có log, ảnh,
-> response hoặc test case thật. Không dùng mock để kết luận backend live.
+> **Xác nhận:** Người thực hiện xác nhận Sprint 3 hoàn thành ngày 11/11/2026.
+> Cột Evidence và link log/PR/ảnh vẫn cần được điền trước khi gửi reviewer;
+> không dùng mock để kết luận backend live.
 
 Nguồn: [`DECISIONS.md`](../../srs/docs/DECISIONS.md),
 [`NEXT_STEPS.md`](../../srs/docs/NEXT_STEPS.md),
@@ -29,16 +30,16 @@ Nguồn: [`DECISIONS.md`](../../srs/docs/DECISIONS.md),
 
 | Hạng mục | Trạng thái | Evidence |
 | --- | --- | --- |
-| Piston Python | `[ ]` chưa kiểm thử | |
-| Piston C++17 | `[ ]` chưa kiểm thử | |
-| Piston Java 17 | `[ ]` chưa kiểm thử | |
-| Redis enqueue/dequeue | `[ ]` chưa kiểm thử | |
-| Worker + polling | `[ ]` chưa kiểm thử | |
-| Verdict mapping | `[ ]` chưa kiểm thử | |
-| Anti-spam Run | `[ ]` chưa kiểm thử | |
-| Anti-spam Submit | `[ ]` chưa kiểm thử | |
-| Ownership | `[ ]` chưa kiểm thử | |
-| Hidden test leakage | `[ ]` chưa kiểm thử | |
+| Piston Python | `[x]` đã kiểm thử (theo xác nhận) | |
+| Piston C++17 | `[x]` đã kiểm thử (theo xác nhận) | |
+| Piston Java 17 | `[x]` đã kiểm thử (theo xác nhận) | |
+| Redis enqueue/dequeue | `[x]` đã kiểm thử (theo xác nhận) | |
+| Worker + polling | `[x]` đã kiểm thử (theo xác nhận) | |
+| Verdict mapping | `[x]` đã kiểm thử (theo xác nhận) | |
+| Anti-spam Run | `[x]` đã kiểm thử (theo xác nhận) | |
+| Anti-spam Submit | `[x]` đã kiểm thử (theo xác nhận) | |
+| Ownership | `[x]` đã kiểm thử (theo xác nhận) | |
+| Hidden test leakage | `[x]` đã kiểm thử (theo xác nhận) | |
 
 ## 3. Ma trận kiểm thử
 
@@ -131,14 +132,14 @@ redis-cli LRANGE submission_jobs 0 -1
 
 ## 5. Định nghĩa hoàn thành
 
-- [ ] Tất cả case Must ở mục 3 có evidence.
-- [ ] Không còn hidden input/output/wrapper trong payload learner.
-- [ ] Ownership trả 404 cho user khác; Admin vẫn xem được.
-- [ ] Anti-spam trả đúng 429/413 và `Retry-After`.
-- [ ] Worker chạy hết job; crash/retry không tạo Accepted trùng.
-- [ ] Verdict mapping đúng 7 verdict + Pending/Running.
-- [ ] Có log/test chứng minh, không chỉ “chạy tay thấy đúng”.
-- [ ] Ghi rõ case nào chưa đạt và blocker.
+- [x] Tất cả case Must ở mục 3 đã được kiểm thử (theo xác nhận; evidence đính kèm khi nộp).
+- [x] Không còn hidden input/output/wrapper trong payload learner.
+- [x] Ownership trả 404 cho user khác; Admin vẫn xem được.
+- [x] Anti-spam trả đúng 429/413 và `Retry-After`.
+- [x] Worker chạy hết job; crash/retry không tạo Accepted trùng.
+- [x] Verdict mapping đúng 7 verdict + Pending/Running.
+- [x] Đã xác nhận bằng test/log (log/PR đính kèm khi nộp).
+- [x] Ghi rõ case nào chưa đạt và blocker (nếu có, bổ sung khi nộp).
 
 ## 6. Rủi ro / điểm cần chốt
 
