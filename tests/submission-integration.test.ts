@@ -57,9 +57,21 @@ async function stop(child: ChildProcess) {
 }
 
 describe("Sprint 3 real HTTP integration with local mock", () => {
-  it.each(["Accepted", "Wrong Answer", "Compilation Error"])(
-    "connects auth → template → Submit → poll → history/progress for %s",
-    async (verdict) => {
+  it.each([
+    ...[
+      "Accepted",
+      "Wrong Answer",
+      "Compilation Error",
+      "Runtime Error",
+      "Time Limit Exceeded",
+      "Memory Limit Exceeded",
+      "Internal Error",
+    ].map((verdict) => ({ verdict, languageSlug: "python3" })),
+    { verdict: "Accepted", languageSlug: "cpp" },
+    { verdict: "Accepted", languageSlug: "java" },
+  ])(
+    "connects HTTP mock auth → template → Submit → poll → history/progress for $languageSlug / $verdict",
+    async ({ verdict, languageSlug }) => {
       const { child, url } = await launch(verdict);
       const requests: {
         path: string;
@@ -93,7 +105,10 @@ describe("Sprint 3 real HTTP integration with local mock", () => {
         const user = session.getSnapshot().user!;
         expect(user).toBeTruthy();
         const detail = await api.catalog.getProblem("sum-two");
-        const language = detail.languages[0];
+        const language = detail.languages.find(
+          (item) => item.slug === languageSlug,
+        )!;
+        expect(language).toBeDefined();
         const template = await api.catalog.getTemplate("sum-two", language.id);
         controller = createSubmissionController(
           api,
@@ -126,6 +141,8 @@ describe("Sprint 3 real HTTP integration with local mock", () => {
         );
         const result = controller.getSnapshot();
         expect(result.submission?.status).toBe(verdict);
+        expect(result.submission?.languageId).toBe(language.id);
+        expect(result.submission?.languageSlug).toBe(languageSlug);
         expect(result.submission?.passCount).toBe(
           verdict === "Accepted" ? 5 : 1,
         );
