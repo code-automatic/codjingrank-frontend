@@ -1135,3 +1135,61 @@ button:hover:not(:disabled) {
     transition: none;
   }
 }
+
+.submission-panel {
+  margin-top: 24px;
+  min-width: 0;
+}
+.submission-section {
+  margin-top: 24px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+}
+.submission-result {
+  margin: 16px 0;
+  overflow-wrap: anywhere;
+}
+.submission-result p {
+  margin-block: 8px;
+}
+.submission-id {
+  font-size: 12px;
+}
+.submission-message {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 240px;
+  overflow: auto;
+}
+.submission-levels,
+.submission-history {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.submission-levels li {
+  display: grid;
+  gap: 6px;
+}
+.submission-history li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.submission-history p {
+  margin: 4px 0;
+}
+.submission-history time {
+  font-size: 13px;
+  color: #475569;
+}
+@media (max-width: 600px) {
+  .submission-history li {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
