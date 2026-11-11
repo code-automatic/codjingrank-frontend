@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/features/auth/session";
@@ -36,6 +37,19 @@ export default function Protected() {
             <p>{user.email}</p>
             <p className="muted">
               Bạn đã đăng nhập. Trang này chỉ hiển thị khi phiên sẵn sàng.
+            </p>
+            <div className="actions catalog-actions">
+              <Link href="/packages" className="btn-primary-link">
+                Khám phá Gói bài tập
+              </Link>
+              <Link href="/problems" className="btn-secondary-link">
+                Kho bài tập & Bộ lọc
+              </Link>
+            </div>
+            <p>
+              <Link href="/problems/sum-two">
+                Mở bài tập mẫu: Sum two numbers →
+              </Link>
             </p>
             {error && (
               <p className="error" role="alert">

@@ -9,12 +9,15 @@
     "lint": "eslint app features lib tests scripts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "mock": "node scripts/mock.mjs"
+    "mock": "node scripts/mock.mjs",
+    "mock:sprint3": "node scripts/mock-sprint3.mjs",
+    "test:integration": "vitest run tests/submission-integration.test.ts tests/problem-run.test.ts"
   },
   "dependencies": {
     "next": "^16.0.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

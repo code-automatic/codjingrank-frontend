@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  memo,
   useMemo,
   useRef,
   useState,
@@ -9,7 +10,11 @@ import {
   type UIEvent,
 } from "react";
 import { indentSelection } from "./edit-ops";
-import { tokenizeLines, type EditorLanguage } from "./highlight";
+import {
+  MAX_HIGHLIGHT_CHARS,
+  tokenizeLines,
+  type EditorLanguage,
+} from "./highlight";
 
 export type CodeEditorProps = {
   value: string;
@@ -43,10 +48,13 @@ export function CodeEditor({
   describedBy,
   disabled = false,
 }: CodeEditorProps) {
+  const [tabMovesFocus, setTabMovesFocus] = useState(false);
+  const plain = value.length > MAX_HIGHLIGHT_CHARS;
   const lines = useMemo(
-    () => tokenizeLines(value, language),
-    [value, language],
+    () => (plain ? [] : tokenizeLines(value, language)),
+    [value, language, plain],
   );
+  const lineCount = plain ? value.split("\n").length : lines.length;
   const highlightRef = useRef<HTMLPreElement>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
@@ -87,11 +95,12 @@ export function CodeEditor({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Escape") {
-      event.currentTarget.blur();
+      setTabMovesFocus(true);
       return;
     }
     if (
       event.key !== "Tab" ||
+      tabMovesFocus ||
       event.shiftKey ||
       event.ctrlKey ||
       event.metaKey ||
@@ -101,19 +110,13 @@ export function CodeEditor({
     }
     event.preventDefault();
     const area = event.currentTarget;
-    const edit = indentSelection(
-      value,
-      area.selectionStart,
-      area.selectionEnd,
-    );
+    const edit = indentSelection(value, area.selectionStart, area.selectionEnd);
     pendingSelection.current = [edit.start, edit.end];
     onChange(edit.code);
   };
 
   return (
-    <div
-      className={`code-editor${disabled ? " code-editor--disabled" : ""}`}
-    >
+    <div className={`code-editor${disabled ? " code-editor--disabled" : ""}`}>
       <div className="code-editor__gutter" ref={gutterRef} aria-hidden="true">
         {lines.map((_, index) => (
           <div className="code-editor__line-number" key={index}>
@@ -132,10 +135,7 @@ export function CodeEditor({
               {line.length === 0
                 ? "\u200b"
                 : line.map((token, tokenIndex) => (
-                    <span
-                      className={`tok tok-${token.kind}`}
-                      key={tokenIndex}
-                    >
+                    <span className={`tok tok-${token.kind}`} key={tokenIndex}>
                       {token.text}
                     </span>
                   ))}
@@ -144,17 +144,20 @@ export function CodeEditor({
         </pre>
         <textarea
           ref={areaRef}
-          className="code-editor__input"
+          className={`code-editor__input${plain ? " code-editor__input--plain" : ""}`}
           value={value}
           onChange={(event) => {
             onChange(event.target.value);
-            setCursor(cursorAt(event.target.value, event.target.selectionStart));
+            setCursor(
+              cursorAt(event.target.value, event.target.selectionStart),
+            );
           }}
           onScroll={handleScroll}
           onSelect={updateCursor}
           onClick={updateCursor}
           onKeyUp={updateCursor}
           onKeyDown={handleKeyDown}
+          onBlur={() => setTabMovesFocus(false)}
           disabled={disabled}
           aria-label={label}
           aria-describedby={describedBy}
@@ -168,8 +171,12 @@ export function CodeEditor({
         <span>
           Ln {cursor.line}, Col {cursor.column}
         </span>
-        <span>{lines.length} dòng</span>
+        <span>
+          {lineCount} dòng{plain ? " · Văn bản thuần (mã dài)" : ""}
+        </span>
       </div>
     </div>
   );
 }
+
+export const MemoCodeEditor = memo(CodeEditor);

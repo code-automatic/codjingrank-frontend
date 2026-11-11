@@ -4,6 +4,7 @@ import type {
   ProblemDetailModel,
 } from "@/lib/api/adapters/catalog";
 import { ApiError, type RequestOptions } from "@/lib/api/client";
+import { withDeadline } from "@/lib/api/deadline";
 import { assertSlugParam } from "@/lib/api/domains/preflight";
 import { isUuid } from "@/lib/api/guards";
 import type { DraftStore } from "./draft-store";
@@ -20,22 +21,13 @@ export type WorkspaceCatalogApi = {
   ): Promise<CodeTemplateModel>;
 };
 
-export type WorkspaceErrorKind =
-  | "locked"
-  | "not_found"
-  | "invalid"
-  | "generic";
+export type WorkspaceErrorKind = "locked" | "not_found" | "invalid" | "generic";
 
 export type WorkspacePhase = "loading" | "ready" | "error";
 export type TemplatePhase = "idle" | "loading" | "ready" | "error";
 
 export type DraftSaveState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "starter"
-  | "error"
-  | "unavailable";
+  "idle" | "saving" | "saved" | "starter" | "error" | "unavailable";
 
 export type WorkspaceSnapshot = {
   phase: WorkspacePhase;
@@ -65,7 +57,7 @@ export type WorkspaceController = {
   resetStarter(): void;
   retryTemplate(): Promise<void>;
   flushDraft(): void;
-  dispose(): void;
+  dispose(save?: boolean): void;
 };
 
 export type WorkspaceControllerDeps = {
@@ -73,6 +65,7 @@ export type WorkspaceControllerDeps = {
   drafts: DraftStore;
   now?: () => number;
   debounceMs?: number;
+  timeoutMs?: number;
 };
 
 function createInitial(draftAvailable: boolean): WorkspaceSnapshot {
@@ -133,6 +126,14 @@ export function createWorkspaceController(
   let problemAbort: AbortController | undefined;
   let templateAbort: AbortController | undefined;
   let saveTimer: ReturnType<typeof setTimeout> | undefined;
+  let dirty = false;
+  // Preserve edits across language changes even when localStorage is blocked.
+  const memoryDrafts = new Map<
+    string,
+    { code: string; savedAt: number; persisted?: boolean } | null
+  >();
+  const memoryKey = (problemId: string, languageId: string) =>
+    `${problemId}:${languageId}`;
 
   const patch = (next: Partial<WorkspaceSnapshot>) => {
     state = { ...state, ...next };
@@ -151,6 +152,13 @@ export function createWorkspaceController(
     const problem = state.problem;
     const languageId = state.selectedLanguageId;
     if (!problem || !languageId || state.templatePhase !== "ready") return;
+    if (!dirty) return;
+    memoryDrafts.set(
+      memoryKey(problem.problem.id, languageId),
+      state.code === state.starterCode
+        ? null
+        : { code: state.code, savedAt: now() },
+    );
 
     if (!state.draftAvailable) {
       patch({ saveState: "unavailable" });
@@ -158,8 +166,9 @@ export function createWorkspaceController(
     }
 
     if (state.code === state.starterCode) {
-      drafts.remove(problem.problem.id, languageId);
-      patch({ saveState: "starter", savedAt: null });
+      const removed = drafts.remove(problem.problem.id, languageId);
+      dirty = !removed;
+      patch({ saveState: removed ? "starter" : "error", savedAt: null });
       return;
     }
 
@@ -168,6 +177,9 @@ export function createWorkspaceController(
       code: state.code,
       savedAt,
     });
+    const memory = memoryDrafts.get(memoryKey(problem.problem.id, languageId));
+    if (memory) memory.persisted = written;
+    dirty = !written;
     patch({
       saveState: written ? "saved" : "error",
       savedAt: written ? savedAt : state.savedAt,
@@ -193,6 +205,7 @@ export function createWorkspaceController(
     templateAbort = abort;
 
     cancelScheduledSave();
+    dirty = false;
     patch({
       templatePhase: "loading",
       templateError: null,
@@ -205,10 +218,13 @@ export function createWorkspaceController(
     });
 
     try {
-      const template = await catalog.getTemplate(
-        problem.problem.slug,
-        language.id,
-        { signal: abort.signal },
+      const template = await withDeadline(
+        abort,
+        () =>
+          catalog.getTemplate(problem.problem.slug, language.id, {
+            signal: abort.signal,
+          }),
+        deps.timeoutMs ?? 15_000,
       );
       if (requestId !== templateEpoch) return;
       if (
@@ -218,7 +234,10 @@ export function createWorkspaceController(
         throw templateIdentityError();
       }
 
-      const draft = drafts.read(problem.problem.id, language.id);
+      const key = memoryKey(problem.problem.id, language.id);
+      const draft = memoryDrafts.has(key)
+        ? memoryDrafts.get(key)
+        : drafts.read(problem.problem.id, language.id);
       patch({
         templatePhase: "ready",
         starterCode: template.starterCode,
@@ -227,13 +246,30 @@ export function createWorkspaceController(
         draftRestored: Boolean(draft),
         savedAt: draft ? draft.savedAt : null,
         saveState: draft
-          ? "saved"
+          ? !state.draftAvailable
+            ? "unavailable"
+            : memoryDrafts.has(key) && !memoryDrafts.get(key)?.persisted
+              ? "error"
+              : "saved"
           : state.draftAvailable
             ? "idle"
             : "unavailable",
       });
     } catch (error) {
       if (requestId !== templateEpoch || isAbortError(error)) return;
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 ||
+          (error.status === 403 && error.code === "LEVEL_LOCKED"))
+      ) {
+        patch({
+          ...createInitial(drafts.available),
+          phase: "error",
+          problemError: error,
+          errorKind: classifyProblemError(error),
+        });
+        return;
+      }
       patch({
         templatePhase: "error",
         templateError: error,
@@ -273,10 +309,18 @@ export function createWorkspaceController(
     problemAbort = abort;
 
     try {
-      const problem = await catalog.getProblem(cleanSlug, {
-        signal: abort.signal,
-      });
+      const problem = await withDeadline(
+        abort,
+        () =>
+          catalog.getProblem(cleanSlug, {
+            signal: abort.signal,
+          }),
+        deps.timeoutMs ?? 15_000,
+      );
       if (requestId !== problemEpoch) return;
+      if (problem.problem.slug !== cleanSlug)
+        throw new ApiError(200, "INVALID_CONTRACT_DATA");
+      if (!problem.problem.unlocked) throw new ApiError(403, "LEVEL_LOCKED");
 
       if (problem.languages.length === 0) {
         throw new ApiError(200, "INVALID_CONTRACT_DATA", {
@@ -328,6 +372,7 @@ export function createWorkspaceController(
   const changeCode = (code: string) => {
     if (state.templatePhase !== "ready") return;
     if (typeof code !== "string" || code === state.code) return;
+    dirty = true;
     patch({
       code,
       saveState: state.draftAvailable ? "saving" : "unavailable",
@@ -339,12 +384,21 @@ export function createWorkspaceController(
     if (state.templatePhase !== "ready" || !state.problem) return;
     const languageId = state.selectedLanguageId;
     cancelScheduledSave();
-    if (languageId) drafts.remove(state.problem.problem.id, languageId);
+    const removed = languageId
+      ? drafts.remove(state.problem.problem.id, languageId)
+      : false;
+    if (languageId)
+      memoryDrafts.set(memoryKey(state.problem.problem.id, languageId), null);
+    dirty = !removed;
     patch({
       code: state.starterCode,
       draftRestored: false,
       savedAt: null,
-      saveState: state.draftAvailable ? "starter" : "unavailable",
+      saveState: !state.draftAvailable
+        ? "unavailable"
+        : removed
+          ? "starter"
+          : "error",
     });
   };
 
@@ -357,8 +411,8 @@ export function createWorkspaceController(
     await loadTemplate(state.problem, language);
   };
 
-  const dispose = () => {
-    flushDraft();
+  const dispose = (save = true) => {
+    if (save) flushDraft();
     cancelScheduledSave();
     problemEpoch += 1;
     templateEpoch += 1;
@@ -366,6 +420,9 @@ export function createWorkspaceController(
     templateAbort?.abort();
     problemAbort = undefined;
     templateAbort = undefined;
+    dirty = false;
+    memoryDrafts.clear();
+    patch(createInitial(drafts.available));
   };
 
   return {

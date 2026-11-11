@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type {
   CodeTemplateModel,
   LanguageModel,
@@ -37,7 +37,12 @@ function language(id: string, slug: string, name: string): LanguageModel {
   };
 }
 
-function makeProblem(languages = [language(PYTHON_ID, "python3", "Python 3"), language(CPP_ID, "cpp", "C++")]): ProblemDetailModel {
+function makeProblem(
+  languages = [
+    language(PYTHON_ID, "python3", "Python 3"),
+    language(CPP_ID, "cpp", "C++"),
+  ],
+): ProblemDetailModel {
   return {
     problem: {
       id: PROBLEM_ID,
@@ -85,13 +90,12 @@ type CatalogCalls = {
   templates: string[];
 };
 
-function fakeCatalog(handlers: {
-  problem?: (slug: string) => Promise<ProblemDetailModel>;
-  template?: (
-    slug: string,
-    languageId: string,
-  ) => Promise<CodeTemplateModel>;
-} = {}): WorkspaceCatalogApi & { calls: CatalogCalls } {
+function fakeCatalog(
+  handlers: {
+    problem?: (slug: string) => Promise<ProblemDetailModel>;
+    template?: (slug: string, languageId: string) => Promise<CodeTemplateModel>;
+  } = {},
+): WorkspaceCatalogApi & { calls: CatalogCalls } {
   const calls: CatalogCalls = { problems: [], templates: [] };
   return {
     calls,
@@ -154,10 +158,179 @@ function makeController(
 }
 
 describe("problem workspace controller", () => {
+  it("reset cancels a pending autosave and reports failed removal", async () => {
+    vi.useFakeTimers();
+    const drafts = createDraftStore(memoryStorage());
+    const controller = makeController(fakeCatalog(), drafts);
+    try {
+      await controller.open("sum-two");
+      controller.changeCode("must not return");
+      controller.resetStarter();
+      await vi.advanceTimersByTimeAsync(10);
+      expect(drafts.read(PROBLEM_ID, PYTHON_ID)).toBeNull();
+      expect(controller.getSnapshot().code).toBe("print('py')");
+      vi.spyOn(drafts, "remove").mockReturnValue(false);
+      controller.changeCode("custom");
+      controller.resetStarter();
+      expect(controller.getSnapshot().saveState).toBe("error");
+    } finally {
+      controller.dispose();
+      vi.useRealTimers();
+    }
+  });
+  it("retains per-language edits in memory when storage is unavailable", async () => {
+    const controller = makeController(fakeCatalog(), createDraftStore(null));
+    try {
+      await controller.open("sum-two");
+      controller.changeCode("private unsaved python");
+      await controller.selectLanguage(CPP_ID);
+      controller.changeCode("private unsaved cpp");
+      await controller.selectLanguage(PYTHON_ID);
+      expect(controller.getSnapshot().code).toBe("private unsaved python");
+      expect(controller.getSnapshot().saveState).toBe("unavailable");
+      controller.resetStarter();
+      await controller.selectLanguage(CPP_ID);
+      expect(controller.getSnapshot().code).toBe("private unsaved cpp");
+      await controller.selectLanguage(PYTHON_ID);
+      expect(controller.getSnapshot().code).toBe("print('py')");
+    } finally {
+      controller.dispose();
+    }
+  });
+
+  it("writes a dirty draft once and avoids saving unchanged code on pagehide/dispose", async () => {
+    const drafts = createDraftStore(memoryStorage());
+    const write = vi.spyOn(drafts, "write");
+    const controller = makeController(fakeCatalog(), drafts);
+    await controller.open("sum-two");
+    controller.changeCode("custom");
+    controller.flushDraft();
+    controller.flushDraft();
+    controller.dispose();
+    expect(write).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not save pending edits or accept late templates after session disposal", async () => {
+    const late = deferred<CodeTemplateModel>();
+    const catalog = fakeCatalog({
+      template: async (_slug, id) =>
+        id === CPP_ID ? late.promise : makeTemplate(id),
+    });
+    const drafts = createDraftStore(memoryStorage());
+    const controller = makeController(catalog, drafts);
+    await controller.open("sum-two");
+    controller.changeCode("secret edit");
+    controller.dispose(false);
+    controller.flushDraft();
+    expect(drafts.read(PROBLEM_ID, PYTHON_ID)).toBeNull();
+    await controller.open("sum-two");
+    const switching = controller.selectLanguage(CPP_ID);
+    controller.dispose(false);
+    late.resolve(makeTemplate(CPP_ID));
+    await switching;
+    expect(controller.getSnapshot()).toMatchObject({
+      problem: null,
+      code: "",
+      starterCode: "",
+    });
+  });
+
+  it.each(["detail", "template"])(
+    "bounds a hanging %s request and allows retry",
+    async (target) => {
+      vi.useFakeTimers();
+      let hanging = true;
+      const controller = createWorkspaceController({
+        drafts: createDraftStore(null),
+        timeoutMs: 50,
+        catalog: fakeCatalog({
+          problem: () =>
+            target === "detail" && hanging
+              ? new Promise(() => {})
+              : Promise.resolve(makeProblem()),
+          template: (_slug, id) =>
+            target === "template" && hanging
+              ? new Promise(() => {})
+              : Promise.resolve(makeTemplate(id)),
+        }),
+      });
+      try {
+        const opening = controller.open("sum-two");
+        await vi.advanceTimersByTimeAsync(51);
+        await opening;
+        const snapshot = controller.getSnapshot();
+        expect(
+          target === "detail" ? snapshot.problemError : snapshot.templateError,
+        ).toMatchObject({ code: "REQUEST_TIMEOUT" });
+        hanging = false;
+        if (target === "detail") await controller.open("sum-two");
+        else await controller.retryTemplate();
+        expect(controller.getSnapshot().templatePhase).toBe("ready");
+        expect(vi.getTimerCount()).toBe(0);
+      } finally {
+        controller.dispose();
+        vi.useRealTimers();
+      }
+    },
+  );
+  it("does not project a successful detail payload for a locked or different problem", async () => {
+    for (const change of [{ unlocked: false }, { slug: "another-problem" }]) {
+      const problem = makeProblem();
+      const catalog = fakeCatalog({
+        problem: async () => ({
+          ...problem,
+          problem: { ...problem.problem, ...change },
+        }),
+      });
+      const controller = makeController(
+        catalog,
+        createDraftStore(memoryStorage()),
+      );
+      try {
+        await controller.open("sum-two");
+        expect(controller.getSnapshot().phase).toBe("error");
+        expect(controller.getSnapshot().problem).toBeNull();
+        expect(catalog.calls.templates).toHaveLength(0);
+      } finally {
+        controller.dispose();
+      }
+    }
+  });
+
+  it("removes detail and editor data when template access is revoked", async () => {
+    for (const error of [
+      new ApiError(401, "UNAUTHORIZED"),
+      new ApiError(403, "LEVEL_LOCKED"),
+    ]) {
+      const catalog = fakeCatalog({
+        template: async () => {
+          throw error;
+        },
+      });
+      const controller = makeController(
+        catalog,
+        createDraftStore(memoryStorage()),
+      );
+      try {
+        await controller.open("sum-two");
+        expect(controller.getSnapshot()).toMatchObject({
+          phase: "error",
+          problem: null,
+          code: "",
+          starterCode: "",
+        });
+      } finally {
+        controller.dispose();
+      }
+    }
+  });
   it("loads the problem and restores a draft for the default language", async () => {
     const catalog = fakeCatalog();
     const drafts = createDraftStore(memoryStorage());
-    drafts.write(PROBLEM_ID, PYTHON_ID, { code: "print('draft')", savedAt: 50 });
+    drafts.write(PROBLEM_ID, PYTHON_ID, {
+      code: "print('draft')",
+      savedAt: 50,
+    });
 
     const controller = makeController(catalog, drafts);
     try {
@@ -190,14 +363,18 @@ describe("problem workspace controller", () => {
 
       controller.changeCode("print('saved py')");
       controller.flushDraft();
-      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe("print('saved py')");
+      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe(
+        "print('saved py')",
+      );
 
       await controller.selectLanguage(CPP_ID);
       let snapshot = controller.getSnapshot();
       expect(snapshot.selectedLanguageId).toBe(CPP_ID);
       expect(snapshot.code).toBe("int main() {}");
       expect(snapshot.draftRestored).toBe(false);
-      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe("print('saved py')");
+      expect(drafts.read(PROBLEM_ID, PYTHON_ID)?.code).toBe(
+        "print('saved py')",
+      );
       expect(drafts.readPreferredLanguage(PROBLEM_ID)).toBe(CPP_ID);
 
       controller.changeCode("int main() { return 0; }");
@@ -392,7 +569,7 @@ describe("problem workspace controller", () => {
       available: true,
       read: () => null,
       write: () => false,
-      remove: () => {},
+      remove: () => false,
       readPreferredLanguage: () => null,
       writePreferredLanguage: () => {},
     };

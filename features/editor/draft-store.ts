@@ -24,7 +24,7 @@ export type DraftStore = {
   available: boolean;
   read(problemId: string, languageId: string): DraftRecord | null;
   write(problemId: string, languageId: string, record: DraftRecord): boolean;
-  remove(problemId: string, languageId: string): void;
+  remove(problemId: string, languageId: string): boolean;
   readPreferredLanguage(problemId: string): string | null;
   writePreferredLanguage(problemId: string, languageId: string): void;
 };
@@ -67,13 +67,11 @@ function parseDraft(
   if (typeof parsed.code !== "string") return null;
   if (typeof parsed.savedAt !== "number" || !Number.isFinite(parsed.savedAt))
     return null;
-  if (parsed.savedAt < 0) return null;
+  if (parsed.savedAt < 0 || parsed.savedAt > 8.64e15) return null;
   return { code: parsed.code, savedAt: parsed.savedAt };
 }
 
-export function createDraftStore(
-  storage: KeyValueStorage | null,
-): DraftStore {
+export function createDraftStore(storage: KeyValueStorage | null): DraftStore {
   let available = false;
   if (storage) {
     try {
@@ -114,7 +112,12 @@ export function createDraftStore(
     write(problemId, languageId, record) {
       if (!available || !isUuid(problemId) || !isUuid(languageId)) return false;
       if (typeof record.code !== "string") return false;
-      if (!Number.isFinite(record.savedAt) || record.savedAt < 0) return false;
+      if (
+        !Number.isFinite(record.savedAt) ||
+        record.savedAt < 0 ||
+        record.savedAt > 8.64e15
+      )
+        return false;
       const payload: StoredDraft = {
         v: DRAFT_STORAGE_VERSION,
         problemId,
@@ -123,7 +126,10 @@ export function createDraftStore(
         savedAt: record.savedAt,
       };
       try {
-        storage!.setItem(draftKey(problemId, languageId), JSON.stringify(payload));
+        storage!.setItem(
+          draftKey(problemId, languageId),
+          JSON.stringify(payload),
+        );
         return true;
       } catch {
         // Quota exceeded or storage disabled: the editor keeps the code in
@@ -133,11 +139,12 @@ export function createDraftStore(
     },
 
     remove(problemId, languageId) {
-      if (!available || !isUuid(problemId) || !isUuid(languageId)) return;
+      if (!available || !isUuid(problemId) || !isUuid(languageId)) return false;
       try {
         storage!.removeItem(draftKey(problemId, languageId));
+        return true;
       } catch {
-        // Ignore storage failures while removing a draft.
+        return false;
       }
     },
 
@@ -189,6 +196,35 @@ function browserStorage(): KeyValueStorage | null {
  * server (or in private mode where access throws) every operation is a no-op
  * and `available` is false.
  */
-export function createBrowserDraftStore(): DraftStore {
-  return createDraftStore(browserStorage());
+export function createBrowserDraftStore(userId: string): DraftStore {
+  return createUserDraftStore(browserStorage(), userId);
+}
+
+/** Keep local source separate by account. Legacy unowned drafts are not read. */
+export function createUserDraftStore(
+  storage: KeyValueStorage | null,
+  userId: string,
+): DraftStore {
+  if (!storage || !isUuid(userId)) return createDraftStore(null);
+  const prefix = `codjingrank:editor:v2:${userId}:`;
+  return createDraftStore({
+    getItem: (key) => storage.getItem(prefix + key),
+    setItem: (key, value) => storage.setItem(prefix + key, value),
+    removeItem: (key) => storage.removeItem(prefix + key),
+  });
+}
+
+export function clearBrowserDrafts(userId: string): void {
+  try {
+    if (typeof window === "undefined" || !isUuid(userId)) return;
+    const storage = window.localStorage;
+    const prefix = `codjingrank:editor:v2:${userId}:`;
+    const keys = Array.from({ length: storage.length }, (_, index) =>
+      storage.key(index),
+    );
+    for (const key of keys)
+      if (key?.startsWith(prefix)) storage.removeItem(key);
+  } catch {
+    /* Browser policy may block cleanup; do not crash logout. */
+  }
 }

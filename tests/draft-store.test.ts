@@ -1,6 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   createDraftStore,
+  createUserDraftStore,
+  clearBrowserDrafts,
   draftKey,
   preferredLanguageKey,
   type KeyValueStorage,
@@ -26,14 +28,80 @@ function memoryStorage(): KeyValueStorage & { data: Map<string, string> } {
 }
 
 describe("draft store", () => {
+  it("clears only the departing account on logout", () => {
+    const storage = memoryStorage();
+    const userA = PROBLEM_A.replace(/.$/, "a");
+    const userB = PROBLEM_A.replace(/.$/, "b");
+    const a = createUserDraftStore(storage, userA);
+    const b = createUserDraftStore(storage, userB);
+    a.write(PROBLEM_A, PYTHON, { code: "A", savedAt: 1 });
+    a.writePreferredLanguage(PROBLEM_A, PYTHON);
+    b.write(PROBLEM_A, PYTHON, { code: "B", savedAt: 1 });
+    storage.setItem("unrelated", "keep");
+    vi.stubGlobal("window", {
+      localStorage: {
+        get length() {
+          return storage.data.size;
+        },
+        key: (index: number) => [...storage.data.keys()][index] ?? null,
+        removeItem: storage.removeItem,
+      },
+    });
+    try {
+      clearBrowserDrafts(userA);
+      expect(a.read(PROBLEM_A, PYTHON)).toBeNull();
+      expect(a.readPreferredLanguage(PROBLEM_A)).toBeNull();
+      expect(b.read(PROBLEM_A, PYTHON)?.code).toBe("B");
+      expect(storage.getItem("unrelated")).toBe("keep");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("rejects timestamps outside JavaScript Date range", () => {
+    const store = createDraftStore(memoryStorage());
+    expect(
+      store.write(PROBLEM_A, PYTHON, { code: "bad", savedAt: 1e100 }),
+    ).toBe(false);
+  });
+  it("isolates accounts and does not import legacy unowned drafts", () => {
+    const storage = memoryStorage();
+    const userA = PROBLEM_A.replace(/.$/, "a");
+    const userB = PROBLEM_A.replace(/.$/, "b");
+    createDraftStore(storage).write(PROBLEM_A, PYTHON, {
+      code: "legacy",
+      savedAt: 1,
+    });
+    const a = createUserDraftStore(storage, userA);
+    const b = createUserDraftStore(storage, userB);
+    expect(a.read(PROBLEM_A, PYTHON)).toBeNull();
+    a.write(PROBLEM_A, PYTHON, { code: "private A", savedAt: 2 });
+    expect(b.read(PROBLEM_A, PYTHON)).toBeNull();
+    b.write(PROBLEM_A, PYTHON, { code: "private B", savedAt: 3 });
+    expect(
+      createUserDraftStore(storage, userA).read(PROBLEM_A, PYTHON)?.code,
+    ).toBe("private A");
+    expect(createUserDraftStore(storage, "invalid").available).toBe(false);
+  });
+
+  it("reports removal failures instead of claiming the draft was deleted", () => {
+    const storage = memoryStorage();
+    const store = createDraftStore(storage);
+    store.write(PROBLEM_A, PYTHON, { code: "old", savedAt: 1 });
+    storage.removeItem = () => {
+      throw new Error("blocked");
+    };
+    expect(store.remove(PROBLEM_A, PYTHON)).toBe(false);
+    expect(store.read(PROBLEM_A, PYTHON)?.code).toBe("old");
+  });
   it("round-trips code and savedAt for one problem-language pair", () => {
     const storage = memoryStorage();
     const store = createDraftStore(storage);
 
     expect(store.available).toBe(true);
-    expect(store.write(PROBLEM_A, PYTHON, { code: "print('a')", savedAt: 100 })).toBe(
-      true,
-    );
+    expect(
+      store.write(PROBLEM_A, PYTHON, { code: "print('a')", savedAt: 100 }),
+    ).toBe(true);
     expect(store.read(PROBLEM_A, PYTHON)).toEqual({
       code: "print('a')",
       savedAt: 100,

@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { RunPanel } from "@/features/problem-run/RunPanel";
+import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
+import { Statement } from "@/features/problems/Statement";
 import type { SampleModel } from "@/lib/api/adapters/catalog";
 import { errorText } from "@/lib/api/client";
 import { MAX_EXECUTE_CODE_BYTES } from "@/lib/api/domains/preflight";
 import { utf8ByteLength } from "@/lib/api/guards";
 import type { LevelDifficulty } from "@/lib/api/types";
-import { CodeEditor } from "./CodeEditor";
+import { MemoCodeEditor as CodeEditor } from "./CodeEditor";
 import { resolveEditorLanguage } from "./highlight";
 import { useProblemWorkspace } from "./useProblemWorkspace";
 import type {
@@ -161,8 +164,7 @@ function WorkspaceReady({
   const bytes = utf8ByteLength(snapshot.code);
   const tooLarge = bytes > MAX_EXECUTE_CODE_BYTES;
   const loadingTemplate =
-    snapshot.templatePhase === "loading" ||
-    snapshot.templatePhase === "idle";
+    snapshot.templatePhase === "loading" || snapshot.templatePhase === "idle";
   const canEdit = snapshot.templatePhase === "ready";
   const saveError =
     snapshot.saveState === "error" || snapshot.saveState === "unavailable";
@@ -177,12 +179,16 @@ function WorkspaceReady({
 
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">{DIFFICULTY_LABEL[problem.problem.difficulty]}</p>
+          <p className="eyebrow">
+            {DIFFICULTY_LABEL[problem.problem.difficulty]}
+          </p>
           <h1>{problem.problem.title}</h1>
         </div>
         <ul className="badges" aria-label="Thông tin bài tập">
           <li>{problem.timeLimitMs} ms</li>
           <li>{problem.memoryLimitMb} MB</li>
+          <li>Đầu ra tối đa: {problem.outputLimitBytes} byte</li>
+          <li>Accepted: {problem.problem.formattedAcceptanceRate}</li>
           <li>
             {problem.executionMode === "function"
               ? `Hàm ${problem.functionName ?? "—"}`
@@ -202,9 +208,9 @@ function WorkspaceReady({
               ))}
             </ul>
           )}
-          <pre className="statement">
+          <Statement>
             {problem.statementMd || "Đề bài chưa có nội dung."}
-          </pre>
+          </Statement>
           <Samples samples={problem.sampleTestCases} />
         </section>
 
@@ -225,10 +231,7 @@ function WorkspaceReady({
               <select
                 id="language-select"
                 value={snapshot.selectedLanguageId ?? ""}
-                disabled={!canEdit && snapshot.templatePhase !== "error"}
-                onChange={(event) =>
-                  onSelectLanguage(event.target.value)
-                }
+                onChange={(event) => onSelectLanguage(event.target.value)}
               >
                 {snapshot.languages.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -275,9 +278,7 @@ function WorkspaceReady({
                 role="alert"
               >
                 <p>Không tải được mã khởi tạo.</p>
-                <p className="muted">
-                  {errorText(snapshot.templateError)}
-                </p>
+                <p className="muted">{errorText(snapshot.templateError)}</p>
                 <button type="button" onClick={onRetryTemplate}>
                   Thử lại
                 </button>
@@ -295,8 +296,8 @@ function WorkspaceReady({
 
           <div className="editor-meta">
             <p id="editor-hint" className="muted">
-              Tab chèn 4 dấu cách; Esc để rời editor. Nháp lưu riêng theo bài
-              và ngôn ngữ.
+              Tab chèn 4 dấu cách; Esc rồi Tab để rời editor. Nháp lưu riêng
+              theo tài khoản, bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
             </p>
             <p className={tooLarge ? "error" : "muted"}>
               {bytes.toLocaleString("vi-VN")} byte
@@ -307,6 +308,8 @@ function WorkspaceReady({
           </div>
         </section>
       </div>
+      <RunPanel key={`run:${problem.problem.id}`} workspace={snapshot} />
+      <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
     </main>
   );
 }
