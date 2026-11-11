@@ -52,3 +52,9 @@ Dừng mock/FE cũ bằng Ctrl+C trước khi dùng lại cùng cổng. Terminal
 Mở `http://localhost:3000/problems/sum-two`, login mock nếu được yêu cầu, mở lại bài. Chạy mẫu Python, xem từng test, sửa code kiểm tra stale badge; đổi C++/Java kiểm tra kết quả cũ bị dọn và template đúng. Run không làm tăng history/mở cấp; bấm Submit mới tạo lượt nộp. Mock không chấm theo source nên code sai vẫn có thể trả Accepted fixture.
 
 Chạy tự động: `npm run test:integration` hoặc `npm test`; mock test dùng cổng ngẫu nhiên và tự dọn process. Muốn ép HTTP errors/verdict dùng controlled transport trong tests hoặc Prefer examples khi gọi mock trực tiếp. Chưa có bằng chứng browser/mobile thực để nghiệm thu các thao tác trên.
+
+## Xác nhận trước merge (2026-11-11)
+
+Thịnh xác nhận đã kiểm tra tay và các thao tác đang ổn định, đồng ý merge nhánh Huy vào master. Đây là xác nhận của người dùng; công cụ Computer Use chưa kiểm chứng độc lập bàn phím/responsive vì không xác minh được URL. Backend live vẫn chưa nghiệm thu.
+
+Sau khi fetch origin, master và nhánh Huy không có commit mới so với bản review. Chạy lại lint, typecheck, 193 tests / 14 files, integration 22 tests / 2 files và production build: tất cả PASS. Integration bao gồm unit/markup và bốn kịch bản HTTP như ghi ở trên, không phải browser E2E.
