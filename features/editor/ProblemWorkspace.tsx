@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
 import { Statement } from "@/features/problems/Statement";
 import type { SampleModel } from "@/lib/api/adapters/catalog";
 import { errorText } from "@/lib/api/client";
@@ -306,6 +307,7 @@ function WorkspaceReady({
           </div>
         </section>
       </div>
+      <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
     </main>
   );
 }

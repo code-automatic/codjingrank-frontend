@@ -89,3 +89,11 @@ npm run mock
 Biến demo chỉ thêm fixture, mặc định tắt; không xác nhận language runtime thực. Có thể đổi cổng mock bằng `MOCK_PORT`, origin FE bằng `MOCK_ORIGIN`; cập nhật `NEXT_PUBLIC_GATEWAY_URL` rồi restart FE tương ứng. Live vẫn dùng origin Gateway, không dùng GitHub Pages. Các endpoint problem/template hiện là contract đích, cần backend implement trước nghiệm thu live.
 
 Kết quả review và hướng dẫn báo cáo: [Sprint 2 Tùng](sprint-2/TUNG_EDITOR_REVIEW.md). Chỉ phần FE Thịnh/Tùng được kiểm duyệt trong lần này; chưa xác nhận toàn bộ Sprint 2 của Huy hoặc Auth/judge live.
+
+## Sprint 3 Thịnh: Submit, polling, history và progress
+
+Bài làm nằm trên `feat/submit-poll-history-progress`; xem [hướng dẫn chạy và báo cáo Sprint 3](sprint-3/THINH_SUBMISSIONS.md). Trang `/problems/sum-two` bổ sung Nộp bài, verdict/pass count, lịch sử cá nhân theo bài và tiến độ server. Polling tuần tự 1,5 giây, có pause/resume và giới hạn đợt theo dõi; không đợi AI mới hiện Accepted. Lỗi POST không rõ kết quả yêu cầu kiểm tra latest trước khi nộp lại.
+
+Để tự thao tác, bật `$env:MOCK_SUBMISSION_DEMO='1'; $env:MOCK_EDITOR_DEMO='1'; npm run mock` ở terminal mock rồi chạy FE như cũ. Đây là fixture in-memory tùy chọn: Pending → Running → verdict, history/progress cho một learner/bài mẫu, mất dữ liệu khi restart; không thực thi code hay chứng minh judge/session/ownership live. Mock mặc định khi không bật biến vẫn stateless. Đổi verdict qua `MOCK_SUBMISSION_VERDICT` trước khi khởi động mock. Full v1 Auth/history/latest và triển khai Gateway cần xác nhận trước khi nghiệm thu live.
+
+Có thể chạy gọn chế độ demo bằng `npm run mock:sprint3` (mặc định 4010). FE ở terminal thứ hai dùng `NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010` và `npm run dev`. Dừng mock cũ trước nếu cổng 4010 đang được sử dụng. `npm run test:integration` tự mở mock ở cổng trống, chạy HTTP thật qua session/API client/controller cho Accepted, Wrong Answer và Compilation Error, rồi tự dọn server test; không cần mở mock thủ công và không tác động dữ liệu demo đang chạy.
