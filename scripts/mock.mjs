@@ -1,3 +1,4 @@
+import { createSubmissionDemo } from "./submission-demo.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
@@ -141,7 +142,14 @@ function resolveOperation(pathname, method) {
   return candidates[0]?.op ?? null;
 }
 
-createServer((req, res) => {
+const submissionDemo =
+  process.env.MOCK_SUBMISSION_DEMO === "1"
+    ? createSubmissionDemo(spec, {
+        verdict: process.env.MOCK_SUBMISSION_VERDICT || "Accepted",
+      })
+    : null;
+
+createServer(async (req, res) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
     process.env.MOCK_ORIGIN || "http://localhost:3000",
@@ -176,6 +184,31 @@ createServer((req, res) => {
       }),
     );
     return;
+  }
+
+  if (submissionDemo && !req.headers.prefer) {
+    try {
+      const fixture = await submissionDemo(req, url);
+      if (fixture) {
+        res.writeHead(fixture.status, {
+          "Content-Type": "application/json",
+          ...fixture.headers,
+        });
+        res.end(JSON.stringify(fixture.body));
+        return;
+      }
+    } catch {
+      res.writeHead(500, { "Content-Type": "application/json" }).end(
+        JSON.stringify({
+          status: "error",
+          code: 500,
+          message: "Demo failure",
+          error: "INTERNAL_ERROR",
+          details: null,
+        }),
+      );
+      return;
+    }
   }
 
   const preferHeader = String(req.headers.prefer || "");
@@ -250,6 +283,6 @@ createServer((req, res) => {
   );
 }).listen(Number(process.env.MOCK_PORT || 4010), "127.0.0.1", () =>
   console.log(
-    `Stateless OpenAPI learner mock (42 endpoints): http://localhost:${process.env.MOCK_PORT || 4010}`,
+    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}): http://localhost:${process.env.MOCK_PORT || 4010}`,
   ),
 );
