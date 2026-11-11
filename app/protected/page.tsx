@@ -38,6 +38,14 @@ export default function Protected() {
             <p className="muted">
               Bạn đã đăng nhập. Trang này chỉ hiển thị khi phiên sẵn sàng.
             </p>
+            <div className="actions catalog-actions">
+              <Link href="/packages" className="btn-primary-link">
+                Khám phá Gói bài tập
+              </Link>
+              <Link href="/problems" className="btn-secondary-link">
+                Kho bài tập & Bộ lọc
+              </Link>
+            </div>
             <p>
               <Link href="/problems/sum-two">
                 Mở bài tập mẫu: Sum two numbers →
