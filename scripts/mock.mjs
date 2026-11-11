@@ -149,7 +149,7 @@ const submissionDemo =
       })
     : null;
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
     process.env.MOCK_ORIGIN || "http://localhost:3000",
@@ -283,6 +283,6 @@ createServer(async (req, res) => {
   );
 }).listen(Number(process.env.MOCK_PORT || 4010), "127.0.0.1", () =>
   console.log(
-    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}): http://localhost:${process.env.MOCK_PORT || 4010}`,
+    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}): http://localhost:${server.address().port}`,
   ),
 );

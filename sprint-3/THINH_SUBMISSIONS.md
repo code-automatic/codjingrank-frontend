@@ -62,3 +62,23 @@ Tests bao phủ concurrent click, retry/cooldown, UTF-8 limit, terminal verdicts
 Đạt FE/mocks không có nghĩa tích hợp live. Tài liệu backend ghi Gateway đã đăng ký Run/Submit; full v1 Auth/profile/history vẫn pending. Cần backend xác nhận UUID history/latest/detail + ownership, worker/Redis/Piston recovery, Accepted transaction/progress, 429/Retry-After, Gateway CORS/Origin/cookie rotation theo deployment. Không sửa repo backend.
 
 Chưa thực hiện browser E2E, bàn phím/mobile thực hoặc đo hiệu năng trên thiết bị; công cụ browser trước đó bị chặn xác minh URL. Server dev cùng checkout chỉ chạy một instance (Next.js báo lock nếu mở instance thứ hai); dùng server hiện có hoặc dừng đúng terminal trước khi đổi cấu hình. Báo cáo không đánh dấu toàn bộ Sprint 3 hay backend live đã done.
+
+## Kết nối mock và báo cáo kiểm tra tích hợp bổ sung
+
+Thêm `npm run mock:sprint3` để bật demo/editor bằng cùng một lệnh trên Windows/Linux; cổng/origin vẫn có thể cấu hình qua `MOCK_PORT`/`MOCK_ORIGIN`. Không đổi `.env.local` của người dùng hoặc base URL live. App local mặc định trỏ Gateway mock `http://localhost:4010`; terminal FE vẫn chạy `npm run dev`. Không tự bật bootstrap refresh thành công, vì fixture refresh không chứng minh cookie.
+
+`npm run test:integration` khởi chạy mock riêng cổng ngẫu nhiên, dùng fetch HTTP thật, session store/API client và submission controller của ứng dụng, sau đó tự đóng mock. Không dùng cổng 4010/3000 của người dùng. Test không chạy trình duyệt và không thay thế E2E/live.
+
+| Kịch bản                                                  | Kết quả                                                                   |
+| --------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Bootstrap refresh 401 → anonymous → login mock → template | PASS                                                                      |
+| Submit → Pending → Running → Accepted                     | PASS; history có một lượt, pass count 5/5, server mở cấp 2                |
+| Submit → Wrong Answer                                     | PASS; hiển thị verdict, không mở cấp 2                                    |
+| Submit → Compilation Error                                | PASS; hiển thị verdict, không mở cấp 2                                    |
+| Gửi tiếp trong cooldown                                   | PASS; HTTP 429 và đọc Retry-After                                         |
+| Kiểm tra latest sau verdict                               | PASS; giữ kết quả lượt đã nộp                                             |
+| History cá nhân                                           | PASS; đúng owner và không trả source trong list                           |
+| Gateway/credentials và CORS mock                          | PASS; chỉ `/api/v1`, credentials include, preflight 204 với origin cụ thể |
+| AI và Run                                                 | Không gọi trong Submit flow                                               |
+
+Lệnh kiểm tra toàn bộ sau cập nhật: `npm run lint`, `npm run typecheck`, `npm test` (173 tests / 13 files), `npm run build`; tất cả PASS. Lệnh chạy riêng HTTP integration: `npm run test:integration` (3/3 PASS). Đây là tích hợp FE với mock có điều khiển; không chứng minh PostgreSQL/Redis/Piston, JWT/ownership thật, cookie rotation hoặc deployment CORS.

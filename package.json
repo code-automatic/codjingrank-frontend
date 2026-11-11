@@ -9,7 +9,9 @@
     "lint": "eslint app features lib tests scripts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "mock": "node scripts/mock.mjs"
+    "mock": "node scripts/mock.mjs",
+    "mock:sprint3": "node scripts/mock-sprint3.mjs",
+    "test:integration": "vitest run tests/submission-integration.test.ts"
   },
   "dependencies": {
     "next": "^16.0.0",
