@@ -19,6 +19,7 @@ export function createSubmissionDemo(
     .submission;
   const records = [];
   const calls = new Map();
+  const aiCalls = new Map();
   let lastSubmitted = -Infinity;
   const allowed = [
     "Accepted",
@@ -134,10 +135,107 @@ export function createSubmissionDemo(
       if (records.length > 100) {
         const removed = records.pop();
         calls.delete(removed.id);
+        aiCalls.delete(removed.id);
       }
       return response({ submission: row }, 201);
     }
     if (req.method !== "GET") return null;
+    const aiMatch = /^\/api\/v1\/submissions\/([^/]+)\/ai-review$/.exec(path);
+    if (aiMatch) {
+      const row = records.find((item) => item.id === aiMatch[1]);
+      if (!row) return error(404, "SUBMISSION_NOT_FOUND");
+      if (row.status !== "Accepted") {
+        return error(409, "AI_REVIEW_NOT_ELIGIBLE");
+      }
+      const step = (aiCalls.get(row.id) ?? 0) + 1;
+      aiCalls.set(row.id, step);
+      if (step === 1) {
+        return response({ review: null });
+      }
+      const nowIso = new Date(now()).toISOString();
+      const baseReview = {
+        id: randomUUID(),
+        submissionId: row.id,
+        score: null,
+        summary: null,
+        dimensions: {},
+        findings: [],
+        errorMessage: null,
+        createdAt: row.createdAt,
+        startedAt: null,
+        completedAt: null,
+      };
+      if (step === 2) {
+        return response({ review: { ...baseReview, status: "queued" } });
+      }
+      if (step === 3) {
+        return response({
+          review: { ...baseReview, status: "running", startedAt: nowIso },
+        });
+      }
+      if (process.env.MOCK_AI_REVIEW_STATUS === "failed") {
+        return response({
+          review: {
+            ...baseReview,
+            status: "failed",
+            errorMessage:
+              "Dịch vụ AI tạm thời quá tải (demo). Kết quả Accepted của bạn không thay đổi.",
+            startedAt: nowIso,
+            completedAt: nowIso,
+          },
+        });
+      }
+      const totalLines = Math.max(
+        1,
+        String(row.code || "").split(/\r?\n/).length,
+      );
+      return response({
+        review: {
+          ...baseReview,
+          status: "completed",
+          score: 88.5,
+          summary:
+            "Lời giải đạt yêu cầu đúng đắn và dễ đọc; có thể tách rõ bước đọc dữ liệu đầu vào.",
+          dimensions: {
+            readability: 86,
+            maintainability: 91,
+            clarity: 88,
+          },
+          findings: [
+            {
+              id: randomUUID(),
+              severity: "info",
+              lineStart: 1,
+              lineEnd: Math.min(2, totalLines),
+              title: "Làm rõ tên biến và kiểm tra biên",
+              explanation:
+                "Đặt tên biến mang ngữ nghĩa bài toán giúp người đọc hiểu nhanh logic xử lý.",
+              suggestion:
+                "Bổ sung chú thích ngắn hoặc tách hàm nhỏ nếu bài toán mở rộng thêm điều kiện.",
+              displayOrder: 1,
+            },
+            ...(totalLines >= 2
+              ? [
+                  {
+                    id: randomUUID(),
+                    severity: "warning",
+                    lineStart: totalLines >= 3 ? 2 : 1,
+                    lineEnd: totalLines >= 3 ? 2 : 1,
+                    title: "Kiểm tra định dạng xuất kết quả",
+                    explanation:
+                      "Đảm bảo luồng chuẩn stdout khớp chặt với yêu cầu bài toán trên đầu vào lớn.",
+                    suggestion:
+                      "Tránh cấp phát trung gian không cần thiết trong vòng lặp chính.",
+                    displayOrder: 2,
+                  },
+                ]
+              : []),
+          ],
+          startedAt: nowIso,
+          completedAt: nowIso,
+        },
+      });
+    }
     const match = /^\/api\/v1\/submissions\/([^/]+)$/.exec(path);
     if (match) {
       const row = records.find((item) => item.id === match[1]);
