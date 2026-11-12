@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import "./workspace-prototype.css";
 import { RunPanel } from "@/features/problem-run/RunPanel";
 import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
 import { Statement } from "@/features/problems/Statement";
@@ -82,7 +83,7 @@ function Samples({ samples }: { samples: SampleModel[] }) {
 
 function WorkspaceLoading() {
   return (
-    <main className="workspace-main">
+    <main className="workspace-main workspace-prototype">
       <p className="status-line" role="status">
         <span className="spinner" aria-hidden="true" />
         Đang tải bài tập…
@@ -118,7 +119,7 @@ function WorkspaceError({
           : errorText(error);
 
   return (
-    <main className="workspace-main">
+    <main className="workspace-main workspace-prototype">
       <div className="panel error-panel" role="alert">
         <p className="muted">
           <Link href="/protected">← Tài khoản</Link>
@@ -170,18 +171,32 @@ function WorkspaceReady({
     snapshot.saveState === "error" || snapshot.saveState === "unavailable";
 
   return (
-    <main className="workspace-main">
+    <main className="workspace-main workspace-prototype">
+      <nav className="workspace-topbar" aria-label="Điều hướng luyện tập">
+        <Link className="workspace-brand" href="/problems">
+          <span aria-hidden="true">c.</span>codjingrank
+        </Link>
+        <div>
+          <Link href="/packages">Gói bài tập</Link>
+          <Link href="/problems">Kho bài</Link>
+          <Link href="/protected">Tài khoản</Link>
+        </div>
+      </nav>
       <p className="breadcrumb muted">
-        <Link href="/protected">Tài khoản</Link>
+        <Link href="/problems">Kho bài tập</Link>
         <span aria-hidden="true"> / </span>
-        {problem.problem.packageSlug}
+        <Link href={`/packages/${problem.problem.packageSlug}`}>
+          {problem.problem.packageSlug}
+        </Link>
       </p>
 
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">
+          <span
+            className={`workspace-difficulty workspace-difficulty--${problem.problem.difficulty}`}
+          >
             {DIFFICULTY_LABEL[problem.problem.difficulty]}
-          </p>
+          </span>
           <h1>{problem.problem.title}</h1>
         </div>
         <ul className="badges" aria-label="Thông tin bài tập">
@@ -214,102 +229,104 @@ function WorkspaceReady({
           <Samples samples={problem.sampleTestCases} />
         </section>
 
-        <section
-          className="panel editor-panel"
-          aria-labelledby="editor-heading"
-        >
-          <div className="editor-heading-row">
-            <h2 id="editor-heading">Code</h2>
-            <span className="file-name" title="Tên tệp nộp bài">
-              {snapshot.fileName || "Chưa có tệp"}
-            </span>
-          </div>
-
-          <div className="editor-toolbar">
-            <div className="field">
-              <label htmlFor="language-select">Ngôn ngữ</label>
-              <select
-                id="language-select"
-                value={snapshot.selectedLanguageId ?? ""}
-                onChange={(event) => onSelectLanguage(event.target.value)}
-              >
-                {snapshot.languages.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.displayLabel}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              type="button"
-              className="button-secondary"
-              onClick={onResetStarter}
-              disabled={!canEdit || snapshot.code === snapshot.starterCode}
-              title="Xoá nháp và trả về đúng mã khởi tạo của bài"
-            >
-              Đặt lại mã khởi tạo
-            </button>
-          </div>
-
-          {snapshot.draftRestored && (
-            <p className="notice" role="status">
-              Đã khôi phục bản nháp đã lưu cho {language.displayLabel}.
-            </p>
-          )}
-
-          <div className="editor-stage">
-            <CodeEditor
-              value={snapshot.code}
-              onChange={onChangeCode}
-              language={editorLanguage}
-              label={`Mã nguồn ${language.name} cho bài ${problem.problem.title}`}
-              describedBy="editor-hint editor-save"
-              disabled={!canEdit}
-            />
-            {loadingTemplate && (
-              <div className="editor-overlay" role="status">
-                <span className="spinner" aria-hidden="true" />
-                Đang tải mã khởi tạo…
-              </div>
-            )}
-            {snapshot.templatePhase === "error" && (
-              <div
-                className="editor-overlay editor-overlay--error"
-                role="alert"
-              >
-                <p>Không tải được mã khởi tạo.</p>
-                <p className="muted">{errorText(snapshot.templateError)}</p>
-                <button type="button" onClick={onRetryTemplate}>
-                  Thử lại
-                </button>
-              </div>
-            )}
-          </div>
-
-          <p
-            id="editor-save"
-            className={saveError ? "error editor-save" : "muted editor-save"}
-            aria-live="polite"
+        <div className="workspace-coding-column">
+          <section
+            className="panel editor-panel"
+            aria-labelledby="editor-heading"
           >
-            {saveMessage(snapshot.saveState, snapshot.savedAt)}
-          </p>
+            <div className="editor-heading-row">
+              <h2 id="editor-heading">Code</h2>
+              <span className="file-name" title="Tên tệp nộp bài">
+                {snapshot.fileName || "Chưa có tệp"}
+              </span>
+            </div>
 
-          <div className="editor-meta">
-            <p id="editor-hint" className="muted">
-              Tab chèn 4 dấu cách; Esc rồi Tab để rời editor. Nháp lưu riêng
-              theo tài khoản, bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
+            <div className="editor-toolbar">
+              <div className="field">
+                <label htmlFor="language-select">Ngôn ngữ</label>
+                <select
+                  id="language-select"
+                  value={snapshot.selectedLanguageId ?? ""}
+                  onChange={(event) => onSelectLanguage(event.target.value)}
+                >
+                  {snapshot.languages.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.displayLabel}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={onResetStarter}
+                disabled={!canEdit || snapshot.code === snapshot.starterCode}
+                title="Xoá nháp và trả về đúng mã khởi tạo của bài"
+              >
+                Đặt lại mã khởi tạo
+              </button>
+            </div>
+
+            {snapshot.draftRestored && (
+              <p className="notice" role="status">
+                Đã khôi phục bản nháp đã lưu cho {language.displayLabel}.
+              </p>
+            )}
+
+            <div className="editor-stage">
+              <CodeEditor
+                value={snapshot.code}
+                onChange={onChangeCode}
+                language={editorLanguage}
+                label={`Mã nguồn ${language.name} cho bài ${problem.problem.title}`}
+                describedBy="editor-hint editor-save"
+                disabled={!canEdit}
+              />
+              {loadingTemplate && (
+                <div className="editor-overlay" role="status">
+                  <span className="spinner" aria-hidden="true" />
+                  Đang tải mã khởi tạo…
+                </div>
+              )}
+              {snapshot.templatePhase === "error" && (
+                <div
+                  className="editor-overlay editor-overlay--error"
+                  role="alert"
+                >
+                  <p>Không tải được mã khởi tạo.</p>
+                  <p className="muted">{errorText(snapshot.templateError)}</p>
+                  <button type="button" onClick={onRetryTemplate}>
+                    Thử lại
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <p
+              id="editor-save"
+              className={saveError ? "error editor-save" : "muted editor-save"}
+              aria-live="polite"
+            >
+              {saveMessage(snapshot.saveState, snapshot.savedAt)}
             </p>
-            <p className={tooLarge ? "error" : "muted"}>
-              {bytes.toLocaleString("vi-VN")} byte
-              {tooLarge
-                ? ` — vượt giới hạn ${MAX_EXECUTE_CODE_BYTES.toLocaleString("vi-VN")} byte; Run/Submit sẽ từ chối.`
-                : ""}
-            </p>
-          </div>
-        </section>
+
+            <div className="editor-meta">
+              <p id="editor-hint" className="muted">
+                Tab chèn 4 dấu cách; Esc rồi Tab để rời editor. Nháp lưu riêng
+                theo tài khoản, bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
+              </p>
+              <p className={tooLarge ? "error" : "muted"}>
+                {bytes.toLocaleString("vi-VN")} byte
+                {tooLarge
+                  ? ` — vượt giới hạn ${MAX_EXECUTE_CODE_BYTES.toLocaleString("vi-VN")} byte; Run/Submit sẽ từ chối.`
+                  : ""}
+              </p>
+            </div>
+          </section>
+          <RunPanel key={`run:${problem.problem.id}`} workspace={snapshot} />
+          <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
+        </div>
       </div>
-      <RunPanel key={`run:${problem.problem.id}`} workspace={snapshot} />
-      <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
     </main>
   );
 }
