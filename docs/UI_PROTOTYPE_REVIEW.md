@@ -1,31 +1,40 @@
-# Review UI login và giải bài
+# Review UI v2: auth và giải bài
 
-Branch: `feature/ui-design-prototype`. Lưu trong repo VSCode tại `D:/Subject-riki-hk2/subject-it-mon_duan_01/codjingrank`. Prototype chờ review; chưa merge hoặc push.
+Ngày 13/11/2026. Branch: feature/ui-design-prototype. Repo VSCode: D:/Subject-riki-hk2/subject-it-mon_duan_01/codjingrank. Bản prototype để team review; chưa push/merge.
 
-| Phần | Trước | Sau |
+## Phạm vi và thay đổi
+
+| Phần | Bản trước | Bản hiện tại |
 | --- | --- | --- |
-| Login | Form tài khoản dùng style chung | Split layout desktop, form mobile, hiện/ẩn mật khẩu, focus rõ |
-| Giải bài | Panel chức năng theo layout nền | Đề trái, editor và kết quả phải, mobile một cột |
-| Sprint 3 | Editor, draft, Run, Submit, history, progress | Giữ chức năng, tổ chức lại vị trí và style |
+| Login/register | Login preview tĩnh, register giao diện nền | Split kiểu HackerRank, form trắng, code stream trên nền tối |
+| Hoạt ảnh | Code tĩnh | CSS transform 32s linear liên tục, pause/resume, tắt theo reduced-motion và dừng khi tab ẩn |
+| Workspace | Trang dài, editor tối, kết quả xếp bên dưới | Pane như LeetCode: đề trái, editor phải, console dưới, Run/Submit trên topbar |
+| Kết quả | Panel trên trang | Tab Run/Bài nộp luôn mounted để giữ controller và polling |
+| Resize | Cố định | Kéo cột đề hoặc dùng ArrowLeft/ArrowRight/Home/End, giới hạn 30–65% |
 
-## Kết quả thực tế
+Giữ Auth/session/API, draft, reset, ngôn ngữ, Run sample, Submit/polling/history và progress Sprint 3. Không sửa backend, không thêm dependency hoặc UI catalog/account. Thương hiệu và dữ liệu vẫn là Codjingrank.
 
-- `npm run lint`: pass.
-- `npm run typecheck`: pass.
-- `npm test`: 199/199, 14 file.
-- `npm run test:integration`: 28/28, 2 file; là tập con được chạy riêng, không cộng thành 227 test riêng biệt.
-- `npm run build`: pass Next.js 16.4.5.
-- Impeccable detector trên bốn file UI: `[]`.
-- Chrome headless với profile mới, mock tại 4010 và production frontend tại 3000: đăng nhập, hiện/ẩn mật khẩu, mở bài mẫu, Run Accepted, Submit polling Accepted, lưu nháp và reset, đổi C++, Esc rồi Tab rời editor: pass.
-- Đo document overflow ở 320/390/768/1024/1440px cho cả hai trang: không tràn ngang. Kiểm tra ảnh desktop/mobile; không có pageerror JavaScript.
-- Lượt browser đầu timeout vì selector tìm Accepted thay vì nhãn thật Đạt (Accepted); đã sửa selector và chạy lại đạt. Không thay đổi hành vi ứng dụng để làm test đạt.
-- Cảnh báo Vite về configLoader native/ESM trong vitest.config.ts vẫn có, không làm test fail.
+## Kiểm tra thực tế
 
-Bằng chứng local: `C:/Users/Administrator/.codex/visualizations/2026/11/08/01a1bc06-765d-7b40-a856-8a1a58c05558/ui-prototype/` gồm ảnh và `browser-results.json`. Kịch bản browser tạm nằm ở `%TEMP%/codjingrank-ui-flows.cjs`; không thêm dependency Playwright vào dự án.
+- npm run lint: pass.
+- npm run typecheck: pass.
+- npm test: 199/199, 14 file.
+- npm run test:integration: 28/28, 2 file; là tập con chạy riêng, không cộng thành 227 test khác nhau.
+- npm run build: pass Next.js 16.4.5 với .env.local.
+- Impeccable detector trên 8 file UI: [].
+- Chrome headless với profile mới và mock: 37 xác nhận trong hai kịch bản, chạy lại trên production đều pass. Đây không phải 37 test case độc lập hay nghiệm thu backend live.
 
-## Tự chạy để team review
+Các xác nhận browser: code thực sự chuyển động, pause đóng băng, reduced-motion tắt animation; register validation và hiện/ẩn password; register/login mock; không tràn ngang cả ba route ở 320/390/768/1024/1440; resize bằng pointer và bàn phím; Run Accepted; Submit Accepted và polling tiếp tục khi đổi tab; điều hướng tab bằng mũi tên; lưu/reset draft; đổi C++; fallback trên 20.000 ký tự vẫn đọc được; lỗi HTTP 503 nhận focus và login retry thành công; không có pageerror JavaScript.
 
-Mở repo ổ D trong VSCode. Nếu cần cài theo lockfile: `npm ci`. `.env.local` dùng `NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010` (không commit).
+Ảnh và JSON: C:/Users/Administrator/.codex/visualizations/2026/11/08/01a1bc06-765d-7b40-a856-8a1a58c05558/ui-v2/. Kịch bản local tạm: %TEMP%/codjingrank-ui-v2.cjs và codjingrank-ui-extra.cjs, sử dụng Playwright có sẵn trong runtime, không thêm package vào repo.
+
+Lượt đầu chạy FE 3001 không vào form vì mock cho origin 3000. Đã dùng đúng 3000/4010, đặt Gateway rõ ràng và chạy lại pass; không tắt CORS/chính sách an toàn. Cảnh báo Vite configLoader native/ESM có sẵn vẫn hiện, không làm test fail.
+
+Review hình inline trong phiên, không có reviewer độc lập. Disposition: ship trong phạm vi prototype để team review. Đã sửa focus pointer màu cam, màu fallback editor sáng và input mobile 16px.
+
+## Chạy để tự review
+
+Mở repo ổ D trong VSCode. Khi cần cài dependency theo lockfile: npm ci. File .env.local có NEXT_PUBLIC_GATEWAY_URL=http://localhost:4010; chỉ là public base URL và được Git bỏ qua.
 
 Terminal 1:
 
@@ -39,14 +48,12 @@ Terminal 2:
 npm run dev
 ```
 
-Mở http://localhost:3000/login. Với mock demo dùng `learner@example.com` / `Coding2026`. Sau login, bấm “Mở bài tập mẫu: Sum two numbers” để đến workspace. Không refresh trang giữa luồng: access token chỉ ở memory và mock mặc định refresh trả 401. Đây là giới hạn mock, không phải bằng chứng persistence live. Nếu cổng đang có server, dùng server hiện tại hoặc dừng đúng terminal đang chạy trước khi mở lại.
+Mở http://localhost:3000/login hoặc /register. Với mock demo có thể dùng learner@example.com / Coding2026. Sau login, bấm Mở bài tập mẫu để vào /problems/sum-two. Trong phiên bàn giao đã có mock và production chạy; dùng các server đó hoặc dừng đúng terminal trước khi mở lại để tránh EADDRINUSE. Muốn dùng production: npm run build rồi npm start.
 
-Thử nhập code, đổi Python/C++/Java, đặt lại starter, chạy mẫu, nộp bài, xem lịch sử/tiến độ. Mock trả kết quả mô phỏng; không biên dịch/chấm code thật. Chờ cooldown trước khi nộp tiếp. Dùng Tab/Shift+Tab; trong editor Esc rồi Tab để rời. Thu nhỏ cửa sổ để review mobile.
+Khi đổi cổng FE phải đặt MOCK_ORIGIN tương ứng; không khởi động hai process cùng cổng. Không refresh trang giữa luồng demo: access token chỉ ở memory, mock mặc định refresh 401. Mock không biên dịch/chấm code thật và không chứng minh persistence/rotation. Có cooldown khi nộp liên tiếp.
 
-## Giới hạn bằng chứng
+## Giới hạn
 
-Chưa kiểm tra backend live, thiết bị điện thoại thật, screen reader hoặc toàn bộ tổ hợp browser. Không gọi đây là nghiệm thu toàn sản phẩm hay thiết kế chính thức. Chưa thiết kế tiếp register/catalog/profile. Backend còn cần Gateway /api/v1, UUID DTO, auth/cookie rotation, Set-Cookie, CORS/Origin, Path/SameSite/Secure và Run/Submit/Judge theo contract.
+HackerRank trả Access Denied, LeetCode yêu cầu xác minh trong headless; chưa có bằng chứng đối chiếu từng pixel. Chưa nghiệm thu backend live, điện thoại thật hay screen reader. Backend còn cần Gateway /api/v1, UUID DTO, auth/cookie rotation, Set-Cookie, CORS/Origin, Path/SameSite/Secure và Run/Submit/Judge theo contract.
 
-## Finish review nội bộ
-
-Review inline trên ảnh vì không có công cụ reviewer độc lập trong phiên. Disposition: ship cho prototype để team review, không phải phê duyệt thiết kế chính thức. Đã sửa logo login lệch và thụt dòng minh họa. Đã nhìn ảnh mới desktop/mobile và đối chiếu các tương tác; không còn lỗi vật chất trong phạm vi prototype. Giữ bố cục và toàn bộ logic Sprint 3 khi tiếp tục chỉnh giao diện.
+Không commit agents.md/AGENTS.md, .env.local, t hay file local ngoài phạm vi. Không có token trong localStorage/sessionStorage do thay đổi UI này.

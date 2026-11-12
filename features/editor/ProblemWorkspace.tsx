@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useState, type CSSProperties } from "react";
+import { Icon } from "@/lib/ui/Icon";
 import "./workspace-prototype.css";
 import { RunPanel } from "@/features/problem-run/RunPanel";
 import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
@@ -63,7 +65,7 @@ function Samples({ samples }: { samples: SampleModel[] }) {
     <section className="samples" aria-labelledby="samples-heading">
       <h2 id="samples-heading">Ví dụ mẫu</h2>
       {samples.map((sample) => (
-        <details className="sample" key={sample.id}>
+        <details className="sample" key={sample.id} open>
           <summary>Ví dụ {sample.displayOrder}</summary>
           <div className="sample-grid">
             <div>
@@ -152,6 +154,13 @@ function WorkspaceReady({
   onResetStarter: () => void;
   onRetryTemplate: () => void;
 }) {
+  const [resultTab, setResultTab] = useState<"run" | "submission">("run");
+  const [runActionHost, setRunActionHost] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const [submitActionHost, setSubmitActionHost] =
+    useState<HTMLDivElement | null>(null);
+  const [statementWidth, setStatementWidth] = useState(43);
   const problem = snapshot.problem;
   if (!problem) return null;
 
@@ -173,77 +182,181 @@ function WorkspaceReady({
   return (
     <main className="workspace-main workspace-prototype">
       <nav className="workspace-topbar" aria-label="Điều hướng luyện tập">
-        <Link className="workspace-brand" href="/problems">
-          <span aria-hidden="true">c.</span>codjingrank
-        </Link>
-        <div>
+        <div className="workspace-navigation">
+          <Link
+            className="workspace-brand"
+            href="/problems"
+            aria-label="Codjingrank · Kho bài tập"
+          >
+            <span aria-hidden="true">c.</span>
+          </Link>
+          <Link className="workspace-catalog-link" href="/problems">
+            <Icon name="file" />
+            Kho bài tập
+          </Link>
+          <span className="workspace-current-problem">
+            {problem.problem.title}
+          </span>
+        </div>
+        <div className="workspace-primary-actions">
+          <div ref={setRunActionHost} />
+          <div ref={setSubmitActionHost} />
+        </div>
+        <div className="workspace-account-links">
           <Link href="/packages">Gói bài tập</Link>
-          <Link href="/problems">Kho bài</Link>
           <Link href="/protected">Tài khoản</Link>
         </div>
       </nav>
-      <p className="breadcrumb muted">
-        <Link href="/problems">Kho bài tập</Link>
-        <span aria-hidden="true"> / </span>
-        <Link href={`/packages/${problem.problem.packageSlug}`}>
-          {problem.problem.packageSlug}
-        </Link>
-      </p>
-
-      <header className="workspace-header">
-        <div>
-          <span
-            className={`workspace-difficulty workspace-difficulty--${problem.problem.difficulty}`}
-          >
-            {DIFFICULTY_LABEL[problem.problem.difficulty]}
-          </span>
-          <h1>{problem.problem.title}</h1>
-        </div>
-        <ul className="badges" aria-label="Thông tin bài tập">
-          <li>{problem.timeLimitMs} ms</li>
-          <li>{problem.memoryLimitMb} MB</li>
-          <li>Đầu ra tối đa: {problem.outputLimitBytes} byte</li>
-          <li>Accepted: {problem.problem.formattedAcceptanceRate}</li>
-          <li>
-            {problem.executionMode === "function"
-              ? `Hàm ${problem.functionName ?? "—"}`
-              : "stdin → stdout"}
-          </li>
-          {problem.problem.solved && <li className="badge-solved">Đã giải</li>}
-        </ul>
-      </header>
-
-      <div className="workspace-grid">
-        <section className="panel" aria-labelledby="statement-heading">
-          <h2 id="statement-heading">Đề bài</h2>
-          {problem.problem.tags.length > 0 && (
-            <ul className="tags" aria-label="Thẻ">
-              {problem.problem.tags.map((tag) => (
-                <li key={tag.id}>{tag.name}</li>
-              ))}
-            </ul>
-          )}
-          <Statement>
-            {problem.statementMd || "Đề bài chưa có nội dung."}
-          </Statement>
-          <Samples samples={problem.sampleTestCases} />
+      <div
+        className="workspace-grid workspace-shell"
+        style={{ "--statement-width": `${statementWidth}%` } as CSSProperties}
+      >
+        <section
+          className="panel workspace-statement-panel"
+          id="statement-pane"
+          aria-labelledby="statement-heading"
+        >
+          <div className="workspace-pane-bar">
+            <h2 id="statement-heading">
+              <Icon name="file" />
+              Đề bài
+            </h2>
+            <Link href={`/packages/${problem.problem.packageSlug}`}>
+              {problem.problem.packageSlug}
+            </Link>
+          </div>
+          <div className="workspace-statement-scroll">
+            <header className="workspace-header">
+              <h1>{problem.problem.title}</h1>
+              <div className="workspace-problem-meta">
+                <span
+                  className={`workspace-difficulty workspace-difficulty--${problem.problem.difficulty}`}
+                >
+                  {DIFFICULTY_LABEL[problem.problem.difficulty]}
+                </span>
+                <span>Accepted: {problem.problem.formattedAcceptanceRate}</span>
+                {problem.problem.solved && (
+                  <span className="workspace-solved">
+                    <Icon name="check" />
+                    Đã giải
+                  </span>
+                )}
+              </div>
+              {problem.problem.tags.length > 0 && (
+                <ul className="tags" aria-label="Thẻ">
+                  {problem.problem.tags.map((tag) => (
+                    <li key={tag.id}>{tag.name}</li>
+                  ))}
+                </ul>
+              )}
+            </header>
+            <Statement>
+              {problem.statementMd || "Đề bài chưa có nội dung."}
+            </Statement>
+            <Samples samples={problem.sampleTestCases} />
+            <div className="workspace-constraints">
+              <h2>Giới hạn thực thi</h2>
+              <dl>
+                <div>
+                  <dt>Thời gian</dt>
+                  <dd>{problem.timeLimitMs} ms</dd>
+                </div>
+                <div>
+                  <dt>Bộ nhớ</dt>
+                  <dd>{problem.memoryLimitMb} MB</dd>
+                </div>
+                <div>
+                  <dt>Đầu ra tối đa</dt>
+                  <dd>{problem.outputLimitBytes} byte</dd>
+                </div>
+                <div>
+                  <dt>Chế độ</dt>
+                  <dd>
+                    {problem.executionMode === "function"
+                      ? `Hàm ${problem.functionName ?? "—"}`
+                      : "stdin → stdout"}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
         </section>
-
+        <div
+          className="workspace-resizer"
+          role="separator"
+          aria-label="Độ rộng đề bài"
+          aria-orientation="vertical"
+          aria-controls="statement-pane"
+          aria-valuemin={30}
+          aria-valuemax={65}
+          aria-valuenow={statementWidth}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            const next =
+              event.key === "ArrowLeft"
+                ? statementWidth - 2
+                : event.key === "ArrowRight"
+                  ? statementWidth + 2
+                  : event.key === "Home"
+                    ? 30
+                    : event.key === "End"
+                      ? 65
+                      : null;
+            if (next !== null) {
+              event.preventDefault();
+              setStatementWidth(Math.max(30, Math.min(65, next)));
+            }
+          }}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            event.currentTarget.setPointerCapture(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+            const bounds =
+              event.currentTarget.parentElement!.getBoundingClientRect();
+            setStatementWidth(
+              Math.max(
+                30,
+                Math.min(
+                  65,
+                  Math.round(
+                    ((event.clientX - bounds.left) / bounds.width) * 100,
+                  ),
+                ),
+              ),
+            );
+          }}
+          onPointerUp={(event) => {
+            if (event.currentTarget.hasPointerCapture(event.pointerId))
+              event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+          onPointerCancel={(event) => {
+            if (event.currentTarget.hasPointerCapture(event.pointerId))
+              event.currentTarget.releasePointerCapture(event.pointerId);
+          }}
+        >
+          <span />
+        </div>
         <div className="workspace-coding-column">
           <section
             className="panel editor-panel"
             aria-labelledby="editor-heading"
           >
-            <div className="editor-heading-row">
-              <h2 id="editor-heading">Code</h2>
+            <div className="workspace-pane-bar">
+              <h2 id="editor-heading">
+                <Icon name="code" />
+                Code
+              </h2>
               <span className="file-name" title="Tên tệp nộp bài">
                 {snapshot.fileName || "Chưa có tệp"}
               </span>
             </div>
-
             <div className="editor-toolbar">
               <div className="field">
-                <label htmlFor="language-select">Ngôn ngữ</label>
+                <label htmlFor="language-select" className="sr-only">
+                  Ngôn ngữ
+                </label>
                 <select
                   id="language-select"
                   value={snapshot.selectedLanguageId ?? ""}
@@ -258,21 +371,20 @@ function WorkspaceReady({
               </div>
               <button
                 type="button"
-                className="button-secondary"
+                className="button-secondary workspace-reset"
                 onClick={onResetStarter}
                 disabled={!canEdit || snapshot.code === snapshot.starterCode}
                 title="Xoá nháp và trả về đúng mã khởi tạo của bài"
               >
+                <Icon name="reset" />
                 Đặt lại mã khởi tạo
               </button>
             </div>
-
             {snapshot.draftRestored && (
               <p className="notice" role="status">
                 Đã khôi phục bản nháp đã lưu cho {language.displayLabel}.
               </p>
             )}
-
             <div className="editor-stage">
               <CodeEditor
                 value={snapshot.code}
@@ -301,30 +413,98 @@ function WorkspaceReady({
                 </div>
               )}
             </div>
-
-            <p
-              id="editor-save"
-              className={saveError ? "error editor-save" : "muted editor-save"}
-              aria-live="polite"
-            >
-              {saveMessage(snapshot.saveState, snapshot.savedAt)}
-            </p>
-
-            <div className="editor-meta">
-              <p id="editor-hint" className="muted">
-                Tab chèn 4 dấu cách; Esc rồi Tab để rời editor. Nháp lưu riêng
-                theo tài khoản, bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
+            <div className="workspace-editor-footer">
+              <p
+                id="editor-save"
+                className={
+                  saveError ? "error editor-save" : "muted editor-save"
+                }
+                aria-live="polite"
+              >
+                {saveMessage(snapshot.saveState, snapshot.savedAt)}
               </p>
-              <p className={tooLarge ? "error" : "muted"}>
+              <span className={tooLarge ? "error" : "muted"}>
                 {bytes.toLocaleString("vi-VN")} byte
-                {tooLarge
-                  ? ` — vượt giới hạn ${MAX_EXECUTE_CODE_BYTES.toLocaleString("vi-VN")} byte; Run/Submit sẽ từ chối.`
-                  : ""}
-              </p>
+                {tooLarge ? " · Vượt giới hạn" : ""}
+              </span>
+            </div>
+            <p id="editor-hint" className="workspace-editor-hint">
+              Tab: 4 dấu cách · Esc rồi Tab: rời editor · Nháp theo tài khoản,
+              bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
+            </p>
+          </section>
+          <section className="workspace-console" aria-label="Kết quả thực thi">
+            <div
+              className="workspace-result-tabs"
+              role="tablist"
+              aria-label="Kết quả"
+            >
+              {(["run", "submission"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  role="tab"
+                  id={`result-tab-${tab}`}
+                  aria-controls={`result-panel-${tab}`}
+                  aria-selected={resultTab === tab}
+                  tabIndex={resultTab === tab ? 0 : -1}
+                  onClick={() => setResultTab(tab)}
+                  onKeyDown={(event) => {
+                    if (
+                      ["ArrowLeft", "ArrowRight", "Home", "End"].includes(
+                        event.key,
+                      )
+                    ) {
+                      event.preventDefault();
+                      const next =
+                        event.key === "Home"
+                          ? "run"
+                          : event.key === "End"
+                            ? "submission"
+                            : tab === "run"
+                              ? "submission"
+                              : "run";
+                      setResultTab(next);
+                      document.getElementById(`result-tab-${next}`)?.focus();
+                    }
+                  }}
+                >
+                  <Icon name={tab === "run" ? "check" : "history"} />
+                  {tab === "run" ? "Kết quả chạy" : "Bài nộp"}
+                </button>
+              ))}
+            </div>
+            <div
+              className="workspace-console-panel"
+              id="result-panel-run"
+              role="tabpanel"
+              aria-labelledby="result-tab-run"
+              hidden={resultTab !== "run"}
+              tabIndex={0}
+            >
+              <RunPanel
+                key={`run:${problem.problem.id}`}
+                workspace={snapshot}
+                actionHost={runActionHost}
+                onRunStart={() => setResultTab("run")}
+              />
+            </div>
+            <div
+              className="workspace-console-panel"
+              id="result-panel-submission"
+              role="tabpanel"
+              aria-labelledby="result-tab-submission"
+              hidden={resultTab !== "submission"}
+              tabIndex={0}
+            >
+              <SubmissionPanel
+                key={problem.problem.id}
+                workspace={snapshot}
+                actionHost={submitActionHost}
+                onSubmitStart={() => setResultTab("submission")}
+              />
             </div>
           </section>
-          <RunPanel key={`run:${problem.problem.id}`} workspace={snapshot} />
-          <SubmissionPanel key={problem.problem.id} workspace={snapshot} />
         </div>
       </div>
     </main>

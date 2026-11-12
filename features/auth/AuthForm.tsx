@@ -6,6 +6,7 @@ import { errorText } from "@/lib/api/client";
 import { useSession } from "./session";
 import { SessionNotice } from "./SessionNotice";
 import "./login-prototype.css";
+import { AuthCodeStream } from "./AuthCodeStream";
 import { validateRegistration } from "./validation";
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -55,126 +56,116 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     }
   }
   return (
-    <main className={mode === "login" ? "login-prototype" : undefined}>
-      {mode === "login" && (
-        <aside className="login-story" aria-label="Codjingrank">
-          <Link href="/" className="prototype-brand">
-            <span aria-hidden="true" className="prototype-mark">
-              c<span>.</span>
-            </span>
-            codjingrank
-          </Link>
-          <div className="login-story-content">
-            <h2>
-              Mỗi bài giải.
-              <br />
-              Một bước tiến.
-            </h2>
+    <main className={`login-prototype auth-page auth-page--${mode}`}>
+      <aside className="auth-story" aria-label="Codjingrank">
+        <Link href="/" className="auth-brand">
+          <span aria-hidden="true">c.</span>codjingrank
+        </Link>
+        <div className="auth-story-body">
+          <h2>
+            Ý tưởng của bạn.
+            <br />
+            <span>Lời giải tiếp theo.</span>
+          </h2>
+          <p>Viết code. Chạy thử. Tìm ra cách giải của riêng bạn.</p>
+          <AuthCodeStream />
+        </div>
+        <p className="auth-story-footer">
+          Một không gian để tập trung vào điều bạn đang xây dựng.
+        </p>
+      </aside>
+      <section className="auth-form-side" aria-labelledby="auth-title">
+        <div className="auth-form-content">
+          <nav className="auth-tabs" aria-label="Tài khoản">
+            <Link
+              href="/login"
+              aria-current={mode === "login" ? "page" : undefined}
+            >
+              Đăng nhập
+            </Link>
+            <Link
+              href="/register"
+              aria-current={mode === "register" ? "page" : undefined}
+            >
+              Đăng ký
+            </Link>
+          </nav>
+          <header className="auth-heading">
+            <h1 id="auth-title">
+              {mode === "login"
+                ? "Chào mừng trở lại."
+                : "Bắt đầu hành trình của bạn."}
+            </h1>
             <p>
-              Đọc đề, thử ý tưởng và tìm lời giải của bạn. Tiếp tục hành trình
-              lập trình ngay từ nơi bạn đã dừng lại.
+              {mode === "login"
+                ? "Đăng nhập để tiếp tục luyện tập cùng Codjingrank."
+                : "Tạo tài khoản và bắt đầu với bài giải đầu tiên."}
             </p>
-            <div className="login-code-preview" aria-hidden="true">
-              <div className="preview-file">
-                sum_two.py <span>Python 3</span>
-              </div>
-              <pre>
-                <span className="preview-comment">
-                  # Bắt đầu từ những điều đơn giản
-                </span>
-                {"\n"}
-                <span className="preview-keyword">def</span> sum_two(a, b):
-                {"\n    "}<span className="preview-keyword">return</span> a + b
-              </pre>
-              <div className="preview-output">
-                <span>
-                  Đầu vào <strong>2 3</strong>
-                </span>
-                <span>
-                  Đầu ra <strong>5</strong>
-                </span>
-              </div>
-            </div>
+          </header>
+          <div className="auth-session">
+            <SessionNotice />
           </div>
-          <p className="login-story-footer">
-            Không gian để tập trung. Công cụ để tiến bộ.
-          </p>
-        </aside>
-      )}
-      <section className="card">
-        {mode === "register" && (
-          <p className="muted">CODJINGRANK / TÀI KHOẢN</p>
-        )}
-        {mode === "login" && (
-          <Link href="/" className="login-mobile-brand">
-            codjingrank<span>.</span>
-          </Link>
-        )}
-        <h1>
-          {mode === "login" ? "Chào mừng trở lại" : "Tạo tài khoản học tập"}
-        </h1>
-        {mode === "login" && (
-          <p className="login-intro">
-            Đăng nhập để tiếp tục luyện tập cùng Codjingrank.
-          </p>
-        )}
-        <SessionNotice />
-        {status === "anonymous" && !loggingOut && (
-          <>
-            <form onSubmit={submit}>
-              <fieldset disabled={busy}>
-                <legend className="sr-only">Thông tin tài khoản</legend>
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  maxLength={mode === "register" ? 254 : undefined}
-                />
-                {mode === "register" && (
-                  <>
-                    <label htmlFor="username">Tên người dùng</label>
-                    <input
-                      id="username"
-                      name="username"
-                      required
-                      autoComplete="username"
-                      pattern="[A-Za-z0-9_]{3,50}"
-                      aria-describedby="username-hint"
-                    />
-                    <small id="username-hint">
-                      3–50 ký tự chữ, số hoặc dấu gạch dưới.
-                    </small>
-                    <label htmlFor="fullName">Họ tên (tuỳ chọn)</label>
-                    <input
-                      id="fullName"
-                      name="fullName"
-                      autoComplete="name"
-                      maxLength={120}
-                    />
-                  </>
-                )}
-                <label htmlFor="password">Mật khẩu</label>
-                <div
-                  className={mode === "login" ? "login-password" : undefined}
-                >
+          {status === "anonymous" && !loggingOut && (
+            <>
+              <form onSubmit={submit}>
+                <fieldset disabled={busy}>
+                  <legend className="sr-only">Thông tin tài khoản</legend>
+                  <label htmlFor="email">Email</label>
                   <input
-                    id="password"
-                    name="password"
-                    type={
-                      mode === "login" && showPassword ? "text" : "password"
-                    }
-                    autoComplete={
-                      mode === "login" ? "current-password" : "new-password"
-                    }
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
                     required
-                    aria-describedby={
-                      mode === "register" ? "password-hint" : undefined
-                    }
+                    maxLength={mode === "register" ? 254 : undefined}
                   />
-                  {mode === "login" && (
+                  {mode === "register" && (
+                    <>
+                      <label htmlFor="username">Tên người dùng</label>
+                      <input
+                        id="username"
+                        name="username"
+                        required
+                        autoComplete="username"
+                        pattern="[A-Za-z0-9_]{3,50}"
+                        aria-describedby="username-hint"
+                        placeholder="Tên của bạn trên Codjingrank"
+                      />
+                      <small id="username-hint">
+                        3–50 ký tự chữ, số hoặc dấu gạch dưới.
+                      </small>
+                      <label htmlFor="fullName">
+                        Họ tên <span className="auth-optional">(tuỳ chọn)</span>
+                      </label>
+                      <input
+                        id="fullName"
+                        name="fullName"
+                        autoComplete="name"
+                        maxLength={120}
+                        placeholder="Họ và tên"
+                      />
+                    </>
+                  )}
+                  <label htmlFor="password">Mật khẩu</label>
+                  <div className="login-password">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete={
+                        mode === "login" ? "current-password" : "new-password"
+                      }
+                      placeholder={
+                        mode === "login"
+                          ? "Nhập mật khẩu của bạn"
+                          : "Tạo mật khẩu"
+                      }
+                      required
+                      aria-describedby={
+                        mode === "register" ? "password-hint" : undefined
+                      }
+                    />
                     <button
                       type="button"
                       className="password-toggle"
@@ -186,43 +177,44 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                     >
                       {showPassword ? "Ẩn" : "Hiện"}
                     </button>
+                  </div>
+                  {mode === "register" && (
+                    <small id="password-hint">
+                      8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.
+                    </small>
                   )}
-                </div>
-                {mode === "register" && (
-                  <small id="password-hint">
-                    8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.
-                  </small>
+                  {error && (
+                    <p ref={alert} tabIndex={-1} className="error" role="alert">
+                      {error}
+                    </p>
+                  )}
+                  <button className="login-submit" disabled={busy}>
+                    {busy
+                      ? "Đang xử lý…"
+                      : mode === "login"
+                        ? "Đăng nhập"
+                        : "Đăng ký"}
+                  </button>
+                </fieldset>
+              </form>
+              <p className="auth-switch">
+                {mode === "login" ? (
+                  <>
+                    Chưa có tài khoản?{" "}
+                    <Link href="/register">Đăng ký ngay</Link>
+                  </>
+                ) : (
+                  <>
+                    Đã có tài khoản? <Link href="/login">Đăng nhập</Link>
+                  </>
                 )}
-                {error && (
-                  <p ref={alert} tabIndex={-1} className="error" role="alert">
-                    {error}
-                  </p>
-                )}
-                <button
-                  className={mode === "login" ? "login-submit" : undefined}
-                  disabled={busy}
-                >
-                  {busy
-                    ? "Đang xử lý…"
-                    : mode === "login"
-                      ? "Đăng nhập"
-                      : "Đăng ký"}
-                </button>
-              </fieldset>
-            </form>
-            <p>
-              {mode === "login" ? (
-                <>
-                  Chưa có tài khoản? <Link href="/register">Đăng ký</Link>
-                </>
-              ) : (
-                <>
-                  Đã có tài khoản? <Link href="/login">Đăng nhập</Link>
-                </>
-              )}
-            </p>
-          </>
-        )}
+              </p>
+            </>
+          )}
+          <p className="auth-form-footer">
+            Tập trung vào code. Tiến bộ qua từng bài giải.
+          </p>
+        </div>
       </section>
     </main>
   );

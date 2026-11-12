@@ -1,5 +1,7 @@
 "use client";
 
+import { createPortal } from "react-dom";
+import { Icon } from "@/lib/ui/Icon";
 import { memo, useEffect, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
 import type { WorkspaceSnapshot } from "@/features/editor/workspace";
@@ -179,7 +181,15 @@ export function RunResultView({
 
 const MemoRunResultView = memo(RunResultView);
 
-export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
+export function RunPanel({
+  workspace,
+  actionHost,
+  onRunStart,
+}: {
+  workspace: WorkspaceSnapshot;
+  actionHost?: HTMLElement | null;
+  onRunStart?: () => void;
+}) {
   const api = useApiClient();
   const { user, store } = useSession();
   const problem = workspace.problem;
@@ -243,6 +253,39 @@ export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
     state.resultCode !== workspace.code,
   );
 
+  const actions = (
+    <div className="run-actions">
+      <button
+        type="button"
+        aria-label={isRunning ? "Đang chạy thử mẫu…" : "Chạy thử mẫu"}
+        disabled={disabledRun}
+        onClick={() => {
+          if (!selectedLanguage) return;
+          onRunStart?.();
+          void controller.run({
+            problemId: problem.problem.id,
+            languageId: selectedLanguage.id,
+            code: workspace.code,
+          });
+        }}
+      >
+        {isRunning && <span className="spinner" aria-hidden="true" />}
+        <Icon name="play" />
+        {isRunning ? "Đang chạy…" : "Chạy thử"}
+      </button>
+
+      {isRunning && (
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={() => controller.cancel()}
+        >
+          Dừng chờ kết quả
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <section className="panel run-panel" aria-labelledby="run-heading">
       <div className="run-header">
@@ -260,33 +303,7 @@ export function RunPanel({ workspace }: { workspace: WorkspaceSnapshot }) {
           </p>
         </div>
 
-        <div className="run-actions">
-          <button
-            type="button"
-            disabled={disabledRun}
-            onClick={() => {
-              if (!selectedLanguage) return;
-              void controller.run({
-                problemId: problem.problem.id,
-                languageId: selectedLanguage.id,
-                code: workspace.code,
-              });
-            }}
-          >
-            {isRunning && <span className="spinner" aria-hidden="true" />}
-            {isRunning ? "Đang chạy thử mẫu…" : "▶ Chạy thử mẫu"}
-          </button>
-
-          {isRunning && (
-            <button
-              type="button"
-              className="button-secondary"
-              onClick={() => controller.cancel()}
-            >
-              ⏹ Dừng chờ kết quả
-            </button>
-          )}
-        </div>
+        {actionHost ? createPortal(actions, actionHost) : actions}
       </div>
 
       {templateNotReady && (
