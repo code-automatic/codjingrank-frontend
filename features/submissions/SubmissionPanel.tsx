@@ -31,7 +31,15 @@ export function SubmissionResult({ state }: { state: SubmissionState }) {
             <pre className="submission-message">{row.errorMessage}</pre>
           )}
           {row.isAccepted && (
-            <p>Đã chấp nhận bài nộp. Kết quả chấm độc lập với đánh giá AI.</p>
+            <div className="submission-ai-cta">
+              <p>Đã chấp nhận bài nộp. Kết quả chấm độc lập với đánh giá AI.</p>
+              <Link
+                className="btn-secondary-link"
+                href={`/submissions/${encodeURIComponent(row.id)}/ai-review`}
+              >
+                Xem đánh giá AI
+              </Link>
+            </div>
           )}
         </>
       ) : (
@@ -270,17 +278,27 @@ export function SubmissionPanel({
                         {new Date(row.createdAt).toLocaleString("vi-VN")}
                       </time>
                     </div>
-                    <button
-                      type="button"
-                      className="button-secondary"
-                      disabled={
-                        !state.initialized || state.phase === "submitting"
-                      }
-                      aria-label={`Xem bài nộp ${row.id}`}
-                      onClick={() => void controller.select(row.id)}
-                    >
-                      Xem kết quả
-                    </button>
+                    <div className="actions">
+                      <button
+                        type="button"
+                        className="button-secondary"
+                        disabled={
+                          !state.initialized || state.phase === "submitting"
+                        }
+                        aria-label={`Xem bài nộp ${row.id}`}
+                        onClick={() => void controller.select(row.id)}
+                      >
+                        Xem kết quả
+                      </button>
+                      {row.isAccepted && (
+                        <Link
+                          className="btn-secondary-link"
+                          href={`/submissions/${encodeURIComponent(row.id)}/ai-review`}
+                        >
+                          Xem đánh giá AI
+                        </Link>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -117,5 +117,31 @@ describe("opt-in submission demo", () => {
     ).toBeNull();
     expect(await call(demo, "/api/v1/run")).toBeNull();
     expect((await call(demo, "/api/v1/submissions/missing")).status).toBe(404);
+    expect(
+      (await call(demo, "/api/v1/submissions/missing/ai-review")).status,
+    ).toBe(404);
+  });
+  it("handles stateful AI review eligibility, polling progression and failed state", async () => {
+    const demo = createSubmissionDemo(spec);
+    const created = await call(demo, "/api/v1/submit", {
+      ...payload,
+      problemId: problem.id,
+    });
+    const id = created.body.data.submission.id;
+    const ineligible = await call(demo, `/api/v1/submissions/${id}/ai-review`);
+    expect(ineligible.status).toBe(409);
+    expect(ineligible.body.error).toBe("AI_REVIEW_NOT_ELIGIBLE");
+    await call(demo, `/api/v1/submissions/${id}`);
+    await call(demo, `/api/v1/submissions/${id}`);
+    const r1 = await call(demo, `/api/v1/submissions/${id}/ai-review`);
+    expect(r1.status).toBe(200);
+    expect(r1.body.data.review).toBeNull();
+    const r2 = await call(demo, `/api/v1/submissions/${id}/ai-review`);
+    expect(r2.body.data.review.status).toBe("queued");
+    const r3 = await call(demo, `/api/v1/submissions/${id}/ai-review`);
+    expect(r3.body.data.review.status).toBe("running");
+    const r4 = await call(demo, `/api/v1/submissions/${id}/ai-review`);
+    expect(r4.body.data.review.status).toBe("completed");
+    expect(r4.body.data.review.score).toBe(88.5);
   });
 });
