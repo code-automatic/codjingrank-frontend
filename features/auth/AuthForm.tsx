@@ -6,7 +6,8 @@ import { errorText } from "@/lib/api/client";
 import { useSession } from "./session";
 import { SessionNotice } from "./SessionNotice";
 import "./login-prototype.css";
-import { AuthCodeStream } from "./AuthCodeStream";
+import { AuthMotion } from "./AuthMotion";
+import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { validateRegistration } from "./validation";
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -57,49 +58,38 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   }
   return (
     <main className={`login-prototype auth-page auth-page--${mode}`}>
-      <aside className="auth-story" aria-label="Codjingrank">
-        <Link href="/" className="auth-brand">
-          <span aria-hidden="true">c.</span>codjingrank
-        </Link>
+      <aside className="auth-story" aria-label="Codjingrank Community">
+        <AuthMotion />
         <div className="auth-story-body">
-          <h2>
-            Ý tưởng của bạn.
-            <br />
-            <span>Lời giải tiếp theo.</span>
+          <p className="auth-welcome" lang="en">
+            Welcome to
+          </p>
+          <h2 lang="en">
+            Codjingrank <span className="auth-community-accent">Community</span>
           </h2>
-          <p>Viết code. Chạy thử. Tìm ra cách giải của riêng bạn.</p>
-          <AuthCodeStream />
+          <p className="auth-story-caption">
+            Luyện giải lập trình. Từng bài một.
+          </p>
         </div>
-        <p className="auth-story-footer">
-          Một không gian để tập trung vào điều bạn đang xây dựng.
-        </p>
       </aside>
       <section className="auth-form-side" aria-labelledby="auth-title">
+        <div className="auth-theme-control">
+          <ThemeToggle />
+        </div>
         <div className="auth-form-content">
-          <nav className="auth-tabs" aria-label="Tài khoản">
-            <Link
-              href="/login"
-              aria-current={mode === "login" ? "page" : undefined}
-            >
-              Đăng nhập
-            </Link>
-            <Link
-              href="/register"
-              aria-current={mode === "register" ? "page" : undefined}
-            >
-              Đăng ký
-            </Link>
-          </nav>
           <header className="auth-heading">
-            <h1 id="auth-title">
-              {mode === "login"
-                ? "Chào mừng trở lại."
-                : "Bắt đầu hành trình của bạn."}
+            <h1 id="auth-title" lang="en">
+              <span>{mode === "login" ? "Welcome back" : "Join us"}</span>
+              <span>
+                {mode === "login"
+                  ? "Log in to Codjingrank"
+                  : "Create a Codjingrank account"}
+              </span>
             </h1>
             <p>
               {mode === "login"
-                ? "Đăng nhập để tiếp tục luyện tập cùng Codjingrank."
-                : "Tạo tài khoản và bắt đầu với bài giải đầu tiên."}
+                ? "Tiếp tục luyện giải lập trình cùng Codjingrank."
+                : "Tạo tài khoản để bắt đầu luyện giải lập trình."}
             </p>
           </header>
           <div className="auth-session">
@@ -143,7 +133,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         name="fullName"
                         autoComplete="name"
                         maxLength={120}
-                        placeholder="Họ và tên"
+                        placeholder="Họ tên (tuỳ chọn)"
                       />
                     </>
                   )}
@@ -211,9 +201,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               </p>
             </>
           )}
-          <p className="auth-form-footer">
-            Tập trung vào code. Tiến bộ qua từng bài giải.
-          </p>
         </div>
       </section>
     </main>

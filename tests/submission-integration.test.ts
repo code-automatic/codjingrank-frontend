@@ -6,7 +6,7 @@ import { createSession } from "@/features/auth/store";
 import { createSubmissionController } from "@/features/submissions/controller";
 import { createApiClient, createTransport } from "@/lib/api";
 
-async function launch(verdict: string) {
+async function launch(verdict: string, origin = "http://localhost:3000") {
   const child = spawn(
     process.execPath,
     [fileURLToPath(new URL("../scripts/mock.mjs", import.meta.url))],
@@ -19,7 +19,7 @@ async function launch(verdict: string) {
         MOCK_SUBMISSION_VERDICT: verdict,
         MOCK_AUTH_ONLY: "0",
         MOCK_REFRESH_STATUS: "401",
-        MOCK_ORIGIN: "http://localhost:3000",
+        MOCK_ORIGIN: origin,
       },
       stdio: ["ignore", "pipe", "pipe"],
     },
@@ -57,6 +57,52 @@ async function stop(child: ChildProcess) {
 }
 
 describe("Sprint 3 real HTTP integration with local mock", () => {
+  it("supports default dev and preview origins without trusting other origins", async () => {
+    const { child, url } = await launch("Accepted", "");
+    try {
+      for (const origin of ["http://localhost:3000", "http://localhost:3001"]) {
+        const response = await fetch(`${url}/api/v1/auth/refresh`, {
+          method: "OPTIONS",
+          headers: { Origin: origin, "Access-Control-Request-Method": "POST" },
+        });
+        expect(response.status).toBe(204);
+        expect(response.headers.get("Access-Control-Allow-Origin")).toBe(
+          origin,
+        );
+        expect(response.headers.get("Access-Control-Allow-Credentials")).toBe(
+          "true",
+        );
+        expect(response.headers.get("Vary")).toBe("Origin");
+      }
+      const denied = await fetch(`${url}/api/v1/auth/refresh`, {
+        method: "OPTIONS",
+        headers: { Origin: "https://untrusted.example" },
+      });
+      expect(denied.headers.get("Access-Control-Allow-Origin")).toBeNull();
+    } finally {
+      await stop(child);
+    }
+  });
+
+  it("keeps an explicit mock origin exclusive", async () => {
+    const origin = "http://localhost:4200";
+    const { child, url } = await launch("Accepted", origin);
+    try {
+      const allowed = await fetch(`${url}/api/v1/auth/refresh`, {
+        method: "OPTIONS",
+        headers: { Origin: origin },
+      });
+      expect(allowed.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+      const denied = await fetch(`${url}/api/v1/auth/refresh`, {
+        method: "OPTIONS",
+        headers: { Origin: "http://localhost:3001" },
+      });
+      expect(denied.headers.get("Access-Control-Allow-Origin")).toBeNull();
+    } finally {
+      await stop(child);
+    }
+  });
+
   it.each([
     ...[
       "Accepted",

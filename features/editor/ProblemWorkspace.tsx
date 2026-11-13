@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { BrandLogo } from "@/lib/ui/BrandLogo";
+import { ThemeToggle } from "@/lib/ui/ThemeToggle";
+import { WorkspaceSeparator } from "./WorkspaceSeparator";
 import { useState, type CSSProperties } from "react";
 import { Icon } from "@/lib/ui/Icon";
 import "./workspace-prototype.css";
@@ -160,7 +163,8 @@ function WorkspaceReady({
   );
   const [submitActionHost, setSubmitActionHost] =
     useState<HTMLDivElement | null>(null);
-  const [statementWidth, setStatementWidth] = useState(43);
+  const [statementWidth, setStatementWidth] = useState(50);
+  const [editorHeight, setEditorHeight] = useState(65);
   const problem = snapshot.problem;
   if (!problem) return null;
 
@@ -188,7 +192,7 @@ function WorkspaceReady({
             href="/problems"
             aria-label="Codjingrank · Kho bài tập"
           >
-            <span aria-hidden="true">c.</span>
+            <BrandLogo compact />
           </Link>
           <Link className="workspace-catalog-link" href="/problems">
             <Icon name="file" />
@@ -203,6 +207,7 @@ function WorkspaceReady({
           <div ref={setSubmitActionHost} />
         </div>
         <div className="workspace-account-links">
+          <ThemeToggle />
           <Link href="/packages">Gói bài tập</Link>
           <Link href="/protected">Tài khoản</Link>
         </div>
@@ -281,66 +286,20 @@ function WorkspaceReady({
             </div>
           </div>
         </section>
+        <WorkspaceSeparator
+          orientation="vertical"
+          value={statementWidth}
+          label="Độ rộng đề bài"
+          controls="statement-pane"
+          onChange={setStatementWidth}
+        />
         <div
-          className="workspace-resizer"
-          role="separator"
-          aria-label="Độ rộng đề bài"
-          aria-orientation="vertical"
-          aria-controls="statement-pane"
-          aria-valuemin={30}
-          aria-valuemax={65}
-          aria-valuenow={statementWidth}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            const next =
-              event.key === "ArrowLeft"
-                ? statementWidth - 2
-                : event.key === "ArrowRight"
-                  ? statementWidth + 2
-                  : event.key === "Home"
-                    ? 30
-                    : event.key === "End"
-                      ? 65
-                      : null;
-            if (next !== null) {
-              event.preventDefault();
-              setStatementWidth(Math.max(30, Math.min(65, next)));
-            }
-          }}
-          onPointerDown={(event) => {
-            event.preventDefault();
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }}
-          onPointerMove={(event) => {
-            if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
-            const bounds =
-              event.currentTarget.parentElement!.getBoundingClientRect();
-            setStatementWidth(
-              Math.max(
-                30,
-                Math.min(
-                  65,
-                  Math.round(
-                    ((event.clientX - bounds.left) / bounds.width) * 100,
-                  ),
-                ),
-              ),
-            );
-          }}
-          onPointerUp={(event) => {
-            if (event.currentTarget.hasPointerCapture(event.pointerId))
-              event.currentTarget.releasePointerCapture(event.pointerId);
-          }}
-          onPointerCancel={(event) => {
-            if (event.currentTarget.hasPointerCapture(event.pointerId))
-              event.currentTarget.releasePointerCapture(event.pointerId);
-          }}
+          className="workspace-coding-column"
+          style={{ "--editor-height": `${editorHeight}%` } as CSSProperties}
         >
-          <span />
-        </div>
-        <div className="workspace-coding-column">
           <section
             className="panel editor-panel"
+            id="editor-pane"
             aria-labelledby="editor-heading"
           >
             <div className="workspace-pane-bar">
@@ -433,6 +392,15 @@ function WorkspaceReady({
               bài và ngôn ngữ; đăng xuất sẽ xóa nháp.
             </p>
           </section>
+          <WorkspaceSeparator
+            orientation="horizontal"
+            value={editorHeight}
+            min={35}
+            max={78}
+            label="Chiều cao trình soạn thảo"
+            controls="editor-pane"
+            onChange={setEditorHeight}
+          />
           <section className="workspace-console" aria-label="Kết quả thực thi">
             <div
               className="workspace-result-tabs"

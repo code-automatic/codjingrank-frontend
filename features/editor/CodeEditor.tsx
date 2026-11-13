@@ -57,6 +57,7 @@ export function CodeEditor({
   const lineCount = plain ? value.split("\n").length : lines.length;
   const highlightRef = useRef<HTMLPreElement>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
+  const activeLineRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
   const pendingSelection = useRef<[number, number] | null>(null);
   const [cursor, setCursor] = useState<Cursor>({ line: 1, column: 1 });
@@ -83,6 +84,11 @@ export function CodeEditor({
     setCursor(cursorAt(value, area.selectionStart));
   }, [value]);
 
+  useEffect(() => {
+    if (areaRef.current && activeLineRef.current)
+      activeLineRef.current.style.transform = `translateY(${(cursor.line - 1) * 20 - areaRef.current.scrollTop}px)`;
+  }, [cursor.line]);
+
   const updateCursor = () => {
     const area = areaRef.current;
     if (!area) return;
@@ -91,6 +97,8 @@ export function CodeEditor({
 
   const handleScroll = (event: UIEvent<HTMLTextAreaElement>) => {
     syncScroll(event.currentTarget);
+    if (activeLineRef.current)
+      activeLineRef.current.style.transform = `translateY(${(cursor.line - 1) * 20 - event.currentTarget.scrollTop}px)`;
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -125,6 +133,11 @@ export function CodeEditor({
         ))}
       </div>
       <div className="code-editor__surface">
+        <div
+          className="code-editor__active-line"
+          ref={activeLineRef}
+          aria-hidden="true"
+        />
         <pre
           className="code-editor__highlight"
           ref={highlightRef}
