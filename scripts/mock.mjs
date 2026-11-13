@@ -149,11 +149,15 @@ const submissionDemo =
       })
     : null;
 
+// Allow the normal dev port and the UI preview port; custom deployments opt in.
+const mockOrigins = process.env.MOCK_ORIGIN
+  ? [process.env.MOCK_ORIGIN]
+  : ["http://localhost:3000", "http://localhost:3001"];
 const server = createServer(async (req, res) => {
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.MOCK_ORIGIN || "http://localhost:3000",
-  );
+  const origin = req.headers.origin ?? mockOrigins[0];
+  if (mockOrigins.includes(origin))
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Headers",

@@ -1,0 +1,42 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ui-text);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.mark {
+  display: block;
+  width: 64px;
+  height: 64px;
+}
+.wordmark {
+  display: block;
+  width: 181px;
+  aspect-ratio: 859 / 172;
+  background: currentColor;
+  -webkit-mask: url("/brand/codjingrank-wordmark.png") center / contain
+    no-repeat;
+  mask: url("/brand/codjingrank-wordmark.png") center / contain no-repeat;
+}
+.onDark {
+  color: #f5f5f5;
+}
+.compact .mark {
+  width: 28px;
+  height: 28px;
+}
+@media (max-width: 760px) {
+  .mark {
+    width: 52px;
+    height: 52px;
+  }
+  .wordmark {
+    width: 154px;
+  }
+  .compact .mark {
+    width: 26px;
+    height: 26px;
+  }
+}

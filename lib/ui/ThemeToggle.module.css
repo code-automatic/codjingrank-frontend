@@ -1,0 +1,33 @@
+.toggle.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  min-height: 36px;
+  margin: 0;
+  padding: 7px;
+  border: 1px solid var(--ui-control-border);
+  border-radius: 6px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  cursor: pointer;
+}
+.toggle:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.sun {
+  display: none;
+}
+:global([data-theme="dark"]) .sun {
+  display: inline-flex;
+}
+:global([data-theme="dark"]) .moon {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .toggle.toggle:hover {
+    background: var(--ui-surface-muted);
+  }
+}

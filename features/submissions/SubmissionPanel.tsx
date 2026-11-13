@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { createPortal } from "react-dom";
+import { Icon } from "@/lib/ui/Icon";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
 import type { WorkspaceSnapshot } from "@/features/editor/workspace";
@@ -53,8 +55,12 @@ export function SubmissionResult({ state }: { state: SubmissionState }) {
 
 export function SubmissionPanel({
   workspace,
+  actionHost,
+  onSubmitStart,
 }: {
   workspace: WorkspaceSnapshot;
+  actionHost?: HTMLElement | null;
+  onSubmitStart?: () => void;
 }) {
   const api = useApiClient();
   const { user, store } = useSession();
@@ -122,6 +128,26 @@ export function SubmissionPanel({
     !workspace.code.trim() ||
     utf8ByteLength(workspace.code) > MAX_EXECUTE_CODE_BYTES;
   const history = state.history;
+  const action = (
+    <button
+      type="button"
+      className="workspace-submit"
+      aria-label="Nộp bài chấm điểm"
+      disabled={blocked}
+      onClick={() => {
+        onSubmitStart?.();
+        void controller.submit({
+          problemId: problem.problem.id,
+          languageId: workspace.selectedLanguageId!,
+          code: workspace.code,
+        });
+      }}
+    >
+      <Icon name="submit" />
+      {state.phase === "submitting" ? "Đang gửi…" : "Nộp bài"}
+    </button>
+  );
+
   return (
     <section
       className="panel submission-panel"
@@ -129,19 +155,7 @@ export function SubmissionPanel({
     >
       <div className="editor-heading-row">
         <h2 id="submission-heading">Nộp bài</h2>
-        <button
-          type="button"
-          disabled={blocked}
-          onClick={() =>
-            void controller.submit({
-              problemId: problem.problem.id,
-              languageId: workspace.selectedLanguageId!,
-              code: workspace.code,
-            })
-          }
-        >
-          {state.phase === "submitting" ? "Đang gửi…" : "Nộp bài chấm điểm"}
-        </button>
+        {actionHost ? createPortal(action, actionHost) : action}
       </div>
       {!state.initialized && (
         <p role="status">Đang kiểm tra lượt nộp gần nhất…</p>

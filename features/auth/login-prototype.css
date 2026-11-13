@@ -1,0 +1,310 @@
+/* Auth composition follows the supplied HackerRank reference. */
+.auth-page {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+.auth-story {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  background: #101010;
+  color: #f5f5f5;
+}
+.auth-media {
+  position: absolute;
+  inset: 0;
+  background: #101010 url("/media/auth-clock-poster.jpg") center / cover
+    no-repeat;
+}
+.auth-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+}
+.auth-media[data-motion="error"] video {
+  visibility: hidden;
+}
+.auth-media-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.72),
+    rgb(0 0 0 / 0.58) 38%,
+    rgb(0 0 0 / 0.88) 76%,
+    rgb(0 0 0 / 0.92)
+  );
+}
+.auth-story-body {
+  position: absolute;
+  z-index: 1;
+  left: 19%;
+  right: 8%;
+  bottom: 20%;
+}
+.auth-story .auth-welcome {
+  font-size: 24px;
+  font-weight: 600;
+  color: #c6d9ce;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+.auth-story h2 {
+  font-size: clamp(28px, 2.2vw, 42px);
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.auth-story .auth-community-accent {
+  color: #88dda7;
+}
+.auth-story .auth-story-caption {
+  color: #d2dfd7;
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 30px 0 0;
+}
+.auth-page .auth-form-side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 72px 48px;
+}
+.auth-theme-control {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
+.auth-form-content {
+  width: 100%;
+  max-width: 448px;
+}
+.auth-heading h1 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.auth-heading p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 20px 0 28px;
+  color: var(--ui-text-muted);
+}
+.auth-page label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.auth-page input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--ui-control-border);
+  border-radius: 6px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font:
+    14px "Segoe UI",
+    Arial,
+    sans-serif;
+  caret-color: var(--ui-text);
+  box-shadow: none;
+}
+.auth-page input::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
+}
+.auth-page input:focus {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+  border-color: var(--ui-focus);
+}
+.auth-page fieldset > input:first-of-type {
+  margin-top: 0;
+}
+.auth-page small {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ui-text-muted);
+  margin-top: 6px;
+}
+.auth-page .login-password {
+  position: relative;
+  margin-top: 16px;
+}
+.auth-page .login-password input {
+  padding-right: 62px;
+  margin-top: 0;
+}
+.auth-page .password-toggle {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  height: 42px;
+  min-height: 42px;
+  padding: 8px 12px;
+  margin: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.auth-page .login-submit {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  margin: 24px 0 0;
+  border-radius: 6px;
+  background: var(--ui-accent);
+  color: var(--ui-on-accent);
+  font-size: 14px;
+  font-weight: 650;
+  transition: background-color 140ms ease;
+}
+.auth-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.auth-page :is(button, a):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.auth-page a {
+  color: var(--ui-link);
+  text-underline-offset: 3px;
+}
+.auth-page .error {
+  color: var(--ui-danger);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+.auth-session {
+  margin: 0;
+}
+.auth-session:has(p) {
+  margin-bottom: 22px;
+}
+.auth-session p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ui-text-muted);
+  margin: 0;
+}
+.auth-session .error {
+  color: var(--ui-danger);
+}
+.auth-switch {
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.7;
+  color: var(--ui-text);
+  margin: 42px 0 0;
+}
+.auth-page button:focus:not(:focus-visible) {
+  outline: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .auth-page .login-submit:hover:not(:disabled) {
+    background: var(--ui-accent-hover);
+  }
+  .auth-page .password-toggle:hover {
+    background: var(--ui-surface-muted);
+  }
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .auth-page {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .auth-story-body {
+    left: 10%;
+  }
+  .auth-page .auth-form-side {
+    padding: 72px 32px;
+  }
+  .auth-story h2 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 760px) {
+  .auth-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .auth-story {
+    height: 182px;
+    min-height: 0;
+    position: relative;
+  }
+  .auth-story-body {
+    left: 24px;
+    right: 20px;
+    bottom: 20px;
+  }
+  .auth-story .auth-welcome {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .auth-story h2 {
+    font-size: 22px;
+    letter-spacing: -0.025em;
+  }
+  .auth-story .auth-story-caption {
+    display: none;
+  }
+  .auth-media {
+    opacity: 0.7;
+  }
+  .auth-page .auth-form-side {
+    padding: 64px 24px 40px;
+  }
+  .auth-theme-control {
+    top: 16px;
+    right: 24px;
+  }
+  .auth-heading h1 {
+    font-size: 23px;
+  }
+  .auth-page input {
+    font-size: 16px;
+  }
+  .auth-heading p {
+    margin: 16px 0 24px;
+  }
+  .auth-switch {
+    margin-top: 30px;
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-page * {
+    transition: none !important;
+  }
+}

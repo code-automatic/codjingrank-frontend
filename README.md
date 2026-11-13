@@ -47,7 +47,7 @@ Mở hai terminal tại thư mục dự án. Dừng server cũ bằng Ctrl+C tr�
 npm run mock:sprint3
 ```
 
-Tên script được giữ để tương thích repository; đây là lệnh khởi động demo Run/Submit hiện có, không phải trạng thái tiến độ sprint. Mock chạy tại `http://localhost:4010`.
+Tên script được giữ để tương thích repository; đây là lệnh khởi động demo Run/Submit hiện có, không phải trạng thái tiến độ sprint. Mock chạy tại `http://localhost:4010`. CORS mặc định hỗ trợ FE ở `http://localhost:3000` và `http://localhost:3001`. Nếu cổng 3000 bận, chạy `npm run dev -- --port 3001`; nếu đã đặt `MOCK_ORIGIN`, biến này phải khớp chính xác origin FE và cần khởi động lại mock sau khi đổi.
 
 **Terminal 2 — frontend:**
 
@@ -83,7 +83,7 @@ Remove-Item Env:MOCK_SUBMISSION_VERDICT -ErrorAction SilentlyContinue
 | Biến                      | Mặc định                | Tác dụng                                         |
 | ------------------------- | ----------------------- | ------------------------------------------------ |
 | `MOCK_PORT`               | `4010`                  | Cổng mock                                        |
-| `MOCK_ORIGIN`             | `http://localhost:3000` | Origin FE được CORS mock cho phép                |
+| `MOCK_ORIGIN`             | `http://localhost:3000` và `http://localhost:3001` | Origin FE được CORS mock cho phép; đặt biến để chỉ cho phép origin tùy chỉnh |
 | `MOCK_AUTH_ONLY`          | Tắt                     | Đặt `1` để chỉ phục vụ auth/current-user         |
 | `MOCK_EDITOR_DEMO`        | Tắt                     | Đặt `1` để thêm fixture editor đa ngôn ngữ       |
 | `MOCK_SUBMISSION_DEMO`    | Tắt                     | Đặt `1` để bật Submit/history/progress in-memory |
