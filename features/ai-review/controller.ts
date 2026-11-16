@@ -40,10 +40,10 @@ export type AiReviewControllerOptions = {
 
 export function createAiReviewController(
   api: ApiClient,
-  params: { userId: string; submissionId: string },
+  params: { userId: string; submissionId: string; role?: string },
   options: AiReviewControllerOptions = {},
 ) {
-  const { userId, submissionId } = params;
+  const { userId, submissionId, role } = params;
   const intervalMs = options.intervalMs ?? AI_REVIEW_POLL_INTERVAL_MS;
   const maxPolls = options.maxPolls ?? AI_REVIEW_MAX_POLLS;
   const deadlineMs = options.deadlineMs ?? 15_000;
@@ -65,6 +65,7 @@ export function createAiReviewController(
   let abortController: AbortController | null = null;
   let timerId: ReturnType<typeof setTimeout> | null = null;
   let inFlight = false;
+  let generation = 0;
 
   function notify() {
     for (const listener of subscribers) {
@@ -85,6 +86,7 @@ export function createAiReviewController(
   }
 
   function abortInFlight() {
+    generation++;
     clearTimer();
     if (abortController) {
       abortController.abort();
@@ -108,7 +110,10 @@ export function createAiReviewController(
   }
 
   function verifySubmission(sub: SubmissionModel): void {
-    if (!isSubmissionOwner(sub, userId)) {
+    if (
+      sub.id !== submissionId ||
+      (!isSubmissionOwner(sub, userId) && role !== "admin")
+    ) {
       const err = new Error("SUBMISSION_FORBIDDEN");
       Object.assign(err, { code: "FORBIDDEN", status: 403 });
       throw err;
@@ -125,41 +130,40 @@ export function createAiReviewController(
 
   async function performInitialLoad() {
     abortInFlight();
+    const operation = generation;
     abortController = new AbortController();
     const ctrl = abortController;
     inFlight = true;
     patchState({ phase: "loading", error: null, pollError: null });
 
     try {
-      const subPromise: Promise<SubmissionModel> = withDeadline(
+      const subResult = await withDeadline(
         ctrl,
         () => api.judge.getSubmission(submissionId, { signal: ctrl.signal }),
         deadlineMs,
       );
-
-      const revPromise: Promise<AiReviewModel | null | "ineligible"> =
-        withDeadline(
-          ctrl,
-          () => api.judge.getAiReview(submissionId, { signal: ctrl.signal }),
-          deadlineMs,
-        ).catch((err: unknown) => {
-          if (
-            typeof err === "object" &&
-            err !== null &&
-            (err as { code?: string }).code === "AI_REVIEW_NOT_ELIGIBLE"
-          ) {
-            return "ineligible" as const;
-          }
-          throw err;
-        });
-
-      const [subResult, revResult] = await Promise.all([
-        subPromise,
-        revPromise,
-      ]);
-      if (disposed || ctrl.signal.aborted) return;
-
+      if (disposed || operation !== generation) return;
       verifySubmission(subResult);
+      patchState({ submission: subResult });
+      if (!isEligible(subResult)) {
+        patchState({ phase: "ineligible", review: null, error: null });
+        return;
+      }
+      const revResult: AiReviewModel | null | "ineligible" = await withDeadline(
+        ctrl,
+        () => api.judge.getAiReview(submissionId, { signal: ctrl.signal }),
+        deadlineMs,
+      ).catch((err: unknown) => {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          (err as { code?: string }).code === "AI_REVIEW_NOT_ELIGIBLE"
+        ) {
+          return "ineligible" as const;
+        }
+        throw err;
+      });
+      if (disposed || operation !== generation) return;
 
       if (!isEligible(subResult) || revResult === "ineligible") {
         patchState({
@@ -189,10 +193,13 @@ export function createAiReviewController(
         scheduleNextPoll();
       }
     } catch (err: unknown) {
-      if (disposed || ctrl.signal.aborted) return;
+      if (disposed || operation !== generation) return;
       patchState({ phase: "error", error: err });
     } finally {
-      inFlight = false;
+      if (operation === generation) {
+        inFlight = false;
+        abortController = null;
+      }
     }
   }
 
@@ -207,6 +214,7 @@ export function createAiReviewController(
   async function runPollStep() {
     if (disposed || inFlight) return;
     if (state.phase !== "polling") return;
+    const operation = generation;
 
     abortController = new AbortController();
     const ctrl = abortController;
@@ -218,7 +226,7 @@ export function createAiReviewController(
         () => api.judge.getAiReview(submissionId, { signal: ctrl.signal }),
         deadlineMs,
       );
-      if (disposed || ctrl.signal.aborted) return;
+      if (disposed || operation !== generation) return;
 
       verifyReview(rev);
       const nextCount = state.pollCount + 1;
@@ -250,17 +258,22 @@ export function createAiReviewController(
         });
       }
     } catch (err: unknown) {
-      if (disposed || ctrl.signal.aborted) return;
+      if (disposed || operation !== generation) return;
 
       const isAuthOrNotFound =
-        typeof err === "object" &&
-        err !== null &&
-        [
-          "UNAUTHORIZED",
-          "FORBIDDEN",
-          "NOT_FOUND",
-          "AI_REVIEW_NOT_ELIGIBLE",
-        ].includes((err as { code?: string }).code ?? "");
+        (typeof err === "object" &&
+          err !== null &&
+          [
+            "UNAUTHORIZED",
+            "FORBIDDEN",
+            "NOT_FOUND",
+            "AI_REVIEW_NOT_ELIGIBLE",
+          ].includes((err as { code?: string }).code ?? "")) ||
+        (typeof err === "object" &&
+          err !== null &&
+          [401, 403, 404, 409].includes(
+            (err as { status?: number }).status ?? 0,
+          ));
 
       if (isAuthOrNotFound) {
         patchState({ phase: "error", error: err, pollError: null });
@@ -271,7 +284,10 @@ export function createAiReviewController(
         });
       }
     } finally {
-      inFlight = false;
+      if (operation === generation) {
+        inFlight = false;
+        abortController = null;
+      }
     }
   }
 
@@ -290,7 +306,11 @@ export function createAiReviewController(
     },
     async start() {
       if (disposed) return;
-      if (state.phase === "initial" || (!state.submission && !inFlight)) {
+      if (
+        state.phase === "initial" ||
+        (state.phase === "loading" && !inFlight) ||
+        (!state.submission && !inFlight)
+      ) {
         await performInitialLoad();
       } else if (state.phase === "polling" && !timerId && !inFlight) {
         scheduleNextPoll();
@@ -300,12 +320,16 @@ export function createAiReviewController(
       if (disposed) return;
       clearTimer();
       abortInFlight();
-      if (state.phase === "polling") {
+      if (state.phase === "polling" || state.phase === "loading") {
         patchState({ phase: "paused" });
       }
     },
     resume() {
       if (disposed) return;
+      if (state.phase === "paused" && !state.submission) {
+        void performInitialLoad();
+        return;
+      }
       if (
         state.phase === "paused" ||
         (state.phase === "ready" && state.review?.isFailed)
@@ -314,6 +338,7 @@ export function createAiReviewController(
           phase: "polling",
           pollError: null,
           exhausted: false,
+          pollCount: 0,
         });
         void runPollStep();
       }

@@ -1437,6 +1437,7 @@ body {
   align-items: center;
 }
 .ai-review-main {
+  overflow-wrap: anywhere;
   display: grid;
   gap: 20px;
   min-width: 0;
@@ -1447,6 +1448,14 @@ body {
   justify-content: space-between;
   align-items: flex-end;
   gap: 12px;
+}
+.ai-review-header-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  text-decoration: none;
 }
 .ai-review-header-links {
   display: flex;
@@ -1844,6 +1853,9 @@ body {
   .ai-review-header-links a {
     width: 100%;
     text-align: center;
+  }
+  .ai-section-title {
+    flex-basis: auto;
   }
   .ai-section-header {
     flex-direction: column;

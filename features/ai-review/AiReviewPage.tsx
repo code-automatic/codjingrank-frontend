@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
 import { SessionNotice } from "@/features/auth/SessionNotice";
@@ -53,7 +54,11 @@ export function AiReviewContent({
         `ai-code-line-${selectedFinding.lineStart}`,
       );
       if (lineEl) {
-        lineEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        lineEl.scrollIntoView({
+          behavior: "instant",
+          block: "nearest",
+          inline: "nearest",
+        });
       }
     }
   }, [selectedFinding]);
@@ -112,6 +117,7 @@ export function AiReviewContent({
           <h1>{submission.problemTitle}</h1>
         </div>
         <div className="ai-review-header-links">
+          <ThemeToggle />
           <Link
             className="button-secondary"
             href={`/problems/${encodeURIComponent(submission.problemSlug)}`}
@@ -411,8 +417,8 @@ export function AiReviewContent({
                   {review.findings.length === 0 ? (
                     <div className="ai-empty-findings">
                       <p className="muted">
-                        Mã nguồn đạt chuẩn tốt, AI không phát hiện điểm cần lưu
-                        ý nào.
+                        Chưa có góp ý chi tiết được trả về cho lượt đánh giá
+                        này.
                       </p>
                     </div>
                   ) : (
@@ -478,13 +484,15 @@ export function AiReviewContent({
 function AuthenticatedAiReview({
   submissionId,
   userId,
+  role,
 }: {
   submissionId: string;
   userId: string;
+  role: string;
 }) {
   const api = useApiClient();
   const [controller] = useState<AiReviewController>(() =>
-    createAiReviewController(api, { userId, submissionId }),
+    createAiReviewController(api, { userId, submissionId, role }),
   );
 
   const state = useSyncExternalStore(
@@ -563,7 +571,12 @@ export function AiReviewPage({ id }: { id: string }) {
 
   return (
     <main className="container ai-review-container">
-      <AuthenticatedAiReview submissionId={id} userId={user.id} />
+      <AuthenticatedAiReview
+        key={`${user.id}:${user.role}:${id}`}
+        submissionId={id}
+        userId={user.id}
+        role={user.role}
+      />
     </main>
   );
 }
