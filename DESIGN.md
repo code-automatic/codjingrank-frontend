@@ -1,6 +1,6 @@
 # Codjingrank UI — HackerRank auth / LeetCode workspace
 
-Yêu cầu của Thịnh ngày 13/11/2026 thay thế hướng phủ mocha toàn giao diện. Bản local chờ người dùng duyệt, không phải cam kết đối chiếu từng pixel với website live.
+Yêu cầu của Thịnh ngày 13/11/2026 thay thế hướng phủ mocha toàn giao diện. Tham chiếu bố cục dựa trên ảnh người dùng cung cấp; không cam kết đối chiếu từng pixel với website live.
 
 ## Thương hiệu
 
@@ -10,7 +10,7 @@ Yêu cầu của Thịnh ngày 13/11/2026 thay thế hướng phủ mocha toàn 
 
 ## Theme
 
-- app/theme.css là nguồn semantic tokens cho hai palette. Light: trắng/xám; Dark: canvas #0F0F0F, panel #262626, header #333333, text sáng.
+- app/theme.css là nguồn semantic tokens cho hai palette. Light: Catppuccin Latte; Dark: Catppuccin Mocha theo quyết định của team. Nguồn chính thức: https://catppuccin.com/palette/. Mauve là accent chung, xanh lá/đỏ/vàng dành cho trạng thái. Latte làm đậm các accent khi dùng làm chữ nhỏ và dùng subtext1 cho chữ phụ để giữ tương phản. Biểu tượng logo vẫn giữ #7B5C49, độc lập palette.
 - Inline trusted head script đặt data-theme trước body paint. CSS có system fallback; suppressHydrationWarning chỉ trên html để chấp nhận thuộc tính do script đặt.
 - Lần đầu theo OS. Toggle lưu đúng khóa codjingrank-theme; root ThemeSync theo dõi OS khi chưa chọn và đồng bộ tab qua storage event. Storage bị chặn vẫn đổi được trong trang.
 - Theme đổi bằng CSS và external store nhỏ, không thay key/remount auth/session/editor/Run/Submit; không lưu token hoặc password.
@@ -18,7 +18,7 @@ Yêu cầu của Thịnh ngày 13/11/2026 thay thế hướng phủ mocha toàn 
 
 ## Auth — mode Operate
 
-- Bố cục desktop 60/40 theo ảnh HackerRank người dùng cung cấp; bên trái luôn tối, logo khoảng 19.5% chiều cao, welcome/community gần phía dưới. Form rộng tối đa 448px.
+- Bố cục desktop 60/40 theo ảnh HackerRank người dùng cung cấp; bên trái luôn dùng Mocha, không hiện logo theo yêu cầu cập nhật, welcome/community gần phía dưới. Form rộng tối đa 448px.
 - Welcome to / Codjingrank Community; form Welcome back / Log in to Codjingrank hoặc Join us / Create a Codjingrank account. Display copy yêu cầu bằng tiếng Anh có lang=en; nhãn/hướng dẫn/lỗi tiếp tục tiếng Việt.
 - Nhãn được ẩn thị giác nhưng liên kết input; placeholder không thay thế accessible label. Giữ email, username, fullName tùy chọn, password và validation contract. Không thêm OAuth/điều khoản/forgot-password giả.
 - Pin Pinterest thực tế là Time machine clock painting: video đồng hồ 8 giây, không phải trái đất hay terminal code. Nguồn nằm trong public/media/SOURCES.md; app phục vụ file local, không nhúng Pinterest.

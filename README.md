@@ -39,20 +39,19 @@ Biến có prefix `NEXT_PUBLIC_` được đưa vào mã trình duyệt: **khôn
 
 ## Chạy với mock
 
-Mở hai terminal tại thư mục dự án. Dừng server cũ bằng Ctrl+C trước khi sử dụng lại cùng cổng. Chỉ chạy một Next dev server trên cùng checkout.
+Mở hai terminal tại thư mục dự án (CMD hoặc PowerShell đều dùng được hai lệnh này). `.env.local` đã trỏ Gateway tới `http://localhost:4010` theo bước cài đặt ở trên, nên không cần đặt biến mỗi lần chạy. Dừng server cũ bằng Ctrl+C trước khi sử dụng lại cùng cổng. Chỉ chạy một Next dev server trên cùng checkout; `npm run dev` cố định cổng 3000.
 
 **Terminal 1 — mock cho editor, Run và Submit:**
 
 ```powershell
-npm run mock:sprint3
+npm run mock
 ```
 
-Tên script được giữ để tương thích repository; đây là lệnh khởi động demo Run/Submit hiện có, không phải trạng thái tiến độ sprint. Mock chạy tại `http://localhost:4010`. CORS mặc định hỗ trợ FE ở `http://localhost:3000` và `http://localhost:3001`. Nếu cổng 3000 bận, chạy `npm run dev -- --port 3001`; nếu đã đặt `MOCK_ORIGIN`, biến này phải khớp chính xác origin FE và cần khởi động lại mock sau khi đổi.
+Lệnh mặc định bật demo editor đa ngôn ngữ và Run/Submit; `npm run mock:sprint3` vẫn là alias tương thích. Mock chạy tại `http://localhost:4010`. CORS mặc định hỗ trợ FE ở `http://localhost:3000` và `http://localhost:3001`. Nếu cổng 3000 bận, chạy `npm run dev -- --port 3001`; nếu đã đặt `MOCK_ORIGIN`, biến này phải khớp chính xác origin FE và cần khởi động lại mock sau khi đổi.
 
 **Terminal 2 — frontend:**
 
 ```powershell
-$env:NEXT_PUBLIC_GATEWAY_URL='http://localhost:4010'
 npm run dev
 ```
 
@@ -67,7 +66,7 @@ Muốn đổi verdict Submit, dừng mock rồi chạy lại terminal 1:
 
 ```powershell
 $env:MOCK_SUBMISSION_VERDICT='Wrong Answer'
-npm run mock:sprint3
+npm run mock
 ```
 
 Các verdict hỗ trợ: `Accepted`, `Wrong Answer`, `Time Limit Exceeded`, `Memory Limit Exceeded`, `Compilation Error`, `Runtime Error`, `Internal Error`. Xóa biến trước khi khởi động lại để trở về mặc định:
@@ -78,17 +77,17 @@ Remove-Item Env:MOCK_SUBMISSION_VERDICT -ErrorAction SilentlyContinue
 
 ### Các tùy chọn mock
 
-`npm run mock` phục vụ examples từ [learner OpenAPI local](contracts/openapi_fe.yaml), mặc định stateless. Lệnh demo ở trên bật thêm editor đa ngôn ngữ và Submit in-memory cho một learner/bài mẫu, tối đa 100 lượt nộp.
+`npm run mock` bật editor đa ngôn ngữ và Submit in-memory cho một learner/bài mẫu, tối đa 100 lượt nộp. `npm run mock:contract` phục vụ examples nguyên bản từ [learner OpenAPI local](contracts/openapi_fe.yaml), mặc định stateless và chỉ có ngôn ngữ trong example. Cả hai cùng dùng cổng 4010, chạy một chế độ tại một thời điểm.
 
-| Biến                      | Mặc định                | Tác dụng                                         |
-| ------------------------- | ----------------------- | ------------------------------------------------ |
-| `MOCK_PORT`               | `4010`                  | Cổng mock                                        |
+| Biến                      | Mặc định                                           | Tác dụng                                                                     |
+| ------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `MOCK_PORT`               | `4010`                                             | Cổng mock                                                                    |
 | `MOCK_ORIGIN`             | `http://localhost:3000` và `http://localhost:3001` | Origin FE được CORS mock cho phép; đặt biến để chỉ cho phép origin tùy chỉnh |
-| `MOCK_AUTH_ONLY`          | Tắt                     | Đặt `1` để chỉ phục vụ auth/current-user         |
-| `MOCK_EDITOR_DEMO`        | Tắt                     | Đặt `1` để thêm fixture editor đa ngôn ngữ       |
-| `MOCK_SUBMISSION_DEMO`    | Tắt                     | Đặt `1` để bật Submit/history/progress in-memory |
-| `MOCK_SUBMISSION_VERDICT` | `Accepted`              | Verdict cuối của Submit demo                     |
-| `MOCK_REFRESH_STATUS`     | `401`                   | HTTP status refresh fixture                      |
+| `MOCK_AUTH_ONLY`          | Tắt                                                | Đặt `1` để chỉ phục vụ auth/current-user                                     |
+| `MOCK_EDITOR_DEMO`        | `1` với `npm run mock`; tắt với `mock:contract`    | Đặt `1` để thêm fixture editor đa ngôn ngữ                                   |
+| `MOCK_SUBMISSION_DEMO`    | `1` với `npm run mock`; tắt với `mock:contract`    | Đặt `1` để bật Submit/history/progress in-memory                             |
+| `MOCK_SUBMISSION_VERDICT` | `Accepted`                                         | Verdict cuối của Submit demo                                                 |
+| `MOCK_REFRESH_STATUS`     | `401`                                              | HTTP status refresh fixture                                                  |
 
 Các biến `MOCK_*` chỉ dùng bởi server mock, không phải cấu hình backend live. `MOCK_REFRESH_STATUS=200` chỉ minh họa bootstrap: reload có thể authenticated ngay cả sau logout. Không dùng chế độ này để kết luận refresh cookie/session thật hoạt động.
 
@@ -124,9 +123,10 @@ Trước khi nghiệm thu tích hợp live, phối hợp backend xác nhận:
 
 | Lệnh                       | Mục đích                                                     |
 | -------------------------- | ------------------------------------------------------------ |
-| `npm run dev`              | Khởi động môi trường phát triển                              |
-| `npm run mock`             | Chạy mock examples OpenAPI                                   |
-| `npm run mock:sprint3`     | Chạy demo editor/Run/Submit                                  |
+| `npm run dev`              | Khởi động frontend tại cổng 3000                             |
+| `npm run mock`             | Chạy demo editor đa ngôn ngữ/Run/Submit                      |
+| `npm run mock:contract`    | Chạy examples OpenAPI nguyên bản, stateless                  |
+| `npm run mock:sprint3`     | Alias tương thích của `npm run mock`                         |
 | `npm run lint`             | Kiểm tra ESLint                                              |
 | `npm run typecheck`        | Kiểm tra TypeScript                                          |
 | `npm test`                 | Chạy bộ kiểm thử tự động                                     |
