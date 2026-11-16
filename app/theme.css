@@ -1,135 +1,190 @@
+/* Official Catppuccin Latte / Mocha: https://catppuccin.com/palette/ */
 :root {
-  --ui-canvas: #f0f0f0;
-  --ui-surface: #ffffff;
-  --ui-surface-muted: #f5f5f5;
-  --ui-header: #fafafa;
-  --ui-text: #262626;
-  --ui-text-muted: #666666;
-  --ui-border: #dedede;
-  --ui-control-border: #808080;
-  --ui-accent: #067537;
-  --ui-accent-hover: #066b33;
-  --ui-on-accent: #ffffff;
-  --ui-accent-surface: #e4f3ea;
-  --ui-button: #262626;
-  --ui-button-text: #ffffff;
-  --ui-button-hover: #414141;
-  --ui-link: #076aa8;
-  --ui-focus: #086fc1;
-  --ui-selection: #cfe3fc;
-  --ui-danger: #b42318;
-  --ui-danger-surface: #fff0ee;
-  --ui-danger-border: #d07770;
-  --ui-warning: #865600;
-  --ui-warning-surface: #fff6df;
-  --ui-warning-border: #b9953b;
-  --ui-success: #08743b;
-  --ui-success-surface: #e7f5ed;
-  --ui-success-border: #79ae8d;
-  --ui-info: #0969a5;
-  --ui-active-line: #f4f4f4;
-  --ui-scrollbar: #909090;
-  --ui-shadow: #00000012;
-  --syntax-keyword: #823e9b;
-  --syntax-string: #8c5311;
-  --syntax-number: #176d9e;
-  --syntax-comment: #6b6b6b;
-  --syntax-function: #795e26;
-  --syntax-operator: #444444;
-  --syntax-type: #286b70;
-  --syntax-punctuation: #555555;
-  --syntax-plain: #303030;
-  --syntax-builtin: #006c9c;
+  --ctp-rosewater: #dc8a78;
+  --ctp-flamingo: #dd7878;
+  --ctp-pink: #ea76cb;
+  --ctp-mauve: #8839ef;
+  --ctp-red: #d20f39;
+  --ctp-maroon: #e64553;
+  --ctp-peach: #fe640b;
+  --ctp-yellow: #df8e1d;
+  --ctp-green: #40a02b;
+  --ctp-teal: #179299;
+  --ctp-sky: #04a5e5;
+  --ctp-sapphire: #209fb5;
+  --ctp-blue: #1e66f5;
+  --ctp-lavender: #7287fd;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
   color-scheme: light;
+  --ui-on-accent: var(--ctp-base);
+  --ui-readable-green: color-mix(
+    in srgb,
+    var(--ctp-green) 35%,
+    var(--ctp-text)
+  );
+  --ui-readable-yellow: color-mix(
+    in srgb,
+    var(--ctp-yellow) 25%,
+    var(--ctp-text)
+  );
+  --ui-readable-teal: color-mix(in srgb, var(--ctp-teal) 35%, var(--ctp-text));
+  --ui-readable-peach: color-mix(
+    in srgb,
+    var(--ctp-peach) 30%,
+    var(--ctp-text)
+  );
+  --ui-readable-blue: color-mix(in srgb, var(--ctp-blue) 75%, var(--ctp-text));
+  --ui-readable-mauve: color-mix(
+    in srgb,
+    var(--ctp-mauve) 80%,
+    var(--ctp-text)
+  );
+  --ui-readable-red: color-mix(in srgb, var(--ctp-red) 80%, var(--ctp-text));
+  --ui-control-border: var(--ctp-overlay2);
+  --ui-canvas: var(--ctp-crust);
+  --ui-surface: var(--ctp-base);
+  --ui-surface-muted: var(--ctp-mantle);
+  --ui-header: var(--ctp-mantle);
+  --ui-text: var(--ctp-text);
+  --ui-text-muted: var(--ctp-subtext1);
+  --ui-border: var(--ctp-surface0);
+  --ui-accent: var(--ui-readable-mauve);
+  --ui-accent-hover: color-mix(in srgb, var(--ctp-mauve) 88%, var(--ctp-text));
+  --ui-accent-surface: color-mix(
+    in srgb,
+    var(--ctp-mauve) 12%,
+    var(--ctp-base)
+  );
+  --ui-button: var(--ctp-text);
+  --ui-button-text: var(--ctp-base);
+  --ui-button-hover: var(--ctp-subtext1);
+  --ui-link: var(--ui-readable-blue);
+  --ui-focus: var(--ctp-mauve);
+  --ui-selection: color-mix(in srgb, var(--ctp-mauve) 22%, var(--ctp-base));
+  --ui-danger: var(--ui-readable-red);
+  --ui-danger-surface: color-mix(in srgb, var(--ctp-red) 10%, var(--ctp-base));
+  --ui-danger-border: var(--ctp-red);
+  --ui-warning: var(--ui-readable-yellow);
+  --ui-warning-surface: color-mix(
+    in srgb,
+    var(--ctp-yellow) 10%,
+    var(--ctp-base)
+  );
+  --ui-warning-border: var(--ui-readable-yellow);
+  --ui-success: var(--ui-readable-green);
+  --ui-success-surface: color-mix(
+    in srgb,
+    var(--ctp-green) 10%,
+    var(--ctp-base)
+  );
+  --ui-success-border: var(--ui-readable-green);
+  --ui-info: var(--ui-readable-blue);
+  --ui-active-line: var(--ctp-mantle);
+  --ui-scrollbar: var(--ctp-overlay0);
+  --ui-shadow: color-mix(in srgb, var(--ctp-crust) 35%, transparent);
+  --syntax-keyword: var(--ui-readable-mauve);
+  --syntax-string: var(--ui-readable-green);
+  --syntax-number: var(--ui-readable-peach);
+  --syntax-comment: var(--ctp-subtext1);
+  --syntax-function: var(--ui-readable-blue);
+  --syntax-operator: var(--ui-readable-teal);
+  --syntax-type: var(--ui-readable-yellow);
+  --syntax-punctuation: var(--ctp-subtext1);
+  --syntax-plain: var(--ctp-text);
+  --syntax-builtin: var(--ui-readable-teal);
+  /* The auth illustration remains Mocha in either form theme. */
+  --auth-story-base: #1e1e2e;
+  --auth-story-text: #cdd6f4;
+  --auth-story-muted: #bac2de;
+  --auth-story-accent: #cba6f7;
   accent-color: var(--ui-accent);
 }
 :root[data-theme="dark"] {
-  --ui-canvas: #0f0f0f;
-  --ui-surface: #262626;
-  --ui-surface-muted: #303030;
-  --ui-header: #333333;
-  --ui-text: #f2f2f2;
-  --ui-text-muted: #b0b0b0;
-  --ui-border: #454545;
-  --ui-control-border: #858585;
-  --ui-accent: #41d47a;
-  --ui-accent-hover: #68e294;
-  --ui-on-accent: #101910;
-  --ui-accent-surface: #193a27;
-  --ui-button: #e5e5e5;
-  --ui-button-text: #171717;
-  --ui-button-hover: #ffffff;
-  --ui-link: #80c5f5;
-  --ui-focus: #79bdff;
-  --ui-selection: #264f78;
-  --ui-danger: #ffaaa3;
-  --ui-danger-surface: #482725;
-  --ui-danger-border: #c57670;
-  --ui-warning: #f0c76c;
-  --ui-warning-surface: #42371f;
-  --ui-warning-border: #9c8040;
-  --ui-success: #76dfa0;
-  --ui-success-surface: #193d29;
-  --ui-success-border: #5c9974;
-  --ui-info: #6fc9f2;
-  --ui-active-line: #2f2f2f;
-  --ui-scrollbar: #828282;
-  --ui-shadow: #00000044;
-  --syntax-keyword: #7bd4e4;
-  --syntax-string: #d7c08c;
-  --syntax-number: #c4a8e5;
-  --syntax-comment: #a5a5a5;
-  --syntax-function: #e4d58b;
-  --syntax-operator: #dddddd;
-  --syntax-type: #8bd7cf;
-  --syntax-punctuation: #cccccc;
-  --syntax-plain: #ededed;
-  --syntax-builtin: #9bc5fc;
+  --ctp-rosewater: #f5e0dc;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-maroon: #eba0ac;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-sky: #89dceb;
+  --ctp-sapphire: #74c7ec;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+  --ctp-surface2: #585b70;
+  --ctp-surface1: #45475a;
+  --ctp-surface0: #313244;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
   color-scheme: dark;
+  --ui-on-accent: var(--ctp-crust);
+  --ui-readable-green: var(--ctp-green);
+  --ui-readable-yellow: var(--ctp-yellow);
+  --ui-readable-teal: var(--ctp-teal);
+  --ui-readable-peach: var(--ctp-peach);
+  --ui-readable-blue: var(--ctp-blue);
+  --ui-readable-mauve: var(--ctp-mauve);
+  --ui-readable-red: var(--ctp-red);
+  --ui-control-border: var(--ctp-overlay0);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ui-canvas: #0f0f0f;
-    --ui-surface: #262626;
-    --ui-surface-muted: #303030;
-    --ui-header: #333333;
-    --ui-text: #f2f2f2;
-    --ui-text-muted: #b0b0b0;
-    --ui-border: #454545;
-    --ui-control-border: #858585;
-    --ui-accent: #41d47a;
-    --ui-accent-hover: #68e294;
-    --ui-on-accent: #101910;
-    --ui-accent-surface: #193a27;
-    --ui-button: #e5e5e5;
-    --ui-button-text: #171717;
-    --ui-button-hover: #ffffff;
-    --ui-link: #80c5f5;
-    --ui-focus: #79bdff;
-    --ui-selection: #264f78;
-    --ui-danger: #ffaaa3;
-    --ui-danger-surface: #482725;
-    --ui-danger-border: #c57670;
-    --ui-warning: #f0c76c;
-    --ui-warning-surface: #42371f;
-    --ui-warning-border: #9c8040;
-    --ui-success: #76dfa0;
-    --ui-success-surface: #193d29;
-    --ui-success-border: #5c9974;
-    --ui-info: #6fc9f2;
-    --ui-active-line: #2f2f2f;
-    --ui-scrollbar: #828282;
-    --ui-shadow: #00000044;
-    --syntax-keyword: #7bd4e4;
-    --syntax-string: #d7c08c;
-    --syntax-number: #c4a8e5;
-    --syntax-comment: #a5a5a5;
-    --syntax-function: #e4d58b;
-    --syntax-operator: #dddddd;
-    --syntax-type: #8bd7cf;
-    --syntax-punctuation: #cccccc;
-    --syntax-plain: #ededed;
-    --syntax-builtin: #9bc5fc;
+    --ctp-rosewater: #f5e0dc;
+    --ctp-flamingo: #f2cdcd;
+    --ctp-pink: #f5c2e7;
+    --ctp-mauve: #cba6f7;
+    --ctp-red: #f38ba8;
+    --ctp-maroon: #eba0ac;
+    --ctp-peach: #fab387;
+    --ctp-yellow: #f9e2af;
+    --ctp-green: #a6e3a1;
+    --ctp-teal: #94e2d5;
+    --ctp-sky: #89dceb;
+    --ctp-sapphire: #74c7ec;
+    --ctp-blue: #89b4fa;
+    --ctp-lavender: #b4befe;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext1: #bac2de;
+    --ctp-subtext0: #a6adc8;
+    --ctp-overlay2: #9399b2;
+    --ctp-overlay1: #7f849c;
+    --ctp-overlay0: #6c7086;
+    --ctp-surface2: #585b70;
+    --ctp-surface1: #45475a;
+    --ctp-surface0: #313244;
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
     color-scheme: dark;
+    --ui-on-accent: var(--ctp-crust);
+    --ui-readable-green: var(--ctp-green);
+    --ui-readable-yellow: var(--ctp-yellow);
+    --ui-readable-teal: var(--ctp-teal);
+    --ui-readable-peach: var(--ctp-peach);
+    --ui-readable-blue: var(--ctp-blue);
+    --ui-readable-mauve: var(--ctp-mauve);
+    --ui-readable-red: var(--ctp-red);
+    --ui-control-border: var(--ctp-overlay0);
   }
 }

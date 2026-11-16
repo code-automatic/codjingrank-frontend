@@ -357,10 +357,9 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(
-      300px,
-      min(var(--editor-height, 65%), calc(100% - 178px))
-    ) 8px minmax(170px, 1fr);
+  grid-template-rows:
+    minmax(300px, min(var(--editor-height, 65%), calc(100% - 178px)))
+    8px minmax(170px, 1fr);
   gap: 0;
 }
 .workspace-prototype .editor-panel {
@@ -742,10 +741,9 @@
     display: none;
   }
   .workspace-coding-column {
-    grid-template-rows: minmax(
-        300px,
-        min(var(--editor-height, 65%), calc(100% - 178px))
-      ) 8px minmax(170px, 1fr);
+    grid-template-rows:
+      minmax(300px, min(var(--editor-height, 65%), calc(100% - 178px)))
+      8px minmax(170px, 1fr);
     gap: 0;
     height: 850px;
   }
@@ -844,10 +842,9 @@
     font-size: 21px;
   }
   .workspace-coding-column {
-    grid-template-rows: minmax(
-        300px,
-        min(var(--editor-height, 65%), calc(100% - 178px))
-      ) 8px minmax(170px, 1fr);
+    grid-template-rows:
+      minmax(300px, min(var(--editor-height, 65%), calc(100% - 178px)))
+      8px minmax(170px, 1fr);
     height: 800px;
   }
 }
@@ -897,8 +894,8 @@
 }
 
 .workspace-prototype .workspace-submit {
-  background: var(--ui-accent-surface);
-  color: var(--ui-accent);
+  background: var(--ui-success-surface);
+  color: var(--ui-success);
 }
 
 .workspace-prototype .workspace-pane-bar h2 svg {

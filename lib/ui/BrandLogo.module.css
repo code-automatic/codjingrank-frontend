@@ -21,7 +21,7 @@
   mask: url("/brand/codjingrank-wordmark.png") center / contain no-repeat;
 }
 .onDark {
-  color: #f5f5f5;
+  color: var(--auth-story-text);
 }
 .compact .mark {
   width: 28px;
