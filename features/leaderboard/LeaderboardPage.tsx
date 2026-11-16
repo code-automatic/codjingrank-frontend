@@ -572,6 +572,7 @@ export function LeaderboardPage() {
         <nav aria-label="Điều hướng chính">
           <Link href="/packages">Gói bài</Link>
           <Link href="/problems">Kho bài</Link>
+          <Link href="/forum">Cộng đồng</Link>
           <Link href="/leaderboard" aria-current="page">
             Ranking
           </Link>

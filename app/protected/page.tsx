@@ -50,6 +50,9 @@ export default function Protected() {
               <Link href="/leaderboard">Bảng xếp hạng →</Link>
             </p>
             <p>
+              <Link href="/forum">Cộng đồng hỏi đáp →</Link>
+            </p>
+            <p>
               <Link href="/problems/sum-two">
                 Mở bài tập mẫu: Sum two numbers →
               </Link>
