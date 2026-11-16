@@ -293,8 +293,18 @@ describe("forum post controller", () => {
   });
 
   it("keeps a tombstone when a deleted comment has replies and removes a leaf", async () => {
-    const { controller } = setup();
+    const { controller, community } = setup();
     await controller.load();
+    const tombstone = {
+      ...comment("c1", null),
+      isDeleted: true,
+      content: null,
+      displayContent: "Bình luận đã bị xóa.",
+    };
+    community.listComments.mockResolvedValueOnce({
+      ...comments,
+      items: [tombstone, comment("c2", "c1")],
+    });
     await controller.removeComment("c1");
     const afterRoot = controller.getSnapshot().comments.data;
     expect(afterRoot?.items.find((item) => item.id === "c1")).toMatchObject({
@@ -303,6 +313,11 @@ describe("forum post controller", () => {
       displayContent: "Bình luận đã bị xóa.",
     });
     expect(afterRoot?.items.some((item) => item.id === "c2")).toBe(true);
+    community.listComments.mockResolvedValueOnce({
+      ...comments,
+      total: 0,
+      items: [],
+    });
     await controller.removeComment("c2");
     expect(
       controller
@@ -320,5 +335,64 @@ describe("forum post controller", () => {
       code: "FORBIDDEN",
     });
     expect(controller.getSnapshot().post.data).toEqual(detail);
+  });
+  it("does not cancel pending comments when retrying only the post", async () => {
+    const { controller, community } = setup();
+    const pending = deferred<PaginatedData<ForumCommentModel>>();
+    community.listComments.mockReturnValueOnce(pending.promise);
+    const first = controller.load();
+    await controller.retryPost();
+    pending.resolve(comments);
+    await first;
+    expect(controller.getSnapshot().comments.phase).toBe("ready");
+    controller.dispose();
+  });
+
+  it("coalesces repeated load-more actions while the comment page is pending", async () => {
+    const { controller, community } = setup();
+    await controller.load();
+    const pending = deferred<PaginatedData<ForumCommentModel>>();
+    community.listComments.mockReturnValue(pending.promise);
+    const first = controller.loadMoreComments();
+    const second = controller.loadMoreComments();
+    expect(community.listComments).toHaveBeenCalledTimes(2);
+    pending.resolve({ ...comments, page: 2, items: [] });
+    await Promise.all([first, second]);
+    controller.dispose();
+  });
+
+  it("does not retain comments for an inaccessible or hidden post", async () => {
+    const { controller, community } = setup();
+    community.getPost.mockRejectedValue(new ApiError(404, "NOT_FOUND"));
+    await controller.load();
+    expect(controller.getSnapshot().post.phase).toBe("error");
+    expect(controller.getSnapshot().comments.data).toBeNull();
+    controller.dispose();
+  });
+
+  it("reloads server tombstone state when replies may be on another page", async () => {
+    const { controller, community } = setup();
+    community.listComments.mockResolvedValueOnce({
+      ...comments,
+      items: [comment("c1", null)],
+    });
+    await controller.load();
+    community.listComments.mockResolvedValue({
+      ...comments,
+      items: [
+        {
+          ...comment("c1", null),
+          isDeleted: true,
+          content: null,
+          displayContent: "Bình luận đã bị xóa.",
+        },
+      ],
+    });
+    await controller.removeComment("c1");
+    expect(community.listComments).toHaveBeenCalledTimes(2);
+    expect(controller.getSnapshot().comments.data?.items[0]?.isDeleted).toBe(
+      true,
+    );
+    controller.dispose();
   });
 });

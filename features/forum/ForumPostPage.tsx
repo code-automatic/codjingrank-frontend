@@ -64,7 +64,7 @@ function CommentItem({
       )}
       {!comment.isDeleted && (
         <div className={styles.commentActions}>
-          {userId && (
+          {userId && comment.parentId === null && (
             <button
               type="button"
               className={styles.linkButton}
@@ -101,6 +101,18 @@ function CommentItem({
 }
 
 export function ForumPostPage({ id }: { id: string }) {
+  const { status, user } = useSession();
+  if (status === "initializing") {
+    return (
+      <ForumShell current="post">
+        <p role="status">Đang kiểm tra phiên đăng nhập…</p>
+      </ForumShell>
+    );
+  }
+  return <ForumPostContent key={`${id}:${user?.id ?? "guest"}`} id={id} />;
+}
+
+function ForumPostContent({ id }: { id: string }) {
   const api = useApiClient();
   const router = useRouter();
   const { status, user } = useSession();
@@ -277,92 +289,81 @@ export function ForumPostPage({ id }: { id: string }) {
         </article>
       )}
 
-      <section className={styles.comments} aria-labelledby="comments-heading">
-        <h2 id="comments-heading">
-          Bình luận {comments ? `(${comments.total})` : ""}
-        </h2>
+      {post && (
+        <section className={styles.comments} aria-labelledby="comments-heading">
+          <h2 id="comments-heading">
+            Bình luận {comments ? `(${comments.total})` : ""}
+          </h2>
 
-        {state.comments.phase === "loading" && (
-          <p role="status">Đang tải bình luận…</p>
-        )}
+          {state.comments.phase === "loading" && (
+            <p role="status">Đang tải bình luận…</p>
+          )}
 
-        {state.comments.phase === "error" && (
-          <div role="alert">
-            <p>{errorText(state.comments.error)}</p>
-            <button
-              type="button"
-              onClick={() => void controller.retryComments()}
-            >
-              Thử lại
-            </button>
-          </div>
-        )}
+          {state.comments.phase === "error" && (
+            <div role="alert">
+              <p>{errorText(state.comments.error)}</p>
+              <button
+                type="button"
+                onClick={() => void controller.retryComments()}
+              >
+                Thử lại
+              </button>
+            </div>
+          )}
 
-        {authenticated ? (
-          <form className={styles.commentForm} onSubmit={submitComment}>
-            {replyTo && (
-              <p className={styles.replyHint}>
-                Đang trả lời <strong>{authorName(replyTo)}</strong>.{" "}
-                <button
-                  type="button"
-                  className={styles.linkButton}
-                  onClick={() => setReplyTo(null)}
-                >
-                  Hủy
-                </button>
-              </p>
-            )}
-            <label htmlFor="forum-comment">
-              {replyTo ? "Trả lời bình luận" : "Viết bình luận"}
-            </label>
-            <textarea
-              id="forum-comment"
-              value={commentText}
-              maxLength={5000}
-              rows={4}
-              placeholder="Chia sẻ cách bạn giải hoặc đặt câu hỏi…"
-              onChange={(event) => setCommentText(event.target.value)}
-            />
-            {formError && (
-              <p className="error" role="alert">
-                {formError}
-              </p>
-            )}
-            <button type="submit" disabled={state.busy}>
-              {state.busy ? "Đang gửi…" : "Gửi bình luận"}
-            </button>
-          </form>
-        ) : (
-          <p className={styles.message}>
-            <Link href="/login">Đăng nhập</Link> để bình luận.
-          </p>
-        )}
+          {authenticated ? (
+            <form className={styles.commentForm} onSubmit={submitComment}>
+              {replyTo && (
+                <p className={styles.replyHint}>
+                  Đang trả lời <strong>{authorName(replyTo)}</strong>.{" "}
+                  <button
+                    type="button"
+                    className={styles.linkButton}
+                    onClick={() => setReplyTo(null)}
+                  >
+                    Hủy
+                  </button>
+                </p>
+              )}
+              <label htmlFor="forum-comment">
+                {replyTo ? "Trả lời bình luận" : "Viết bình luận"}
+              </label>
+              <textarea
+                id="forum-comment"
+                value={commentText}
+                maxLength={5000}
+                rows={4}
+                placeholder="Chia sẻ cách bạn giải hoặc đặt câu hỏi…"
+                onChange={(event) => setCommentText(event.target.value)}
+              />
+              {formError && (
+                <p className="error" role="alert">
+                  {formError}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={state.busy || state.commentsLoading}
+              >
+                {state.busy ? "Đang gửi…" : "Gửi bình luận"}
+              </button>
+            </form>
+          ) : (
+            <p className={styles.message}>
+              <Link href="/login">Đăng nhập</Link> để bình luận.
+            </p>
+          )}
 
-        {comments && comments.items.length > 0 && (
-          <ul className={styles.commentList}>
-            {groupComments(comments.items).map((thread) => (
-              <li key={thread.root.id} className={styles.thread}>
-                <ul className={styles.threadList}>
-                  <CommentItem
-                    comment={thread.root}
-                    userId={user?.id}
-                    busy={state.busy}
-                    orphan={thread.orphan}
-                    onReply={setReplyTo}
-                    onEdit={(comment) =>
-                      setEditing({
-                        id: comment.id,
-                        content: comment.content ?? "",
-                      })
-                    }
-                    onDelete={(comment) => void removeComment(comment)}
-                  />
-                  {thread.replies.map((reply) => (
+          {comments && comments.items.length > 0 && (
+            <ul className={styles.commentList}>
+              {groupComments(comments.items).map((thread) => (
+                <li key={thread.root.id} className={styles.thread}>
+                  <ul className={styles.threadList}>
                     <CommentItem
-                      key={reply.id}
-                      comment={reply}
+                      comment={thread.root}
                       userId={user?.id}
                       busy={state.busy}
+                      orphan={thread.orphan}
                       onReply={setReplyTo}
                       onEdit={(comment) =>
                         setEditing({
@@ -372,58 +373,82 @@ export function ForumPostPage({ id }: { id: string }) {
                       }
                       onDelete={(comment) => void removeComment(comment)}
                     />
-                  ))}
-                </ul>
-                {editing &&
-                  thread.replies
-                    .concat(thread.root)
-                    .some((c) => c.id === editing.id) && (
-                    <form className={styles.editForm} onSubmit={saveEdit}>
-                      <label htmlFor={`edit-${editing.id}`}>
-                        Sửa bình luận
-                      </label>
-                      <textarea
-                        id={`edit-${editing.id}`}
-                        value={editing.content}
-                        maxLength={5000}
-                        rows={3}
-                        onChange={(event) =>
+                    {thread.replies.map((reply) => (
+                      <CommentItem
+                        key={reply.id}
+                        comment={reply}
+                        userId={user?.id}
+                        busy={state.busy}
+                        onReply={setReplyTo}
+                        onEdit={(comment) =>
                           setEditing({
-                            ...editing,
-                            content: event.target.value,
+                            id: comment.id,
+                            content: comment.content ?? "",
                           })
                         }
+                        onDelete={(comment) => void removeComment(comment)}
                       />
-                      <div className={styles.inlineActions}>
-                        <button type="submit" disabled={state.busy}>
-                          Lưu
-                        </button>
-                        <button type="button" onClick={() => setEditing(null)}>
-                          Hủy
-                        </button>
-                      </div>
-                    </form>
-                  )}
-              </li>
-            ))}
-          </ul>
-        )}
+                    ))}
+                  </ul>
+                  {editing &&
+                    thread.replies
+                      .concat(thread.root)
+                      .some((c) => c.id === editing.id) && (
+                      <form className={styles.editForm} onSubmit={saveEdit}>
+                        <label htmlFor={`edit-${editing.id}`}>
+                          Sửa bình luận
+                        </label>
+                        <textarea
+                          id={`edit-${editing.id}`}
+                          value={editing.content}
+                          maxLength={5000}
+                          rows={3}
+                          onChange={(event) =>
+                            setEditing({
+                              ...editing,
+                              content: event.target.value,
+                            })
+                          }
+                        />
+                        <div className={styles.inlineActions}>
+                          <button
+                            type="submit"
+                            disabled={state.busy || state.commentsLoading}
+                          >
+                            Lưu
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditing(null)}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                </li>
+              ))}
+            </ul>
+          )}
 
-        {comments && comments.items.length === 0 && (
-          <p className={styles.muted}>Chưa có bình luận nào.</p>
-        )}
+          {comments && comments.items.length === 0 && (
+            <p className={styles.muted}>Chưa có bình luận nào.</p>
+          )}
 
-        {comments && comments.items.length < comments.total && (
-          <button
-            type="button"
-            className={styles.loadMore}
-            disabled={state.busy}
-            onClick={() => void controller.loadMoreComments()}
-          >
-            Tải thêm bình luận
-          </button>
-        )}
-      </section>
+          {comments && comments.items.length < comments.total && (
+            <button
+              type="button"
+              className={styles.loadMore}
+              disabled={state.busy || state.commentsLoading}
+              onClick={() => void controller.loadMoreComments()}
+            >
+              {state.commentsLoading
+                ? "Đang tải bình luận…"
+                : "Tải thêm bình luận"}
+            </button>
+          )}
+        </section>
+      )}
     </ForumShell>
   );
 }

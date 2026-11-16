@@ -664,3 +664,8 @@
     justify-content: center;
   }
 }
+
+.page textarea::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
+}

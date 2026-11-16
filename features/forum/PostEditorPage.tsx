@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useSession } from "@/features/auth/session";
 import { ApiError, errorText } from "@/lib/api/client";
+import { withDeadline } from "@/lib/api/deadline";
 import type { LanguageModel } from "@/lib/api/adapters/catalog";
 import type { ProblemSummaryModel } from "@/lib/api/adapters/catalog";
 import { useApiClient } from "@/lib/api/useApiClient";
@@ -36,7 +37,35 @@ const empty: FormState = {
   codeSnippet: "",
 };
 
-export function PostEditorPage({
+export function PostEditorPage(props: {
+  mode: "create" | "edit";
+  postId?: string;
+}) {
+  const { status, user } = useSession();
+  if (status !== "authenticated" || !user) {
+    return (
+      <ForumShell current={props.mode === "create" ? "new" : "post"}>
+        {status === "initializing" ? (
+          <p role="status">Đang kiểm tra phiên đăng nhập…</p>
+        ) : (
+          <div>
+            <h1>Cần đăng nhập</h1>
+            <p>Bạn cần đăng nhập để viết hoặc sửa bài viết.</p>
+            <Link href="/login">Đăng nhập</Link>
+          </div>
+        )}
+      </ForumShell>
+    );
+  }
+  return (
+    <PostEditorForm
+      key={`${user.id}:${props.mode}:${props.postId ?? "new"}`}
+      {...props}
+    />
+  );
+}
+
+function PostEditorForm({
   mode,
   postId,
 }: {
@@ -53,6 +82,21 @@ export function PostEditorPage({
   const [loading, setLoading] = useState(mode === "edit");
   const [error, setError] = useState("");
   const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [catalogError, setCatalogError] = useState("");
+  const [catalogAttempt, setCatalogAttempt] = useState(0);
+  const [catalogPage, setCatalogPage] = useState(1);
+  const [catalogTotal, setCatalogTotal] = useState(0);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const submissionRef = useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      submissionRef.current?.abort();
+      submissionRef.current = null;
+    },
+    [],
+  );
 
   useEffect(() => {
     if (status === "anonymous") router.replace("/login");
@@ -61,23 +105,57 @@ export function PostEditorPage({
   useEffect(() => {
     if (status !== "authenticated") return;
     const controller = new AbortController();
-    void api.catalog
-      .listProblems({ page: 1, size: 100 }, { signal: controller.signal })
+    void withDeadline(
+      controller,
+      () =>
+        api.catalog.listProblems(
+          { page: catalogPage, size: 100 },
+          { signal: controller.signal },
+        ),
+      15000,
+    )
       .then((page) => {
-        if (!controller.signal.aborted) setProblems(page.items);
+        if (!controller.signal.aborted) {
+          setProblems((previous) =>
+            page.page === 1
+              ? page.items
+              : [
+                  ...new Map(
+                    [...previous, ...page.items].map((problem) => [
+                      problem.id,
+                      problem,
+                    ]),
+                  ).values(),
+                ],
+          );
+          setCatalogTotal(page.total);
+          setCatalogLoading(false);
+          setCatalogError("");
+        }
       })
-      .catch(() => {});
+      .catch((reason) => {
+        if (
+          (reason instanceof ApiError && reason.code === "REQUEST_TIMEOUT") ||
+          !controller.signal.aborted
+        ) {
+          setCatalogError(errorText(reason));
+          setCatalogLoading(false);
+        }
+      });
     return () => controller.abort();
-  }, [api, status]);
+  }, [api, status, catalogAttempt, catalogPage]);
 
   useEffect(() => {
     if (mode !== "edit" || !postId || status !== "authenticated") return;
     const controller = new AbortController();
-    void api.community
-      .getPost(postId, { signal: controller.signal })
+    void withDeadline(
+      controller,
+      () => api.community.getPost(postId, { signal: controller.signal }),
+      15000,
+    )
       .then((post) => {
         if (controller.signal.aborted) return;
-        if (post.author.id !== user?.id) {
+        if (post.id !== postId || post.author.id !== user?.id) {
           setNotFound(true);
           return;
         }
@@ -91,19 +169,24 @@ export function PostEditorPage({
         });
       })
       .catch((reason) => {
-        if (controller.signal.aborted) return;
+        if (
+          controller.signal.aborted &&
+          !(reason instanceof ApiError && reason.code === "REQUEST_TIMEOUT")
+        )
+          return;
         if (
           reason instanceof ApiError &&
           (reason.status === 404 || reason.status === 403)
         )
           setNotFound(true);
-        else setError(errorText(reason));
+        else setLoadError(errorText(reason));
+        setLoading(false);
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [api, mode, postId, status, user?.id]);
+  }, [api, mode, postId, status, user?.id, loadAttempt]);
 
   useEffect(() => {
     if (!form.problemId) return;
@@ -133,6 +216,7 @@ export function PostEditorPage({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submissionRef.current) return;
     setError("");
     if (!form.title.trim()) {
       setError("Tiêu đề không được để trống.");
@@ -146,6 +230,8 @@ export function PostEditorPage({
       setError("Bài viết lời giải phải chọn bài tập liên quan.");
       return;
     }
+    const controller = new AbortController();
+    submissionRef.current = controller;
     setBusy(true);
     try {
       const payload = {
@@ -157,13 +243,33 @@ export function PostEditorPage({
         codeSnippet: form.codeSnippet.trim() ? form.codeSnippet : null,
       };
       if (mode === "create") {
-        const post = await api.community.createPost(payload);
+        const post = await withDeadline(
+          controller,
+          () =>
+            api.community.createPost(payload, { signal: controller.signal }),
+          15000,
+        );
+        if (controller.signal.aborted) return;
         router.push(`/forum/${post.id}`);
       } else if (postId) {
-        const post = await api.community.updatePost(postId, payload);
+        const post = await withDeadline(
+          controller,
+          () =>
+            api.community.updatePost(postId, payload, {
+              signal: controller.signal,
+            }),
+          15000,
+        );
+        if (controller.signal.aborted) return;
         router.push(`/forum/${post.id}`);
       }
     } catch (reason) {
+      if (submissionRef.current !== controller) return;
+      if (
+        controller.signal.aborted &&
+        !(reason instanceof ApiError && reason.code === "REQUEST_TIMEOUT")
+      )
+        return;
       setError(
         reason instanceof ApiError && reason.code === "SOLUTION_NOT_ALLOWED"
           ? "Bạn cần giải đạt (Accepted) bài này trước khi chia sẻ lời giải."
@@ -173,7 +279,10 @@ export function PostEditorPage({
             : errorText(reason),
       );
     } finally {
-      setBusy(false);
+      if (submissionRef.current === controller) {
+        submissionRef.current = null;
+        setBusy(false);
+      }
     }
   }
 
@@ -183,6 +292,28 @@ export function PostEditorPage({
         <p className={styles.message} role="status">
           Đang chuẩn bị biểu mẫu…
         </p>
+      </ForumShell>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <ForumShell current="post">
+        <div role="alert">
+          <h1>Chưa thể tải bài viết để sửa</h1>
+          <p>{loadError}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setLoadError("");
+              setNotFound(false);
+              setLoadAttempt((attempt) => attempt + 1);
+            }}
+          >
+            Thử lại
+          </button>
+        </div>
       </ForumShell>
     );
   }
@@ -229,6 +360,17 @@ export function PostEditorPage({
         </div>
       </header>
 
+      {catalogError && (
+        <div role="alert">
+          <p>Chưa tải được danh sách bài tập: {catalogError}</p>
+          <button
+            type="button"
+            onClick={() => setCatalogAttempt((attempt) => attempt + 1)}
+          >
+            Tải lại danh sách bài tập
+          </button>
+        </div>
+      )}
       <form className={styles.editor} onSubmit={submit}>
         <div>
           <label htmlFor="post-title">Tiêu đề</label>
@@ -272,6 +414,12 @@ export function PostEditorPage({
               }}
             >
               <option value="">Không gắn bài tập</option>
+              {form.problemId &&
+                !problems.some((problem) => problem.id === form.problemId) && (
+                  <option value={form.problemId}>
+                    Bài tập đang gắn: {form.problemId}
+                  </option>
+                )}
               {problems.map((problem) => (
                 <option value={problem.id} key={problem.id}>
                   {problem.title}
@@ -288,6 +436,14 @@ export function PostEditorPage({
               onChange={(event) => patch({ languageId: event.target.value })}
             >
               <option value="">Không chọn</option>
+              {form.languageId &&
+                !languages.some(
+                  (language) => language.id === form.languageId,
+                ) && (
+                  <option value={form.languageId}>
+                    Ngôn ngữ đang gắn: {form.languageId}
+                  </option>
+                )}
               {languages.map((language) => (
                 <option value={language.id} key={language.id}>
                   {language.displayLabel}
@@ -297,6 +453,18 @@ export function PostEditorPage({
           </div>
         </div>
 
+        {!catalogError && problems.length < catalogTotal && (
+          <button
+            type="button"
+            disabled={catalogLoading}
+            onClick={() => {
+              setCatalogLoading(true);
+              setCatalogPage((page) => page + 1);
+            }}
+          >
+            {catalogLoading ? "Đang tải bài tập…" : "Tải thêm bài tập"}
+          </button>
+        )}
         {form.postType === "solution" && (
           <p className={styles.hint}>
             Chỉ được đăng lời giải cho bài bạn đã giải Accepted. Hệ thống kiểm
