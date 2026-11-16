@@ -7,7 +7,12 @@ const child = spawn(
   [fileURLToPath(new URL("./mock.mjs", import.meta.url))],
   {
     stdio: "inherit",
-    env: { ...process.env, MOCK_SUBMISSION_DEMO: "1", MOCK_EDITOR_DEMO: "1" },
+    env: {
+      ...process.env,
+      MOCK_SUBMISSION_DEMO: "1",
+      MOCK_EDITOR_DEMO: "1",
+      MOCK_LEADERBOARD_DEMO: "1",
+    },
   },
 );
 child.on("error", () => {

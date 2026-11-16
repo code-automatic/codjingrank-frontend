@@ -1,3 +1,4 @@
+import { createLeaderboardDemo } from "./leaderboard-demo.mjs";
 import { createSubmissionDemo } from "./submission-demo.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
@@ -142,6 +143,11 @@ function resolveOperation(pathname, method) {
   return candidates[0]?.op ?? null;
 }
 
+const leaderboardDemo =
+  process.env.MOCK_LEADERBOARD_DEMO === "1"
+    ? createLeaderboardDemo(spec)
+    : null;
+
 const submissionDemo =
   process.env.MOCK_SUBMISSION_DEMO === "1"
     ? createSubmissionDemo(spec, {
@@ -188,6 +194,15 @@ const server = createServer(async (req, res) => {
       }),
     );
     return;
+  }
+
+  if (leaderboardDemo && !req.headers.prefer) {
+    const fixture = leaderboardDemo(req, url);
+    if (fixture) {
+      res.writeHead(fixture.status, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(fixture.body));
+      return;
+    }
   }
 
   if (submissionDemo && !req.headers.prefer) {
