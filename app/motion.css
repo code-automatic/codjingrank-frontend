@@ -1,0 +1,24 @@
+/* Shared pointer feedback; never animate data, code, panel resizing, or theme. */
+:root {
+  --motion-fast: 140ms;
+  --motion-feedback: cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  :where(button:not(:disabled), a, summary):hover {
+    transition: transform var(--motion-fast) var(--motion-feedback);
+  }
+  :where(
+    button:not(:disabled):not(:focus-visible),
+    a[role="button"]:not(:focus-visible)
+  ):active {
+    transform: scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a, summary):hover {
+    transition-duration: 0s;
+  }
+  :where(button:not(:disabled), a[role="button"]):active {
+    transform: none;
+  }
+}

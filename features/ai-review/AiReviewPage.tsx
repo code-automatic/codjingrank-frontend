@@ -113,7 +113,7 @@ export function AiReviewContent({
             <span aria-hidden="true"> / </span>
             <span>Đánh giá AI</span>
           </nav>
-          <p className="eyebrow">MÀN HÌNH ĐÁNH GIÁ AI RIÊNG</p>
+          <p className="ai-review-context">Đánh giá mã nguồn</p>
           <h1>{submission.problemTitle}</h1>
         </div>
         <div className="ai-review-header-links">
@@ -242,8 +242,7 @@ export function AiReviewContent({
           {state.phase === "polling" && (
             <p className="notice ai-poll-banner" role="status">
               <span className="spinner" aria-hidden="true" />
-              Đang tự động cập nhật trạng thái từ endpoint AI review (mỗi 3
-              giây)…
+              Đang cập nhật kết quả đánh giá AI (mỗi 3 giây)…
             </p>
           )}
 
@@ -295,7 +294,7 @@ export function AiReviewContent({
             <>
               <div className="ai-overview-grid">
                 <div className="ai-score-card">
-                  <p className="eyebrow">Điểm đánh giá AI</p>
+                  <h3 className="ai-score-label">Điểm đánh giá AI</h3>
                   <p className="ai-score-value">
                     {formatAiScore(review.score)}
                   </p>
