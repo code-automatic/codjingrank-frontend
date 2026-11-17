@@ -4,6 +4,7 @@ import { themeInitializationScript } from "@/lib/ui/theme";
 import { ThemeSync } from "@/lib/ui/ThemeSync";
 import "./theme.css";
 import "./styles.css";
+import "./motion.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:
