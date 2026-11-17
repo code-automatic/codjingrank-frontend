@@ -1,4 +1,5 @@
 import { createLeaderboardDemo } from "./leaderboard-demo.mjs";
+import { createForumDemo } from "./forum-demo.mjs";
 import { createSubmissionDemo } from "./submission-demo.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
@@ -155,6 +156,9 @@ const submissionDemo =
       })
     : null;
 
+const forumDemo =
+  process.env.MOCK_FORUM_DEMO === "1" ? createForumDemo(spec) : null;
+
 // Allow the normal dev port and the UI preview port; custom deployments opt in.
 const mockOrigins = process.env.MOCK_ORIGIN
   ? [process.env.MOCK_ORIGIN]
@@ -201,6 +205,20 @@ const server = createServer(async (req, res) => {
     if (fixture) {
       res.writeHead(fixture.status, { "Content-Type": "application/json" });
       res.end(JSON.stringify(fixture.body));
+      return;
+    }
+  }
+
+  if (forumDemo && !req.headers.prefer) {
+    const fixture = await forumDemo(req, url);
+    if (fixture) {
+      res.writeHead(
+        fixture.status,
+        fixture.status === 204 ? {} : { "Content-Type": "application/json" },
+      );
+      res.end(
+        fixture.body === undefined ? undefined : JSON.stringify(fixture.body),
+      );
       return;
     }
   }
@@ -302,6 +320,6 @@ const server = createServer(async (req, res) => {
   );
 }).listen(Number(process.env.MOCK_PORT || 4010), "127.0.0.1", () =>
   console.log(
-    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}): http://localhost:${server.address().port}`,
+    `OpenAPI learner mock (42 endpoints; submission demo: ${process.env.MOCK_SUBMISSION_DEMO === "1" ? "memory only" : "off"}; forum demo: ${process.env.MOCK_FORUM_DEMO === "1" ? "memory only" : "off"}): http://localhost:${server.address().port}`,
   ),
 );

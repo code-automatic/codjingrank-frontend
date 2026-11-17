@@ -11,7 +11,7 @@
     "test": "vitest run",
     "mock": "node scripts/mock-sprint3.mjs",
     "mock:sprint3": "node scripts/mock-sprint3.mjs",
-    "test:integration": "vitest run tests/submission-integration.test.ts tests/problem-run.test.ts",
+    "test:integration": "vitest run tests/submission-integration.test.ts tests/problem-run.test.ts tests/forum-http.test.mjs",
     "mock:contract": "node scripts/mock.mjs"
   },
   "dependencies": {

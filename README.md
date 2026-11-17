@@ -1,6 +1,6 @@
 # Codjingrank Frontend
 
-Frontend cho nền tảng luyện lập trình Codjingrank, xây dựng bằng Next.js App Router và TypeScript. Ứng dụng kết nối backend thông qua API Gateway; hỗ trợ đăng nhập, duyệt gói/bài tập, soạn mã, chạy sample, nộp bài, theo dõi kết quả và xem bảng xếp hạng.
+Frontend cho nền tảng luyện lập trình Codjingrank, xây dựng bằng Next.js App Router và TypeScript. Ứng dụng kết nối backend thông qua API Gateway; hỗ trợ đăng nhập, duyệt gói/bài tập, soạn mã, chạy sample, nộp bài, theo dõi kết quả, xem bảng xếp hạng và trao đổi trong cộng đồng.
 
 ## Công nghệ và yêu cầu
 
@@ -41,13 +41,13 @@ Biến có prefix `NEXT_PUBLIC_` được đưa vào mã trình duyệt: **khôn
 
 Mở hai terminal tại thư mục dự án (CMD hoặc PowerShell đều dùng được hai lệnh này). `.env.local` đã trỏ Gateway tới `http://localhost:4010` theo bước cài đặt ở trên, nên không cần đặt biến mỗi lần chạy. Dừng server cũ bằng Ctrl+C trước khi sử dụng lại cùng cổng. Chỉ chạy một Next dev server trên cùng checkout; `npm run dev` cố định cổng 3000.
 
-**Terminal 1 — mock cho editor, Run, Submit và leaderboard:**
+**Terminal 1 — mock cho editor, Run, Submit, leaderboard và cộng đồng:**
 
 ```powershell
 npm run mock
 ```
 
-Lệnh mặc định bật demo editor đa ngôn ngữ, Run/Submit và leaderboard; `npm run mock:sprint3` vẫn là alias tương thích. Mock chạy tại `http://localhost:4010`. CORS mặc định hỗ trợ FE ở `http://localhost:3000` và `http://localhost:3001`. Nếu cổng 3000 bận, chạy `npm run dev -- --port 3001`; nếu đã đặt `MOCK_ORIGIN`, biến này phải khớp chính xác origin FE và cần khởi động lại mock sau khi đổi.
+Lệnh mặc định bật demo editor đa ngôn ngữ, Run/Submit, leaderboard và cộng đồng; `npm run mock:sprint3` vẫn là alias tương thích. Mock chạy tại `http://localhost:4010`. CORS mặc định hỗ trợ FE ở `http://localhost:3000` và `http://localhost:3001`. Nếu cổng 3000 bận, chạy `npm run dev -- --port 3001`; nếu đã đặt `MOCK_ORIGIN`, biến này phải khớp chính xác origin FE và cần khởi động lại mock sau khi đổi.
 
 **Terminal 2 — frontend:**
 
@@ -61,6 +61,7 @@ Mở [ứng dụng](http://localhost:3000) hoặc [bài mẫu](http://localhost:
 - Run trả kết quả sample cố định, không tạo submission/history/progress.
 - Submit demo chuyển Pending → Running → verdict, cập nhật history/progress trong memory. Restart mock xóa dữ liệu demo.
 - Leaderboard tại `/leaderboard` có fixture 63 learner, đồng hạng có khoảng trống và tài khoản mẫu ở hạng 63 ngoài trang đầu. Bộ lọc `arrays` có dữ liệu; slug khác cho bảng rỗng. Khách chỉ xem trang 1, scope `all`, size tối đa 50. Đăng nhập rồi đi qua liên kết Bảng xếp hạng trên trang tài khoản để xem hạng cá nhân.
+- Cộng đồng tại `/forum` có fixture bài viết, bình luận, trả lời, like và tombstone; đăng nhập để viết bài, bình luận hoặc like. Fixture nằm trong bộ nhớ mock, không đại diện forum_service thật.
 - Fixture leaderboard độc lập với Submit, không chứng minh phép tổng hợp hạng theo bài giải thật; không dùng để nghiệm thu backend live.
 - Mock **không thực thi source**; code sai vẫn có thể nhận Accepted fixture. Không dùng tài khoản, mật khẩu hoặc source nhạy cảm để thử fixture.
 
@@ -90,6 +91,7 @@ Remove-Item Env:MOCK_SUBMISSION_VERDICT -ErrorAction SilentlyContinue
 | `MOCK_SUBMISSION_DEMO`    | `1` với `npm run mock`; tắt với `mock:contract`    | Đặt `1` để bật Submit/history/progress in-memory                             |
 | `MOCK_SUBMISSION_VERDICT` | `Accepted`                                         | Verdict cuối của Submit demo                                                 |
 | `MOCK_LEADERBOARD_DEMO` | `1` với `npm run mock`; tắt với `mock:contract` | Fixture lọc/phân trang/hạng cá nhân; chỉ nhận bearer giả của mock |
+| `MOCK_FORUM_DEMO`     | `1` với `npm run mock`; tắt với `mock:contract` | Fixture bài viết/bình luận/like trong bộ nhớ; chỉ nhận bearer giả của mock |
 | `MOCK_REFRESH_STATUS`     | `401`                                              | HTTP status refresh fixture                                                  |
 
 Các biến `MOCK_*` chỉ dùng bởi server mock, không phải cấu hình backend live. `MOCK_REFRESH_STATUS=200` chỉ minh họa bootstrap: reload có thể authenticated ngay cả sau logout. Không dùng chế độ này để kết luận refresh cookie/session thật hoạt động.
@@ -118,6 +120,7 @@ Trước khi nghiệm thu tích hợp live, phối hợp backend xác nhận:
 - Các operation cần dùng dưới `/api/v1`, UUID DTO/camelCase và response envelope đúng contract.
 - Auth/current user, refresh rotation, Set-Cookie, logout 204; cookie HttpOnly, Path/SameSite/Secure/domain và CORS/Origin theo deployment.
 - Run/Submit/detail/history/latest/progress; worker, PostgreSQL, Redis, Piston/runtime, ownership, hidden-test redaction, rate/size/time/output limits và Retry-After.
+- Forum: 11 operation `/api/v1/forum/*`, quyền owner, moderation/xóa mềm, tombstone, reply một cấp, like idempotent và sanitize Markdown.
 - Leaderboard và `/leaderboard/me`: quyền khách/bearer, `rank` từ server theo SQL RANK, bộ lọc package/scope, biên tuần/tháng UTC, phép tổng hợp firstSolvedAt/current Accepted và độ trễ cache tối đa 60 giây.
 - Kiểm tra trình duyệt thực tế: đăng nhập/reload, hết phiên, concurrent 401, logout khi refresh đang chạy, Run/Submit/history/progress.
 
@@ -128,7 +131,7 @@ Trước khi nghiệm thu tích hợp live, phối hợp backend xác nhận:
 | Lệnh                       | Mục đích                                                     |
 | -------------------------- | ------------------------------------------------------------ |
 | `npm run dev`              | Khởi động frontend tại cổng 3000                             |
-| `npm run mock`             | Chạy demo editor đa ngôn ngữ/Run/Submit/leaderboard                      |
+| `npm run mock`             | Chạy demo editor đa ngôn ngữ/Run/Submit/leaderboard/cộng đồng |
 | `npm run mock:contract`    | Chạy examples OpenAPI nguyên bản, stateless                  |
 | `npm run mock:sprint3`     | Alias tương thích của `npm run mock`                         |
 | `npm run lint`             | Kiểm tra ESLint                                              |
@@ -166,7 +169,7 @@ Chạy Gateway thật hoặc mock phù hợp ở process riêng; `npm start` ch�
 
 ```text
 app/             Routes, layout và global styles
-features/        Auth/session, catalog, editor, đề bài, Run và submissions
+features/        Auth/session, catalog, editor, đề bài, Run, submissions, leaderboard, forum
 lib/api/         HTTP client, domains, DTO adapters và validation
 contracts/       Snapshot learner OpenAPI dùng cho mock
 scripts/         Server mock và demo fixtures
@@ -184,6 +187,10 @@ Các thư mục báo cáo `sprint-*` và `sprint_thanhtung/` lưu lịch sử tr
 | `/packages`, `/packages/[slug]` | Danh sách và chi tiết gói               |
 | `/problems`                     | Kho bài tập và bộ lọc                   |
 | `/problems/[slug]`              | Đề bài, editor, Run, Submit và kết quả  |
+| `/forum`                        | Danh sách bài viết cộng đồng            |
+| `/forum/new`                    | Tạo bài viết (cần đăng nhập)            |
+| `/forum/[id]`                   | Chi tiết bài viết, bình luận và like    |
+| `/forum/[id]/edit`              | Sửa bài viết của chính mình             |
 
 Access token chỉ lưu trong memory; refresh token do backend quản lý qua HttpOnly cookie. Request dùng `credentials: include`, không gửi `X-User-*`. Session bootstrap giữ trạng thái initializing, concurrent 401 dùng chung refresh và request retry tối đa một lần; phản hồi cũ không khôi phục user sau logout.
 
@@ -215,10 +222,18 @@ Kiểm tra `git status` trước khi đổi nhánh hoặc cập nhật code; lư
 
 Phân công, tiến độ, quyết định nghiệm thu và kết quả test từng đợt được lưu trong tài liệu bàn giao riêng của repository.
 
+## Cộng đồng
+
+Route `/forum` hiển thị bài viết công khai với bộ lọc loại bài, sắp xếp và tìm kiếm; `/forum/[id]` hiển thị nội dung Markdown, đoạn mã, like và bình luận một cấp. Người dùng đã đăng nhập có thể tạo bài, sửa/xóa bài của mình, bình luận, trả lời và like.
+
+Nội dung do người dùng gửi được render qua `react-markdown` với `skipHtml`; ảnh từ xa bị chặn và link mở ở tab mới với `noopener noreferrer nofollow`. Giao diện ẩn nút sửa/xóa với người không phải chủ, nhưng quyền thật do backend quyết định: outsider nhận 404, bài bị ẩn/xóa không còn trong danh sách. Bình luận đã xóa còn trả lời sẽ hiện tombstone; bình luận lá đã xóa bị bỏ khỏi danh sách.
+
+Mock cộng đồng là fixture trong bộ nhớ, không chứng minh forum_service, quyền JWT, moderation hay like thật. Khi chuyển live, cần backend trả đúng envelope, UUID, `likedByMe`, `commentCount`, `isDeleted` và các mã lỗi `FORBIDDEN`, `NOT_FOUND`, `INVALID_COMMENT_PARENT`, `SOLUTION_NOT_ALLOWED`.
+
 ## Bảng xếp hạng
 
 Route `/leaderboard` dùng `rank`, `solvedProblemCount`, `acceptedSolutionCount` do Gateway cung cấp; không tự xếp lại hạng hoặc cộng điểm AI. Bộ lọc thời gian, slug gói bài, page và size nằm trên URL để chia sẻ và dùng Back/Forward. Bộ lọc gói có gợi ý từ các gói nổi bật của public landing; người dùng vẫn nhập được slug ngoài gợi ý, không giới hạn vào danh sách featured.
 
 Phần Vị trí của bạn gọi `/api/v1/leaderboard/me` theo cùng scope/package, không phụ thuộc người học có xuất hiện ở trang hiện tại hay không. Lỗi bảng và lỗi hạng cá nhân có thể thử lại độc lập. Khách được xem trang đầu của toàn thời gian; các scope/trang khác cần đăng nhập. Trong mock mặc định, reload làm refresh trả 401 và trở về khách; đăng nhập lại để kiểm tra hạng cá nhân. Đây là giới hạn fixture, không phải bằng chứng session live.
 
-Báo cáo kiểm tra FE nằm trong [docs/LEADERBOARD_REVIEW.md](docs/LEADERBOARD_REVIEW.md).
+Báo cáo kiểm tra FE nằm trong [docs/LEADERBOARD_REVIEW.md](docs/LEADERBOARD_REVIEW.md) và [docs/FORUM_REVIEW.md](docs/FORUM_REVIEW.md).
