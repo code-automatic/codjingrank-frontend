@@ -89,3 +89,17 @@ Thịnh đã cho phép commit và push giao diện lên nhánh feature/ui-design
 - Ảnh mới tại C:/Users/Administrator/.codex/visualizations/2026/11/08/01a1bc06-765d-7b40-a856-8a1a58c05558/auth-connection-fix/: login-light.png, login-dark.png, register-light.png, register-dark.png.
 - FE: http://localhost:3001/login và http://localhost:3001/register. Mock: http://localhost:4010. Reload tab đang giữ lỗi bootstrap cũ.
 - Đây là kiểm tra HTTP/browser với mock local, chưa nghiệm thu backend live. Không sửa API contract hoặc backend. Được phép commit/push lên nhánh UI; chưa merge master; giữ nguyên các file cá nhân agents.md và t.
+
+## Công cụ workspace ngày 18/11/2026
+
+Tham chiếu: ảnh Two Sum và popup Stopwatch/Timer do Thịnh gửi; đã đọc trang https://leetcode.com/problems/two-sum/description/. Giữ nhận diện Codjingrank và toàn bộ token Latte/Mocha.
+
+- Thanh trên có đồng hồ Stopwatch/Timer và cài đặt cỡ chữ 12–16px. Đồng hồ dùng mốc thời gian, tiếp tục khi đóng popover hoặc tab ở nền; rời workspace sẽ đặt lại. Timer cho chọn 1–180 phút, có start/pause/resume/reset và thông báo hết giờ trong trang.
+- Toolbar có sao chép mã, reset starter hiện có, phóng to editor và ẩn/hiện kết quả. Phóng to chỉ đổi bố cục CSS, không unmount editor/controller hoặc xóa draft. Run/Submit tự khôi phục vùng kết quả và chọn tab tương ứng.
+- Console có Test mẫu/Kết quả chạy/Bài nộp, điều hướng phím Arrow/Home/End. Test mẫu hiển thị input/output công khai từ DTO hiện có; chưa có custom testcase API.
+- Popover dùng HTML Popover API native (Escape, light dismiss). Hiệu ứng mở đồng hồ chỉ dùng với pointer; reduced-motion và phím giữ phản hồi tức thì.
+- Không thêm dependency hoặc chức năng backend, không đưa Editorial/Premium/Companies giả vào giao diện. Cỡ chữ là thiết lập trong phiên workspace.
+
+Bằng chứng kiểm tra: 283 tests/22 files pass gồm 4 tests tính thời gian. Browser kiểm tra stopwatch 15 giây rồi pause, Timer 1 phút chạy tới 00:00:00 và thông báo hết giờ, reset, cỡ chữ 16px ở cả textarea/highlight, copy có trạng thái Đã sao chép, focus giữ mã, Run mở lại console và Accepted fixture, Submit thoát focus vào tab Bài nộp, không ID trùng, không console error được ghi. Lint/typecheck/build pass trong lượt triển khai; xem kết quả final trong chat cho revision cuối.
+
+Giới hạn: công cụ Page.captureScreenshot timeout cả tab hiện tại và tab preview mới; cửa sổ native cũng hết thời gian chờ quyền, chưa có ảnh render mới cho đợt này. Viewport override chưa phản ánh kích thước mobile mong muốn trong DOM ở lần kiểm tra cuối, nên chưa xác nhận mobile của các nút mới hoặc đối chiếu pixel. Chưa kiểm thiết bị vật lý/backend live. Code giữ local, chưa push/merge.

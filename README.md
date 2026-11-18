@@ -237,3 +237,7 @@ Route `/leaderboard` dùng `rank`, `solvedProblemCount`, `acceptedSolutionCount`
 Phần Vị trí của bạn gọi `/api/v1/leaderboard/me` theo cùng scope/package, không phụ thuộc người học có xuất hiện ở trang hiện tại hay không. Lỗi bảng và lỗi hạng cá nhân có thể thử lại độc lập. Khách được xem trang đầu của toàn thời gian; các scope/trang khác cần đăng nhập. Trong mock mặc định, reload làm refresh trả 401 và trở về khách; đăng nhập lại để kiểm tra hạng cá nhân. Đây là giới hạn fixture, không phải bằng chứng session live.
 
 Báo cáo kiểm tra FE nằm trong [docs/LEADERBOARD_REVIEW.md](docs/LEADERBOARD_REVIEW.md) và [docs/FORUM_REVIEW.md](docs/FORUM_REVIEW.md).
+
+### Nhãn dữ liệu demo ở Ranking
+
+Khi chạy mock, đặt `NEXT_PUBLIC_MOCK_MODE=true` trong `.env.local` để hiển thị nhãn dữ liệu mô phỏng. Các tài khoản `demo_*` chỉ là fixture cho phân trang và đồng hạng, không phải người dùng thật. Chạy live thì đặt `NEXT_PUBLIC_MOCK_MODE=false` và cấu hình `NEXT_PUBLIC_GATEWAY_URL` theo Gateway của deployment; khởi động lại Next.js sau khi đổi biến môi trường. Mock không chứng minh cookie rotation, ownership hoặc readiness của backend live.

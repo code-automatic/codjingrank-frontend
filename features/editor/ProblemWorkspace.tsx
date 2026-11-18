@@ -4,7 +4,8 @@ import Link from "next/link";
 import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { WorkspaceSeparator } from "./WorkspaceSeparator";
-import { useState, type CSSProperties } from "react";
+import { WorkspaceTools } from "./WorkspaceTools";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Icon } from "@/lib/ui/Icon";
 import "./workspace-prototype.css";
 import { RunPanel } from "@/features/problem-run/RunPanel";
@@ -62,11 +63,17 @@ function saveMessage(
   }
 }
 
-function Samples({ samples }: { samples: SampleModel[] }) {
+function Samples({
+  samples,
+  headingId = "samples-heading",
+}: {
+  samples: SampleModel[];
+  headingId?: string;
+}) {
   if (samples.length === 0) return null;
   return (
-    <section className="samples" aria-labelledby="samples-heading">
-      <h2 id="samples-heading">Ví dụ mẫu</h2>
+    <section className="samples" aria-labelledby={headingId}>
+      <h2 id={headingId}>Ví dụ mẫu</h2>
       {samples.map((sample) => (
         <details className="sample" key={sample.id} open>
           <summary>Ví dụ {sample.displayOrder}</summary>
@@ -157,7 +164,18 @@ function WorkspaceReady({
   onResetStarter: () => void;
   onRetryTemplate: () => void;
 }) {
-  const [resultTab, setResultTab] = useState<"run" | "submission">("run");
+  const [resultTab, setResultTab] = useState<"samples" | "run" | "submission">(
+    "samples",
+  );
+  const [focusedEditor, setFocusedEditor] = useState(false);
+  const [consoleCollapsed, setConsoleCollapsed] = useState(false);
+  const [fontSize, setFontSize] = useState(13);
+  const [copyStatus, setCopyStatus] = useState("");
+  useEffect(() => {
+    if (!copyStatus) return;
+    const timeout = window.setTimeout(() => setCopyStatus(""), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [copyStatus]);
   const [runActionHost, setRunActionHost] = useState<HTMLDivElement | null>(
     null,
   );
@@ -184,7 +202,12 @@ function WorkspaceReady({
     snapshot.saveState === "error" || snapshot.saveState === "unavailable";
 
   return (
-    <main className="workspace-main workspace-prototype">
+    <main
+      className="workspace-main workspace-prototype"
+      data-focused-editor={focusedEditor}
+      data-console-collapsed={consoleCollapsed}
+      style={{ "--ws-font-size": `${fontSize}px` } as CSSProperties}
+    >
       <nav className="workspace-topbar" aria-label="Điều hướng luyện tập">
         <div className="workspace-navigation">
           <Link
@@ -207,6 +230,7 @@ function WorkspaceReady({
           <div ref={setSubmitActionHost} />
         </div>
         <div className="workspace-account-links">
+          <WorkspaceTools fontSize={fontSize} onFontSize={setFontSize} />
           <ThemeToggle />
           <Link href="/packages">Gói bài tập</Link>
           <Link href="/protected">Tài khoản</Link>
@@ -226,6 +250,20 @@ function WorkspaceReady({
               <Icon name="file" />
               Đề bài
             </h2>
+            <button
+              type="button"
+              className="workspace-description-submissions"
+              onClick={() => {
+                setResultTab("submission");
+                setConsoleCollapsed(false);
+                requestAnimationFrame(() =>
+                  document.getElementById("result-tab-submission")?.focus(),
+                );
+              }}
+            >
+              <Icon name="history" />
+              Bài nộp
+            </button>
             <Link href={`/packages/${problem.problem.packageSlug}`}>
               {problem.problem.packageSlug}
             </Link>
@@ -328,16 +366,74 @@ function WorkspaceReady({
                   ))}
                 </select>
               </div>
-              <button
-                type="button"
-                className="button-secondary workspace-reset"
-                onClick={onResetStarter}
-                disabled={!canEdit || snapshot.code === snapshot.starterCode}
-                title="Xoá nháp và trả về đúng mã khởi tạo của bài"
-              >
-                <Icon name="reset" />
-                Đặt lại mã khởi tạo
-              </button>
+              <div className="workspace-editor-tools">
+                <span className="workspace-copy-status" role="status">
+                  {copyStatus}
+                </span>
+                <button
+                  type="button"
+                  className="workspace-icon-button"
+                  aria-label="Sao chép mã nguồn"
+                  title="Sao chép mã nguồn"
+                  disabled={!canEdit}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(snapshot.code);
+                      setCopyStatus("Đã sao chép");
+                    } catch {
+                      setCopyStatus(
+                        "Không thể sao chép. Chọn mã và nhấn Ctrl+C.",
+                      );
+                    }
+                  }}
+                >
+                  <Icon name="copy" />
+                </button>
+                <button
+                  type="button"
+                  className="button-secondary workspace-reset"
+                  onClick={onResetStarter}
+                  disabled={!canEdit || snapshot.code === snapshot.starterCode}
+                  title="Xoá nháp và trả về đúng mã khởi tạo của bài"
+                >
+                  <Icon name="reset" />
+                  <span>Đặt lại mã khởi tạo</span>
+                </button>
+                <button
+                  type="button"
+                  className="workspace-icon-button"
+                  aria-label={
+                    consoleCollapsed ? "Hiện kết quả" : "Thu gọn kết quả"
+                  }
+                  title={consoleCollapsed ? "Hiện kết quả" : "Thu gọn kết quả"}
+                  aria-expanded={!consoleCollapsed}
+                  aria-controls="workspace-results"
+                  onClick={() => {
+                    setFocusedEditor(false);
+                    setConsoleCollapsed(!consoleCollapsed);
+                  }}
+                >
+                  <Icon name="collapse" />
+                </button>
+                <button
+                  type="button"
+                  className="workspace-icon-button"
+                  aria-label={
+                    focusedEditor
+                      ? "Thoát chế độ tập trung"
+                      : "Phóng to trình soạn thảo"
+                  }
+                  title={
+                    focusedEditor
+                      ? "Thoát chế độ tập trung"
+                      : "Phóng to trình soạn thảo"
+                  }
+                  aria-pressed={focusedEditor}
+                  onClick={() => setFocusedEditor(!focusedEditor)}
+                >
+                  <Icon name={focusedEditor ? "close" : "expand"} />
+                </button>
+              </div>
             </div>
             {snapshot.draftRestored && (
               <p className="notice" role="status">
@@ -401,13 +497,17 @@ function WorkspaceReady({
             controls="editor-pane"
             onChange={setEditorHeight}
           />
-          <section className="workspace-console" aria-label="Kết quả thực thi">
+          <section
+            className="workspace-console"
+            id="workspace-results"
+            aria-label="Kết quả thực thi"
+          >
             <div
               className="workspace-result-tabs"
               role="tablist"
               aria-label="Kết quả"
             >
-              {(["run", "submission"] as const).map((tab) => (
+              {(["samples", "run", "submission"] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
@@ -424,23 +524,57 @@ function WorkspaceReady({
                       )
                     ) {
                       event.preventDefault();
+                      const tabs = ["samples", "run", "submission"] as const;
+                      const index = tabs.indexOf(tab);
                       const next =
                         event.key === "Home"
-                          ? "run"
+                          ? "samples"
                           : event.key === "End"
                             ? "submission"
-                            : tab === "run"
-                              ? "submission"
-                              : "run";
+                            : tabs[
+                                (index + (event.key === "ArrowLeft" ? 2 : 1)) %
+                                  3
+                              ];
                       setResultTab(next);
                       document.getElementById(`result-tab-${next}`)?.focus();
                     }
                   }}
                 >
-                  <Icon name={tab === "run" ? "check" : "history"} />
-                  {tab === "run" ? "Kết quả chạy" : "Bài nộp"}
+                  <Icon
+                    name={
+                      tab === "samples"
+                        ? "code"
+                        : tab === "run"
+                          ? "check"
+                          : "history"
+                    }
+                  />
+                  {tab === "samples"
+                    ? "Test mẫu"
+                    : tab === "run"
+                      ? "Kết quả chạy"
+                      : "Bài nộp"}
                 </button>
               ))}
+            </div>
+            <div
+              className="workspace-console-panel workspace-testcases"
+              id="result-panel-samples"
+              role="tabpanel"
+              aria-labelledby="result-tab-samples"
+              hidden={resultTab !== "samples"}
+              tabIndex={0}
+            >
+              <Samples
+                samples={problem.sampleTestCases}
+                headingId="testcases-heading"
+              />
+              {problem.sampleTestCases.length === 0 && (
+                <p>Đề bài chưa có test mẫu công khai.</p>
+              )}
+              <p className="muted">
+                Test công khai của đề bài. Chạy thử mẫu để xem output thực tế.
+              </p>
             </div>
             <div
               className="workspace-console-panel"
@@ -454,7 +588,11 @@ function WorkspaceReady({
                 key={`run:${problem.problem.id}`}
                 workspace={snapshot}
                 actionHost={runActionHost}
-                onRunStart={() => setResultTab("run")}
+                onRunStart={() => {
+                  setFocusedEditor(false);
+                  setConsoleCollapsed(false);
+                  setResultTab("run");
+                }}
               />
             </div>
             <div
@@ -469,7 +607,11 @@ function WorkspaceReady({
                 key={problem.problem.id}
                 workspace={snapshot}
                 actionHost={submitActionHost}
-                onSubmitStart={() => setResultTab("submission")}
+                onSubmitStart={() => {
+                  setFocusedEditor(false);
+                  setConsoleCollapsed(false);
+                  setResultTab("submission");
+                }}
               />
             </div>
           </section>
