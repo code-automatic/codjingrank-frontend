@@ -21,6 +21,10 @@ export function RankingAvatar({
     <span
       className={`${styles.avatar} ${large ? styles.avatarLarge : ""}`}
       aria-hidden="true"
+      data-tone={
+        Array.from(entry.userId).reduce((sum, c) => sum + c.charCodeAt(0), 0) %
+        5
+      }
     >
       {source && !failed ? (
         <Image
@@ -32,7 +36,11 @@ export function RankingAvatar({
           onError={() => setFailed(true)}
         />
       ) : (
-        <span>{Array.from(entry.username)[0]?.toLocaleUpperCase("vi-VN")}</span>
+        <span>
+          {Array.from(
+            entry.username.replace(/^demo_/, ""),
+          )[0]?.toLocaleUpperCase("vi-VN")}
+        </span>
       )}
     </span>
   );
@@ -128,92 +136,24 @@ export function RankingTrophy() {
 }
 
 export function PracticeArtwork({ pair = false }: { pair?: boolean }) {
-  const prefix = pair ? "practice-pair" : "practice-single";
-  const cube = (
-    <>
-      <path d="m180 20 48 28-48 28-48-28z" fill={`url(#${prefix}-top)`} />
-      <path d="m132 48 48 28v57l-48-28z" fill={`url(#${prefix}-left)`} />
-      <path d="m180 76 48-28v57l-48 28z" fill={`url(#${prefix}-right)`} />
-      <path
-        d="m180 20 48 28v57l-48 28-48-28V48zm-48 28 48 28 48-28m-48 28v57"
-        stroke="var(--card-cube-edge)"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m180 26 41 24v51l-41 24-41-24V52l41 24"
-        stroke="var(--ctp-base)"
-        strokeOpacity="0.6"
-        strokeWidth="1.3"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m180 31 34 20-34 20-34-20z"
-        fill="var(--ctp-base)"
-        fillOpacity="0.16"
-      />
-      <path
-        d="M180 80v43m6-45 36-21"
-        stroke="var(--ctp-base)"
-        strokeWidth="1"
-        strokeOpacity="0.65"
-      />
-    </>
-  );
   return (
-    <svg
-      viewBox="0 0 360 150"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      className={styles.practiceArt}
-    >
-      <defs>
-        <linearGradient
-          id={`${prefix}-top`}
-          x1="132"
-          y1="20"
-          x2="228"
-          y2="76"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--ctp-base)" stopOpacity="0.75" />
-          <stop
-            offset="1"
-            stopColor="var(--card-cube-face)"
-            stopOpacity="0.2"
-          />
-        </linearGradient>
-        <linearGradient
-          id={`${prefix}-left`}
-          x1="132"
-          y1="48"
-          x2="180"
-          y2="133"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--ctp-base)" stopOpacity="0.55" />
-          <stop
-            offset="1"
-            stopColor="var(--card-cube-face)"
-            stopOpacity="0.85"
-          />
-        </linearGradient>
-        <linearGradient
-          id={`${prefix}-right`}
-          x1="180"
-          y1="76"
-          x2="228"
-          y2="110"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--card-cube-face)" stopOpacity="0.3" />
-          <stop offset="1" stopColor="var(--ctp-base)" stopOpacity="0.65" />
-        </linearGradient>
-      </defs>
-      <ellipse cx="180" cy="133" rx="66" ry="8" fill="var(--ui-shadow)" />
-      <g transform={pair ? "translate(-30 0)" : undefined}>{cube}</g>
-      {pair && <g transform="translate(55 32) scale(0.72)">{cube}</g>}
-    </svg>
+    <span className={styles.artworkStage} data-pair={pair} aria-hidden="true">
+      <span className={styles.artworkOrbit} />
+      <span className={styles.artworkShadow} />
+      <span className={styles.artworkCube}>
+        <span className={styles.cubeFront} />
+        <span className={styles.cubeRight} />
+        <span className={styles.cubeTop} />
+        <span className={styles.cubeCore} />
+      </span>
+      {pair && (
+        <span className={`${styles.artworkCube} ${styles.cubeCompanion}`}>
+          <span className={styles.cubeFront} />
+          <span className={styles.cubeRight} />
+          <span className={styles.cubeTop} />
+          <span className={styles.cubeCore} />
+        </span>
+      )}
+    </span>
   );
 }

@@ -39,3 +39,11 @@ Yêu cầu của Thịnh ngày 13/11/2026 thay thế hướng phủ mocha toàn 
 - HackerRank /auth/signup trả 403 Access Denied khi truy cập bằng Chrome kiểm tra; bố cục dựa trên ảnh đính kèm.
 - Pinterest pin truy cập 200 và có MP4 thực tế; nguồn được giữ cùng asset, không khẳng định quyền sở hữu hay giấy phép mới.
 - Backend live và thiết bị vật lý cần nghiệm thu riêng; browser mock không chứng minh cookie rotation, JWT hoặc ownership.
+
+## Workspace — công cụ luyện tập cập nhật 18/11/2026
+
+- Stopwatch/Timer và cài đặt cỡ chữ ở thanh trên; popover native theo ảnh tham chiếu LeetCode, dùng semantic surface/accent của Codjingrank. Stopwatch tiếp tục khi đóng bảng; Timer báo hết giờ trong trang. Rời workspace đặt lại đồng hồ.
+- Toolbar có copy, reset starter, phóng to editor và thu gọn kết quả. Panel giữ mounted để bảo toàn code, draft, language, Run/Submit. Bắt đầu Run/Submit sẽ mở lại kết quả.
+- Console có Test mẫu, Kết quả chạy và Bài nộp; Test mẫu lấy từ public samples của DTO, không giả lập custom test hoặc hidden test.
+- Cỡ chữ 12–16px, giữ line height 20px đồng bộ textarea/highlight/gutter. Không thêm formatter, OAuth/Premium/Editorial hoặc API chưa hỗ trợ.
+- Pointer có phản hồi nhấn và mở popup nhẹ; phím, theme, thao tác code và kết quả không animate. Reduced-motion giữ bố cục tĩnh.

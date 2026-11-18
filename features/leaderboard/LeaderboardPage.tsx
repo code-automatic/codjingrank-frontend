@@ -580,6 +580,15 @@ export function LeaderboardPage() {
         <ThemeToggle />
       </header>
       <main className={styles.main}>
+        {process.env.NEXT_PUBLIC_MOCK_MODE === "true" && (
+          <p className={styles.mockNotice}>
+            <strong>Dữ liệu demo</strong>
+            <span>
+              Tên và thứ hạng bên dưới là dữ liệu mô phỏng để xem thử, không
+              phải tài khoản thật.
+            </span>
+          </p>
+        )}
         <header className={styles.heading}>
           <RankingTrophy />
           <h1 lang="en">Codjingrank Ranking</h1>

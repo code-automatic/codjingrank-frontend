@@ -37,3 +37,15 @@ Các thay đổi Sprint 4 có sẵn và file local được giữ nguyên. Khôn
 Terminal 1: `npm run mock`. Terminal 2: `npm run dev`. Mở http://localhost:3000/leaderboard. Nếu mock cũ đang chạy, Ctrl+C rồi khởi động lại để có fixture mới. Chỉ chạy một Next dev trên checkout.
 
 Browser kiểm tra dùng routing khai báo chuyển Gateway 4010 sang mock riêng 4022 để tránh tiến trình mock cũ; không có fallback trong sản phẩm. Mock không chứng minh JWT, refresh cookie rotation/persistence, ownership hay SQL aggregation. Backend live vẫn cần nghiệm thu theo docs/LEADERBOARD_REVIEW.md.
+
+## Tiếp tục tinh chỉnh ngày 18/11/2026
+
+Thay ảnh crop phóng lớn trên hai thẻ Ranking bằng hình khối CSS 3D theo bố cục tham chiếu: mặt trên/mặt trước/mặt bên, lõi và bóng đổ, một hoặc hai khối. Hover chuột có xoay/nâng nhẹ 220ms; thiết bị cảm ứng và reduced-motion giữ hình tĩnh. Không thêm chuyển động vào dữ liệu thứ hạng hoặc kết quả thực thi. Giữ palette Latte/Mocha, thêm màu podium bằng token hiện có và bỏ nền caro.
+
+Workspace giữ bố cục đề/code và editor/kết quả hiện có. Làm rõ thanh tiêu đề đề bài, code, kết quả bằng xanh/mauve/teal nhẹ; chỉnh language select, gutter, vùng ví dụ, trạng thái tab và nút Submit. Không thay controller, API hoặc theme toàn cục.
+
+Các tài khoản demo_* trong mock là fixture phân trang/đồng hạng, không phải tài khoản thật. Nhãn Dữ liệu demo đang hiển thị trên localhost. Browser xác nhận mock hiện trả demo_minhan/demo_baotran, không còn tên mock_learner trong bảng đã mở.
+
+Validation lượt này: lint, typecheck, build và 279 tests/21 files pass. Impeccable detector trên ba file UI trả []. Chrome: xem hai theme, màn hình hẹp (viewport yêu cầu 390px, trình duyệt báo CSS width 433px do cấu hình scale), không tràn ngang trong hai trang đã xem; Run và Submit Accepted fixture, resize ArrowRight 50→52, mở rộng/thu gọn Ranking hoạt động. Không có console error được ghi trong phiên kiểm tra. Chưa kiểm thiết bị vật lý, chưa đối chiếu pixel với ảnh gốc đầy đủ; ảnh mới đính kèm trong chat chỉ chứa thumbnail tham chiếu.
+
+Ảnh phiên này tại C:/Users/Administrator/.codex/visualizations/2026/11/18/01a1ed46-5cba-7161-87fa-304a4b7c015e/: ranking-dark.png, ranking-mobile-light.png, workspace-light.png. Thay đổi giữ local trên codex/ui-ranking-workspace-refinement; chưa push/merge.
