@@ -1,0 +1,68 @@
+.intro {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  place-items: center;
+  background: #fff;
+  pointer-events: none;
+}
+
+:global(html[data-brand-intro="active"]) .intro {
+  display: grid;
+  animation: intro-exit 2000ms var(--motion-feedback) both;
+}
+
+.logo {
+  width: min(560px, calc(100vw - 48px));
+  animation: logo-reveal 1200ms linear both;
+}
+
+.logo > span {
+  display: flex;
+  gap: 12px;
+  color: #192b29;
+}
+
+.logo [data-brand-mark] {
+  width: 22%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.logo [data-brand-wordmark] {
+  width: 0;
+  flex: 1;
+}
+
+@keyframes logo-reveal {
+  from {
+    opacity: 0.12;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes intro-exit {
+  0%,
+  75% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-brand-intro="active"]) .intro {
+    display: none;
+  }
+  .logo {
+    animation: none;
+  }
+}

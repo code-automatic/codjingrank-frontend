@@ -3,9 +3,12 @@
   --motion-fast: 140ms;
   --motion-feedback: cubic-bezier(0.23, 1, 0.32, 1);
 }
-html[data-theme-changing] *,
-html[data-theme-changing] *::before,
-html[data-theme-changing] *::after {
+html[data-theme-changing]
+  *:not([data-brand-intro-motion]):not([data-brand-intro-motion] *),
+html[data-theme-changing]
+  *:not([data-brand-intro-motion]):not([data-brand-intro-motion] *)::before,
+html[data-theme-changing]
+  *:not([data-brand-intro-motion]):not([data-brand-intro-motion] *)::after {
   transition: none !important;
   animation: none !important;
 }
