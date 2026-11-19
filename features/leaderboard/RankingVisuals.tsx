@@ -123,14 +123,7 @@ export function RankingTrophy() {
           opacity="0.45"
         />
       </svg>
-      <Image
-        src="/brand/codjingrank-mark.png"
-        width={36}
-        height={36}
-        alt=""
-        unoptimized
-        className={styles.trophyMark}
-      />
+      <span className={styles.trophyMark} aria-hidden="true" />
     </div>
   );
 }

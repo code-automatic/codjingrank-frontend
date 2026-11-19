@@ -11,7 +11,6 @@ import {
   CatalogLoadingState,
   CatalogPaginationBar,
   CatalogSearchBar,
-  ProblemSummaryList,
 } from "@/features/catalog/CatalogSections";
 import {
   buildProblemsHref,
@@ -32,6 +31,7 @@ import {
 } from "@/features/catalog/viewModel";
 import { errorText } from "@/lib/api/client";
 import { useApiClient } from "@/lib/api/useApiClient";
+import { ProblemTable } from "@/features/platform/ProblemTable";
 
 function AuthenticatedProblemsDirectory() {
   const api = useApiClient();
@@ -104,12 +104,55 @@ function AuthenticatedProblemsDirectory() {
         </div>
       </div>
 
+      <div className="platform-feature-grid platform-library-features">
+        <Link href="/packages" className="platform-feature">
+          <h2>
+            Học theo lộ trình.
+            <br />
+            Tiến bộ từng cấp.
+          </h2>
+          <span>Khám phá gói bài →</span>
+        </Link>
+        <Link href="/forum" className="platform-feature">
+          <h2>Gỡ bài khó cùng cộng đồng.</h2>
+          <span>Khám phá thảo luận →</span>
+        </Link>
+      </div>
       <header className="workspace-header">
         <div>
           <p className="eyebrow">Bộ lọc bài tập</p>
           <h1>Kho bài tập luyện tập</h1>
         </div>
       </header>
+
+      {state.tags.length > 0 && (
+        <nav
+          className="platform-topic-chips"
+          aria-label="Lọc nhanh theo chủ đề"
+        >
+          <button
+            aria-pressed={!queryState.tag}
+            onClick={() =>
+              navigateWithState(updateProblemsFilter(queryState, { tag: "" }))
+            }
+          >
+            Tất cả chủ đề
+          </button>
+          {state.tags.map((tag) => (
+            <button
+              key={tag.id}
+              aria-pressed={queryState.tag === tag.slug}
+              onClick={() =>
+                navigateWithState(
+                  updateProblemsFilter(queryState, { tag: tag.slug }),
+                )
+              }
+            >
+              {tag.name}
+            </button>
+          ))}
+        </nav>
+      )}
 
       <CatalogSearchBar
         id="problems-search-q"
@@ -302,10 +345,7 @@ function AuthenticatedProblemsDirectory() {
               )
             ) : (
               <>
-                <ProblemSummaryList
-                  problems={state.data.items}
-                  showPackageLink={true}
-                />
+                <ProblemTable problems={state.data.items} />
                 {paginationMeta && (
                   <CatalogPaginationBar
                     meta={paginationMeta}

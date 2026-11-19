@@ -112,6 +112,9 @@
   height: 100%;
 }
 .trophyMark {
+  background: var(--brand-mark);
+  -webkit-mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
+  mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
   position: absolute;
   width: 28px;
   height: 28px;
