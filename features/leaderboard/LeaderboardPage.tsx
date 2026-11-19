@@ -16,8 +16,6 @@ import { ApiError, errorText } from "@/lib/api/client";
 import { withDeadline } from "@/lib/api/deadline";
 import type { LeaderboardEntryModel } from "@/lib/api/adapters/shared";
 import type { PackageModel } from "@/lib/api/adapters/catalog";
-import { BrandLogo } from "@/lib/ui/BrandLogo";
-import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { boardHref, parseBoardQuery, type BoardQuery } from "./query";
 import { createBoardResource } from "./resource";
 import {
@@ -565,20 +563,6 @@ export function LeaderboardPage() {
   }
   return (
     <div className={styles.page}>
-      <header className={styles.navbar}>
-        <Link href="/protected" aria-label="Codjingrank — tài khoản">
-          <BrandLogo compact />
-        </Link>
-        <nav aria-label="Điều hướng chính">
-          <Link href="/packages">Gói bài</Link>
-          <Link href="/problems">Kho bài</Link>
-          <Link href="/forum">Cộng đồng</Link>
-          <Link href="/leaderboard" aria-current="page">
-            Ranking
-          </Link>
-        </nav>
-        <ThemeToggle />
-      </header>
       <main className={styles.main}>
         {process.env.NEXT_PUBLIC_MOCK_MODE === "true" && (
           <p className={styles.mockNotice}>

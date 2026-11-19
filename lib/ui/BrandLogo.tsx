@@ -1,7 +1,5 @@
-import Image from "next/image";
 import styles from "./BrandLogo.module.css";
 
-/** Symbol and original lettering are separate alpha assets, with no whole-logo filter. */
 export function BrandLogo({
   compact = false,
   tone = "auto",
@@ -16,15 +14,14 @@ export function BrandLogo({
       aria-label={compact ? undefined : "Codjingrank"}
       aria-hidden={compact ? true : undefined}
     >
-      <Image
-        src="/brand/codjingrank-mark.png"
-        alt=""
-        width={192}
-        height={192}
-        className={styles.mark}
-        unoptimized
-      />
-      {!compact && <span className={styles.wordmark} aria-hidden="true" />}
+      <span className={styles.mark} data-brand-mark aria-hidden="true" />
+      {!compact && (
+        <span
+          className={styles.wordmark}
+          data-brand-wordmark
+          aria-hidden="true"
+        />
+      )}
     </span>
   );
 }

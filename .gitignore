@@ -8,3 +8,4 @@ coverage/
 srs/
 *.sql
 *.xlsx
+.taste-skill/

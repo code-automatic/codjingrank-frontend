@@ -10,6 +10,10 @@
   display: block;
   width: 64px;
   height: 64px;
+  flex-shrink: 0;
+  background: var(--brand-mark);
+  -webkit-mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
+  mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
 }
 .wordmark {
   display: block;

@@ -1,4 +1,5 @@
 :root {
+  --brand-mark: #087f78;
   font-family: Arial, sans-serif;
   color: var(--ui-text);
   background: var(--ui-canvas);
@@ -98,7 +99,7 @@ a:focus-visible {
   outline: 3px solid var(--ui-focus);
   outline-offset: 4px;
 }
-button:hover:not(:disabled) {
+button:where(:hover:not(:disabled)) {
   background: var(--ui-button-hover);
 }
 

@@ -1,0 +1,387 @@
+.platform .btn-primary-link {
+  color: var(--ui-button-text);
+  background: var(--ui-button);
+  border-color: var(--ui-button);
+}
+.platform .btn-primary-link:hover {
+  color: var(--ui-button-text);
+  background: var(--ui-button-hover);
+}
+.platform .btn-secondary-link {
+  color: var(--ui-text);
+  background: var(--ui-surface);
+  border-color: var(--ui-control-border);
+}
+.platform .btn-secondary-link:hover {
+  color: var(--ui-text);
+  background: var(--ui-surface-muted);
+}
+.platform .button-secondary {
+  color: var(--ui-text);
+  background: var(--ui-surface-muted);
+  border: 1px solid var(--ui-control-border);
+}
+.platform .package-card .btn-primary-link {
+  min-width: 160px;
+}
+.platform .package-card {
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+.platform .package-card-title {
+  font-size: 20px;
+  margin: 6px 0 12px;
+}
+.platform .package-card-footer {
+  gap: 16px;
+}
+.platform :is(button, input, select, textarea) {
+  min-height: 40px;
+}
+.platform :is(input, select, textarea)::placeholder {
+  color: var(--ui-text-muted);
+  opacity: 1;
+}
+.platform .platform-theme input {
+  min-height: 0;
+}
+.platform .platform-calendar-grid span {
+  min-height: 0;
+}
+.platform .platform-search input {
+  min-height: 36px;
+}
+.platform .platform-notice-tabs button {
+  min-height: 44px;
+}
+.platform .catalog-section-head {
+  gap: 20px;
+}
+.platform .catalog-pagination-bar {
+  box-shadow: none;
+}
+.platform .workspace-header {
+  gap: 20px;
+}
+.platform .package-card-desc {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.platform .level-card {
+  box-shadow: none;
+}
+.platform .platform-primary {
+  color: var(--ui-on-accent);
+}
+.platform button:disabled {
+  opacity: 0.65;
+}
+.platform a[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+.practice-calendar {
+  position: relative;
+  padding: 20px 16px 12px;
+  border-radius: 12px;
+  background: var(--ui-surface-muted);
+}
+.practice-calendar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  margin-bottom: 10px;
+}
+.practice-calendar-top > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.practice-calendar-top strong {
+  font-size: 13px;
+}
+.practice-calendar-top span {
+  font-size: 9px;
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.practice-calendar-top small {
+  font-size: 9px;
+  background: var(--ui-surface);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.practice-calendar-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 50px;
+  border: 2px solid var(--ui-accent);
+  border-radius: 13px;
+  color: var(--ui-accent) !important;
+  font-size: 20px !important;
+  font-weight: 700;
+  box-shadow:
+    inset 0 0 0 3px var(--ui-surface-muted),
+    inset 0 0 0 4px var(--ui-border);
+}
+.practice-calendar-badge small {
+  font-size: 7px;
+  background: transparent;
+  padding: 0;
+}
+.practice-calendar-month {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+.practice-calendar-month strong {
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.practice-calendar-month > div {
+  display: flex;
+  gap: 2px;
+}
+.platform .practice-calendar button {
+  min-height: 30px;
+  margin: 0;
+  padding: 4px;
+  background: transparent;
+  color: var(--ui-text);
+  border-radius: 6px;
+  font-weight: 400;
+}
+.practice-calendar-month button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+}
+.practice-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.practice-calendar-weekday {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  padding: 6px 0;
+}
+.platform .practice-calendar-grid button {
+  position: relative;
+  width: 28px;
+  height: 30px;
+  justify-self: center;
+  font-size: 11px;
+  border-radius: 50%;
+}
+.practice-calendar-grid button i {
+  position: absolute;
+  bottom: 2px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: transparent;
+}
+.practice-calendar-grid button[data-active="true"] i {
+  background: var(--ui-success);
+}
+.platform .practice-calendar-grid [aria-current="date"] {
+  background: var(--ui-success);
+  color: var(--ui-on-accent);
+  font-weight: 700;
+}
+.platform .practice-calendar-grid [aria-pressed="true"]:not([aria-current]) {
+  outline: 1px solid var(--ui-accent);
+  outline-offset: -2px;
+}
+.practice-calendar-summary {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--ui-accent-surface);
+  font-size: 11px;
+}
+.practice-calendar-summary strong {
+  color: var(--ui-accent);
+}
+.practice-calendar-summary p {
+  margin: 6px 0 0;
+  color: var(--ui-text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.practice-calendar-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 10px;
+}
+.practice-calendar-footer span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--ui-success);
+}
+.platform .practice-calendar-footer button {
+  color: var(--ui-link);
+  font-size: 10px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .platform
+    :is(
+      .btn-primary-link,
+      .btn-secondary-link,
+      .button-secondary,
+      .primaryAction,
+      .platform-icon-button,
+      .platform-account-grid a,
+      .package-card,
+      .platform-primary
+    ) {
+    transition:
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .platform
+    :is(
+      .btn-primary-link,
+      .btn-secondary-link,
+      .primaryAction,
+      .platform-primary
+    ):hover {
+    transform: translateY(-1px);
+  }
+  .platform
+    :is(
+      .btn-primary-link,
+      .btn-secondary-link,
+      .primaryAction,
+      .platform-primary
+    ):active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+  .platform .package-card:hover {
+    border-color: var(--ui-control-border);
+  }
+  .platform .practice-calendar button:hover {
+    background: var(--ui-accent-surface);
+    color: var(--ui-accent);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .platform-popover[data-pointer-open="true"]:popover-open {
+    animation: platform-popover-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .platform-popover:has(:focus-visible) {
+    animation: none;
+  }
+  @keyframes platform-popover-in {
+    from {
+      opacity: 0.6;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+@media (max-width: 760px) {
+  .platform .package-card {
+    padding: 18px;
+  }
+  .platform .package-card-footer {
+    flex-wrap: wrap;
+  }
+  .platform .package-card-footer a {
+    width: 100%;
+  }
+  .platform .platform-tools button {
+    min-height: 40px;
+  }
+  .platform .catalog-filter-panel input {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .platform :is(a, button, .package-card) {
+    transition: none !important;
+  }
+  .platform
+    :is(
+      .btn-primary-link,
+      .btn-secondary-link,
+      .primaryAction,
+      .platform-primary
+    ):is(:hover, :active) {
+    transform: none;
+  }
+}
+.platform .platform-search {
+  width: 230px;
+  flex: 0 1 230px;
+  min-height: 40px;
+  cursor: text;
+  border-color: var(--ui-control-border);
+  background: var(--ui-surface);
+}
+.platform .platform-search:focus-within {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+  border-color: var(--ui-focus);
+}
+.platform .platform-search input {
+  min-height: 38px;
+  font-size: 13px;
+  padding: 8px 2px;
+  outline: none;
+  box-shadow: none;
+}
+.platform .platform-search input:focus,
+.platform .platform-search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.platform .platform-search button {
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+  color: var(--ui-text-muted);
+  background: transparent;
+}
+@media (hover: hover) and (pointer: fine) {
+  .platform .platform-search button:hover {
+    color: var(--ui-accent);
+    background: var(--ui-accent-surface);
+  }
+  .platform .platform-avatar:hover {
+    background: var(--ui-accent-surface);
+    color: var(--ui-accent);
+    outline: 1px solid var(--ui-accent);
+    outline-offset: 2px;
+  }
+  .platform .platform-topic-chips button:hover {
+    background: var(--ui-accent-surface);
+    color: var(--ui-accent);
+  }
+  .platform .platform-notice-tabs button:hover {
+    background: transparent;
+    color: var(--ui-accent);
+  }
+}

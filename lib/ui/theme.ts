@@ -1,6 +1,7 @@
 export type Theme = "light" | "dark";
 export type ThemePreference = Theme | "system";
 export const THEME_STORAGE_KEY = "codjingrank-theme";
+let themeChangeRevision = 0;
 export function readThemePreference(): ThemePreference {
   try {
     const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -10,6 +11,8 @@ export function readThemePreference(): ThemePreference {
   }
 }
 export function applyTheme(preference: ThemePreference, persist = false) {
+  const revision = ++themeChangeRevision;
+  document.documentElement.dataset.themeChanging = "true";
   const theme =
     preference === "system"
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -28,6 +31,13 @@ export function applyTheme(preference: ThemePreference, persist = false) {
     }
   }
   window.dispatchEvent(new Event("codjingrank-theme-change"));
+  const finish = () => {
+    if (revision === themeChangeRevision)
+      delete document.documentElement.dataset.themeChanging;
+  };
+  if (typeof window.requestAnimationFrame === "function")
+    window.requestAnimationFrame(() => window.requestAnimationFrame(finish));
+  else finish();
 }
 export function getThemeSnapshot(): Theme {
   return document.documentElement.dataset.theme === "dark" ? "dark" : "light";

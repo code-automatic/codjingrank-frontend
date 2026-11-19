@@ -241,3 +241,9 @@ Báo cáo kiểm tra FE nằm trong [docs/LEADERBOARD_REVIEW.md](docs/LEADERBOAR
 ### Nhãn dữ liệu demo ở Ranking
 
 Khi chạy mock, đặt `NEXT_PUBLIC_MOCK_MODE=true` trong `.env.local` để hiển thị nhãn dữ liệu mô phỏng. Các tài khoản `demo_*` chỉ là fixture cho phân trang và đồng hạng, không phải người dùng thật. Chạy live thì đặt `NEXT_PUBLIC_MOCK_MODE=false` và cấu hình `NEXT_PUBLIC_GATEWAY_URL` theo Gateway của deployment; khởi động lại Next.js sau khi đổi biến môi trường. Mock không chứng minh cookie rotation, ownership hoặc readiness của backend live.
+
+## Trang giới thiệu công khai
+
+Route `/` hiển thị landing page trước đăng nhập. Các route đăng nhập/đăng ký và ứng dụng giữ theme Latte/Mocha hiện có; landing dùng palette riêng. Ảnh sản phẩm có dữ liệu demo và nguồn asset tại `public/landing/SOURCES.md`.
+
+Khi triển khai, đặt `NEXT_PUBLIC_SITE_URL` thành origin HTTPS chính thức trước khi build để metadata chia sẻ dùng đúng domain. Giá trị mặc định phục vụ phát triển là `http://localhost:3000`; không chứa token hoặc secret.
