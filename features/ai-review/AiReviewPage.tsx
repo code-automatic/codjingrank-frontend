@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/lib/ui/Icon";
+import { CopyButton } from "@/lib/ui/CopyButton";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
@@ -102,18 +104,17 @@ export function AiReviewContent({
     <div className="ai-review-main">
       <header className="ai-review-page-header">
         <div className="ai-review-header-left">
-          <nav aria-label="Breadcrumb" className="ai-breadcrumb">
+          <nav aria-label="Đường dẫn bài nộp" className="ai-breadcrumb">
+            <Link href="/problems">Kho bài</Link>
+            <Icon name="chevronRight" />
             <Link
               href={`/problems/${encodeURIComponent(submission.problemSlug)}`}
             >
-              ← Quay lại bài tập: {submission.problemTitle}
+              Bài tập
             </Link>
-            <span aria-hidden="true"> / </span>
-            <Link href="/problems">Kho bài tập</Link>
-            <span aria-hidden="true"> / </span>
-            <span>Đánh giá AI</span>
+            <Icon name="chevronRight" />
+            <span aria-current="page">Đánh giá AI</span>
           </nav>
-          <p className="ai-review-context">Đánh giá mã nguồn</p>
           <h1>{submission.problemTitle}</h1>
         </div>
         <div className="ai-review-header-links">
@@ -122,7 +123,7 @@ export function AiReviewContent({
             className="button-secondary"
             href={`/problems/${encodeURIComponent(submission.problemSlug)}`}
           >
-            Mở trình soạn thảo bài này
+            <Icon name="code" /> Quay lại viết code
           </Link>
         </div>
       </header>
@@ -143,9 +144,13 @@ export function AiReviewContent({
               · Bộ nhớ:{" "}
               {submission.memoryKb === null ? "—" : `${submission.memoryKb} KB`}
             </p>
-            <p className="muted ai-submission-id">
-              Mã lượt nộp: {submission.id}
-            </p>
+            <details className="submission-reference">
+              <summary>Thông tin lượt nộp</summary>
+              <div>
+                <code>{submission.id}</code>
+                <CopyButton value={submission.id} />
+              </div>
+            </details>
           </div>
           <div className="ai-verdict-badges">
             <span
@@ -153,7 +158,7 @@ export function AiReviewContent({
                 submission.isAccepted ? "ai-badge--pass" : "ai-badge--fail"
               }`}
             >
-              Verdict: {submission.status}
+              {submission.status}
             </span>
             <span className="ai-badge ai-badge--neutral">
               Độc lập với điểm AI & xếp hạng
@@ -226,14 +231,14 @@ export function AiReviewContent({
                   className="button-secondary"
                   onClick={onPause}
                 >
-                  ⏹ Dừng theo dõi
+                  <Icon name="pause" /> Tạm dừng
                 </button>
               )}
               {(state.phase === "paused" ||
                 (state.phase === "ready" && review?.isFailed)) &&
                 onResume && (
                   <button type="button" onClick={onResume}>
-                    ↻ Kiểm tra lại đánh giá AI
+                    <Icon name="reset" /> Kiểm tra lại
                   </button>
                 )}
             </div>
@@ -270,8 +275,11 @@ export function AiReviewContent({
 
           {!review?.isCompleted && !review?.isFailed && (
             <div className="ai-waiting-box" role="status">
-              <h3>Trạng thái hàng đợi AI</h3>
-              <p className="muted">{statusMeta.description}</p>
+              <h3>Bạn có thể tiếp tục luyện tập</h3>
+              <p className="muted">
+                Quay lại viết code bất cứ lúc nào. Bản nháp được giữ lại; mở lại
+                trang này để xem trạng thái đánh giá mới nhất.
+              </p>
             </div>
           )}
 

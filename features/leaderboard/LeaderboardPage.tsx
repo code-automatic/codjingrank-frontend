@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/lib/ui/Icon";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useEffect,
@@ -435,6 +436,8 @@ function Results({
                 <div>
                   <button
                     type="button"
+                    aria-label="Trang trước"
+                    title="Trang trước"
                     disabled={query.page <= 1}
                     onClick={() =>
                       router.push(
@@ -443,7 +446,8 @@ function Results({
                       )
                     }
                   >
-                    Trước
+                    <Icon name="chevronLeft" />
+                    <span className="sr-only">Trang trước</span>
                   </button>
                   {pageNumbers.map((page) => (
                     <button
@@ -463,6 +467,8 @@ function Results({
                   ))}
                   <button
                     type="button"
+                    aria-label="Trang sau"
+                    title="Trang sau"
                     disabled={query.page >= pages}
                     onClick={() =>
                       router.push(
@@ -471,7 +477,8 @@ function Results({
                       )
                     }
                   >
-                    Sau
+                    <Icon name="chevronRight" />
+                    <span className="sr-only">Trang sau</span>
                   </button>
                 </div>
               </nav>

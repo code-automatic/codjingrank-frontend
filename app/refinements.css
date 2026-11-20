@@ -1,0 +1,560 @@
+.icon-button,
+.platform .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--ui-control-border);
+  border-radius: 8px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  vertical-align: middle;
+}
+button svg,
+a svg {
+  flex-shrink: 0;
+}
+.copy-control {
+  display: inline-flex;
+}
+.login-prototype.auth-page label {
+  position: static;
+  display: block;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  overflow: visible;
+  margin: 18px 0 7px;
+  white-space: normal;
+  color: var(--ui-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.login-prototype.auth-page fieldset > label:first-of-type {
+  margin-top: 0;
+}
+.login-prototype.auth-page input,
+.login-prototype.auth-page .login-password {
+  margin-top: 0;
+}
+.login-prototype.auth-page .login-password input {
+  padding-right: 48px;
+}
+.login-prototype.auth-page .password-toggle {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  padding: 8px;
+  color: var(--ui-text-muted);
+}
+.auth-recovery-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.login-prototype.auth-page .auth-heading p {
+  font-size: 14px;
+}
+.login-prototype.auth-page .auth-switch {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.login-prototype.auth-page .recovery-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  font-size: 14px;
+}
+.recovery-notice {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ui-surface-muted);
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.recovery-notice svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--ui-accent);
+}
+.recovery-notice p {
+  margin: 6px 0 0;
+  color: var(--ui-text-muted);
+}
+.recovery-feedback:not(:empty) {
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.catalog-search-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--ui-control-border);
+  border-radius: 10px;
+  background: var(--ui-input-bg, var(--ui-surface));
+  padding: 3px 4px 3px 14px;
+  color: var(--ui-text-muted);
+}
+.catalog-search-control:focus-within {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.platform .catalog-search-control input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+}
+.platform .catalog-search-control input:focus {
+  outline: none;
+}
+.catalog-search-control .catalog-search-submit {
+  background: var(--ui-button);
+  color: var(--ui-button-text);
+  border: 0;
+}
+.catalog-filter-panel
+  .catalog-filter-footer:has(.catalog-actions:empty):not(
+    :has([role="status"])
+  ) {
+  display: none;
+}
+.platform .catalog-filter-panel {
+  padding: 0 0 22px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ui-border);
+  border-radius: 0;
+}
+.platform .package-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.platform .package-card {
+  position: relative;
+  padding: 22px;
+}
+.package-topic-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+  margin-bottom: 14px;
+}
+.platform .package-card-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+}
+.platform .package-card-footer .btn-primary-link {
+  min-height: 40px;
+  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.platform .pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 14px 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--ui-border);
+  border-radius: 0;
+  gap: 14px;
+}
+.platform .pagination-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: auto;
+}
+.platform .pagination-controls select {
+  width: 76px;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+}
+.platform .pagination-controls button {
+  width: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.platform .pagination-size-label,
+.platform .pagination-page-indicator,
+.platform .pagination-summary {
+  font-size: 13px;
+}
+.platform .practice-calendar {
+  padding: 20px 16px 14px;
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+}
+.platform .practice-calendar-top {
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.platform .practice-calendar-top > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+.platform .practice-calendar-top strong {
+  grid-column: 1 / -1;
+  font-size: 15px;
+}
+.platform .practice-calendar-top span {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.platform .practice-calendar-badge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+  box-shadow: none;
+}
+.platform .practice-calendar-month strong {
+  font-size: 13px;
+}
+.platform .practice-calendar-month button {
+  width: 32px;
+  min-height: 32px;
+}
+.platform .practice-calendar-grid {
+  gap: 4px 0;
+}
+.platform .practice-calendar-grid button {
+  width: 30px;
+  height: 32px;
+  font-size: 12px;
+}
+.platform .practice-calendar-grid [aria-current="date"] {
+  background: var(--ui-success);
+  color: var(--ui-on-accent);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px var(--ui-surface);
+}
+.platform .practice-calendar-grid [aria-pressed="true"] {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 1px;
+}
+.platform .practice-calendar-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 12px 0;
+  margin-top: 14px;
+  background: transparent;
+  border-top: 1px solid var(--ui-border);
+  border-radius: 0;
+}
+.platform .practice-calendar-summary p {
+  margin: 0;
+  font-size: 11px;
+}
+.practice-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  color: var(--ui-text-muted);
+  font-size: 9px;
+}
+.practice-calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.practice-calendar-legend i {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+}
+.calendar-today-key {
+  background: var(--ui-success);
+  border-radius: 50%;
+}
+.calendar-selected-key {
+  border: 1px solid var(--ui-accent);
+  border-radius: 2px;
+}
+.calendar-activity-key {
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50%;
+  background: var(--ui-success);
+}
+.platform .practice-calendar-footer {
+  border-top: 1px solid var(--ui-border);
+  padding-top: 8px;
+  margin-top: 14px;
+  font-size: 11px;
+}
+.platform .practice-calendar-footer button {
+  font-size: 11px;
+}
+.submission-verdict-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.submission-verdict-heading h3 {
+  margin: 3px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.submission-result-label {
+  color: var(--ui-text-muted);
+  font-size: 12px;
+}
+.verdict-symbol {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--ui-accent);
+  background: var(--ui-accent-surface);
+}
+.verdict-symbol--accepted {
+  color: var(--ui-readable-green);
+  background: color-mix(in srgb, var(--ui-success) 12%, var(--ui-surface));
+}
+.submission-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 16px;
+  font-variant-numeric: tabular-nums;
+}
+.submission-metrics dt {
+  font-size: 11px;
+  color: var(--ui-text-muted);
+  margin-bottom: 6px;
+}
+.submission-metrics dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.submission-metrics dd span {
+  font-weight: 400;
+  color: var(--ui-text-muted);
+}
+.submission-reference {
+  padding: 10px 0;
+  font-size: 12px;
+  color: var(--ui-text-muted);
+}
+.submission-reference summary {
+  cursor: pointer;
+  width: fit-content;
+  padding: 6px 0;
+}
+.submission-reference > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+.submission-reference code {
+  overflow-wrap: anywhere;
+  min-width: 0;
+  user-select: all;
+}
+.submission-reference .icon-button {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+}
+.submission-panel .submission-ai-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ui-border);
+  margin-top: 8px;
+}
+.submission-panel .submission-ai-cta p {
+  font-size: 12px;
+  flex: 1 1 190px;
+  max-width: 40ch;
+}
+.submission-panel .submission-ai-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ui-button);
+  color: var(--ui-button-text);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-height: 42px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.ai-review-main .ai-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.ai-review-main .ai-breadcrumb [aria-current] {
+  color: var(--ui-text);
+  font-weight: 600;
+}
+.ai-review-main .ai-review-header-links a,
+.ai-review-main .ai-review-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ai-review-main .ai-review-page-header {
+  border-bottom: 1px solid var(--ui-border);
+  padding-bottom: 24px;
+}
+@media (hover: hover) and (pointer: fine) {
+  :is(.icon-button, .catalog-search-submit):hover {
+    background: var(--ui-accent-surface);
+    color: var(--ui-text);
+    border-color: var(--ui-accent);
+  }
+  .submission-panel .submission-ai-link:hover {
+    background: var(--ui-accent);
+    color: var(--ui-on-accent);
+  }
+  :is(
+    .login-prototype.auth-page input,
+    .catalog-search-control,
+    .icon-button,
+    .submission-ai-link,
+    .recovery-back
+  ) {
+    transition:
+      background-color var(--motion-fast) ease,
+      color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease,
+      transform var(--motion-fast) var(--motion-feedback);
+  }
+}
+@media (max-width: 760px) {
+  .platform .package-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .platform .pagination-controls {
+    width: 100%;
+  }
+  .submission-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .submission-panel .submission-ai-cta {
+    align-items: stretch;
+  }
+  .submission-panel .submission-ai-link {
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .login-prototype.auth-page input,
+    .catalog-search-control,
+    .icon-button,
+    .submission-ai-link,
+    .recovery-back
+  ) {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .practice-calendar-grid[data-month-motion="true"] {
+    animation: calendar-month-in 160ms var(--motion-feedback);
+  }
+  @keyframes calendar-month-in {
+    from {
+      opacity: 0.55;
+      transform: translateY(3px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+.platform .package-card-body {
+  gap: 8px;
+}
+.platform .package-card-title {
+  margin: 0;
+}
+.platform .package-topic-icon {
+  margin-bottom: 4px;
+}
+.platform .package-card-footer {
+  margin-top: 4px;
+}
+.workspace-prototype .workspace-reset.workspace-icon-button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 7px;
+}
+.submission-verdict-heading {
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.submission-verdict-heading .submission-ai-link {
+  margin-left: auto;
+}
+.submission-history-actions :is(a, button),
+.submission-panel > .actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+@media (max-width: 420px) {
+  .submission-verdict-heading .submission-ai-link {
+    margin-left: 0;
+  }
+}

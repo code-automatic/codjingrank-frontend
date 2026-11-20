@@ -65,3 +65,7 @@ Nguồn tham chiếu: https://www.hackerrank.com/ và ảnh người dùng gửi
 ## Landing — tinh chỉnh nút và typography theo ảnh HackerRank
 
 Ngày 19/11/2026: CTA pill tối, secondary viền mảnh, hover đổi xanh rừng và mũi tên dịch nhẹ, nav/footer underline. Manrope regular cho dòng đầu hero, nhấn xanh ở dòng sau; nhãn và mô tả tăng độ đọc. Nền mint của hero chuyển nhẹ theo chuột bằng transform/rAF, không setState theo từng frame; tắt tracking với reduced-motion/cảm ứng và dọn listeners khi unmount. Không sửa theme hoặc form auth của ứng dụng.
+
+## Tinh chỉnh thao tác — 20/11/2026
+
+Theo yêu cầu mới, nhãn email/password hiển thị rõ và có icon mắt, liên kết Quên mật khẩu. Hai route khôi phục được chuẩn bị, mặc định thông báo chưa sẵn sàng do contract backend chưa triển khai; không mô phỏng email thành công. Lịch bỏ badge tháng cũ, dùng icon lịch, giữ UTC và dữ liệu thật, phân biệt ngày bằng ring/đĩa/dot cùng nhãn. IconButton/CopyButton và refinements.css thống nhất control; tìm kiếm nằm sát input, phân trang icon. Kết quả nộp có metrics và CTA AI ngay cạnh Accepted, metadata phụ có copy; breadcrumb AI rõ và giữ draft khi quay lại. Motion phản hồi ngắn, chỉ animate đổi tháng với chuột; không animate code/kết quả. Theme và logo giữ nguyên. Chi tiết file/giới hạn: docs/UI_UX_REFINEMENT_2026_11_20.md.

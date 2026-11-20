@@ -10,6 +10,7 @@ export function PracticeCalendar() {
   const { status, user } = useSession();
   const [now, setNow] = useState<Date | null>(null);
   const [offset, setOffset] = useState(0);
+  const [monthMotion, setMonthMotion] = useState(false);
   const [selected, setSelected] = useState("");
   const [stats, setStats] = useState<UserStatsModel | null>(null);
   const [error, setError] = useState("");
@@ -68,16 +69,12 @@ export function PracticeCalendar() {
     <section className="practice-calendar" aria-label="Lịch luyện tập">
       <div className="practice-calendar-top">
         <div>
-          <strong>Ngày {now.getUTCDate()}</strong>
+          <strong>Lịch luyện tập</strong>
           <span aria-hidden="true">{countdown} còn lại</span>
           <small>UTC</small>
         </div>
-        <span
-          className="practice-calendar-badge"
-          aria-label={`Tháng ${month.getUTCMonth() + 1}`}
-        >
-          {String(month.getUTCMonth() + 1).padStart(2, "0")}
-          <small>THÁNG</small>
+        <span className="practice-calendar-badge" aria-hidden="true">
+          <Icon name="calendar" size={28} />
         </span>
       </div>
       <div className="practice-calendar-month">
@@ -91,19 +88,31 @@ export function PracticeCalendar() {
         <div>
           <button
             aria-label="Tháng trước"
-            onClick={() => setOffset((value) => value - 1)}
+            title="Tháng trước"
+            onClick={(event) => {
+              setMonthMotion(event.detail > 0);
+              setOffset((value) => value - 1);
+            }}
           >
             <Icon name="chevronLeft" />
           </button>
           <button
             aria-label="Tháng sau"
-            onClick={() => setOffset((value) => value + 1)}
+            title="Tháng sau"
+            onClick={(event) => {
+              setMonthMotion(event.detail > 0);
+              setOffset((value) => value + 1);
+            }}
           >
             <Icon name="chevronRight" />
           </button>
         </div>
       </div>
-      <div className="practice-calendar-grid">
+      <div
+        className="practice-calendar-grid"
+        key={month.toISOString()}
+        data-month-motion={monthMotion}
+      >
         {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((day) => (
           <span className="practice-calendar-weekday" key={day}>
             {day}
@@ -122,7 +131,8 @@ export function PracticeCalendar() {
           return (
             <button
               key={date}
-              aria-label={`${i + 1}/${month.getUTCMonth() + 1}/${month.getUTCFullYear()}${activity ? `, ${activity} hoạt động` : ""}`}
+              aria-label={`${i + 1}/${month.getUTCMonth() + 1}/${month.getUTCFullYear()}${date === today ? ", hôm nay" : ""}${activity ? `, ${activity} hoạt động` : ""}`}
+              title={`${i + 1}/${month.getUTCMonth() + 1}/${month.getUTCFullYear()}${activity ? ` · ${activity} hoạt động` : ""}`}
               aria-current={date === today ? "date" : undefined}
               aria-pressed={date === activeDate}
               data-active={Boolean(activity)}
@@ -134,7 +144,7 @@ export function PracticeCalendar() {
           );
         })}
       </div>
-      <div className="practice-calendar-summary">
+      <div className="practice-calendar-summary" aria-live="polite">
         <strong>{activeDate.split("-").reverse().join("/")}</strong>
         <p>
           {error
@@ -142,7 +152,7 @@ export function PracticeCalendar() {
             : stats
               ? count
                 ? `${count} hoạt động luyện tập được ghi nhận.`
-                : "Không có hoạt động được ghi nhận trong dữ liệu hiện có."
+                : "Chưa ghi nhận hoạt động."
               : "Đang tải hoạt động luyện tập…"}
         </p>
         {error && (
@@ -150,6 +160,20 @@ export function PracticeCalendar() {
             Tải lại hoạt động
           </button>
         )}
+      </div>
+      <div className="practice-calendar-legend">
+        <span>
+          <i className="calendar-today-key" />
+          Hôm nay
+        </span>
+        <span>
+          <i className="calendar-selected-key" />
+          Đang chọn
+        </span>
+        <span>
+          <i className="calendar-activity-key" />
+          Hoạt động
+        </span>
       </div>
       <div className="practice-calendar-footer">
         <span>

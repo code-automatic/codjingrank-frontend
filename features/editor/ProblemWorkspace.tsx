@@ -391,13 +391,13 @@ function WorkspaceReady({
                 </button>
                 <button
                   type="button"
-                  className="button-secondary workspace-reset"
+                  className="workspace-icon-button workspace-reset"
                   onClick={onResetStarter}
                   disabled={!canEdit || snapshot.code === snapshot.starterCode}
-                  title="Xoá nháp và trả về đúng mã khởi tạo của bài"
+                  title="Đặt lại mã khởi tạo"
+                  aria-label="Đặt lại mã khởi tạo"
                 >
                   <Icon name="reset" />
-                  <span>Đặt lại mã khởi tạo</span>
                 </button>
                 <button
                   type="button"

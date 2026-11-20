@@ -247,3 +247,7 @@ Khi chạy mock, đặt `NEXT_PUBLIC_MOCK_MODE=true` trong `.env.local` để hi
 Route `/` hiển thị landing page trước đăng nhập. Các route đăng nhập/đăng ký và ứng dụng giữ theme Latte/Mocha hiện có; landing dùng palette riêng. Ảnh sản phẩm có dữ liệu demo và nguồn asset tại `public/landing/SOURCES.md`.
 
 Khi triển khai, đặt `NEXT_PUBLIC_SITE_URL` thành origin HTTPS chính thức trước khi build để metadata chia sẻ dùng đúng domain. Giá trị mặc định phục vụ phát triển là `http://localhost:3000`; không chứa token hoặc secret.
+
+## Khôi phục mật khẩu
+
+UI có `/forgot-password` và `/reset-password?token=...`. Contract hiện đánh dấu backend khôi phục là chưa triển khai; mặc định `NEXT_PUBLIC_PASSWORD_RESET_ENABLED=false`, giao diện báo rõ chưa sẵn sàng và không giả lập gửi email. Chỉ bật cờ thành `true`, đặt `NEXT_PUBLIC_MOCK_MODE=false` và rebuild khi backend đã có token một lần, hạn dùng, gửi email và thu hồi refresh token. Chi tiết UI/kiểm tra: `docs/UI_UX_REFINEMENT_2026_11_20.md`.
