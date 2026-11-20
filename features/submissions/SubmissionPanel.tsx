@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { Icon } from "@/lib/ui/Icon";
+import { CopyButton } from "@/lib/ui/CopyButton";
+import { IconButton } from "@/lib/ui/IconButton";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useSession } from "@/features/auth/session";
 import type { WorkspaceSnapshot } from "@/features/editor/workspace";
@@ -18,29 +20,66 @@ export function SubmissionResult({ state }: { state: SubmissionState }) {
     <div className="submission-result" aria-live="polite" aria-atomic="true">
       {row ? (
         <>
-          <p className={row.isAccepted ? "badge-solved" : "submission-verdict"}>
-            <strong>{row.status}</strong>
-          </p>
-          <p>
-            {row.passCount}/{row.totalTestcases} test đạt · {row.languageSlug}
-          </p>
-          <p className="muted">
-            Thời gian: {row.runtimeMs === null ? "—" : `${row.runtimeMs} ms`} ·
-            Bộ nhớ: {row.memoryKb === null ? "—" : `${row.memoryKb} KB`}
-          </p>
-          <p className="muted submission-id">Mã lượt nộp: {row.id}</p>
+          <div className="submission-verdict-heading">
+            <span
+              className={
+                row.isAccepted
+                  ? "verdict-symbol verdict-symbol--accepted"
+                  : "verdict-symbol"
+              }
+            >
+              <Icon name={row.isAccepted ? "check" : "code"} size={22} />
+            </span>
+            <div>
+              <span className="submission-result-label">Kết quả chấm bài</span>
+              <h3>{row.status}</h3>
+            </div>
+            {row.isAccepted && (
+              <Link
+                href={`/submissions/${encodeURIComponent(row.id)}/ai-review`}
+                className="btn-primary-link submission-ai-link"
+              >
+                <Icon name="sparkles" size={18} /> Xem đánh giá AI{" "}
+                <Icon name="chevronRight" />
+              </Link>
+            )}
+          </div>
+          <dl className="submission-metrics">
+            <div>
+              <dt>Test đạt</dt>
+              <dd
+                aria-label={`${row.passCount}/${row.totalTestcases} test đạt`}
+              >
+                {row.passCount}
+                <span> / {row.totalTestcases}</span>
+              </dd>
+            </div>
+            <div>
+              <dt>Ngôn ngữ</dt>
+              <dd>{row.languageSlug}</dd>
+            </div>
+            <div>
+              <dt>Thời gian</dt>
+              <dd>{row.runtimeMs === null ? "—" : `${row.runtimeMs} ms`}</dd>
+            </div>
+            <div>
+              <dt>Bộ nhớ</dt>
+              <dd>{row.memoryKb === null ? "—" : `${row.memoryKb} KB`}</dd>
+            </div>
+          </dl>
+          <details className="submission-reference">
+            <summary>Thông tin lượt nộp</summary>
+            <div>
+              <code>{row.id}</code>
+              <CopyButton value={row.id} />
+            </div>
+          </details>
           {row.errorMessage && (
             <pre className="submission-message">{row.errorMessage}</pre>
           )}
           {row.isAccepted && (
             <div className="submission-ai-cta">
-              <p>Đã chấp nhận bài nộp. Kết quả chấm độc lập với đánh giá AI.</p>
-              <Link
-                href={`/submissions/${encodeURIComponent(row.id)}/ai-review`}
-                className="button-secondary submission-ai-link"
-              >
-                Xem đánh giá AI →
-              </Link>
+              <p>Kết quả chấm độc lập với nhận xét và điểm đánh giá AI.</p>
             </div>
           )}
         </>
@@ -186,27 +225,23 @@ export function SubmissionPanel({
       )}
       <SubmissionResult state={state} />
       <div className="actions">
-        <button
-          type="button"
-          className="button-secondary"
+        <IconButton
+          icon="reset"
+          label="Kiểm tra lượt nộp gần nhất"
           disabled={state.phase === "submitting"}
           onClick={() => void controller.reconcile()}
-        >
-          Kiểm tra lượt nộp gần nhất
-        </button>
+        />
         {state.phase === "paused" && (
           <button type="button" onClick={() => controller.resume()}>
-            Kiểm tra lại kết quả
+            <Icon name="reset" /> Kiểm tra lại
           </button>
         )}
         {state.phase === "polling" && (
-          <button
-            type="button"
-            className="button-secondary"
+          <IconButton
+            icon="pause"
+            label="Dừng theo dõi"
             onClick={() => controller.pause()}
-          >
-            Dừng theo dõi
-          </button>
+          />
         )}
       </div>
       <section
@@ -259,14 +294,12 @@ export function SubmissionPanel({
       >
         <div className="editor-heading-row">
           <h3 id="submission-history-heading">Lịch sử cá nhân của bài này</h3>
-          <button
-            type="button"
-            className="button-secondary"
+          <IconButton
+            icon="history"
+            label="Làm mới lịch sử"
             disabled={state.historyLoading}
             onClick={() => void controller.loadHistory(history?.page ?? 1)}
-          >
-            Làm mới lịch sử
-          </button>
+          />
         </div>
         {state.historyLoading && <p role="status">Đang tải lịch sử…</p>}
         {!!state.historyError && (
@@ -302,14 +335,14 @@ export function SubmissionPanel({
                         aria-label={`Xem bài nộp ${row.id}`}
                         onClick={() => void controller.select(row.id)}
                       >
-                        Xem kết quả
+                        <Icon name="eye" /> Kết quả
                       </button>
                       {row.isAccepted && (
                         <Link
                           href={`/submissions/${encodeURIComponent(row.id)}/ai-review`}
                           className="button-secondary"
                         >
-                          Xem đánh giá AI
+                          <Icon name="sparkles" /> Đánh giá AI
                         </Link>
                       )}
                     </div>
@@ -320,10 +353,13 @@ export function SubmissionPanel({
             <nav className="actions" aria-label="Phân trang lịch sử">
               <button
                 type="button"
+                aria-label="Trang trước"
+                title="Trang trước"
                 disabled={history.page <= 1}
                 onClick={() => void controller.loadHistory(history.page - 1)}
               >
-                Trang trước
+                <Icon name="chevronLeft" />
+                <span className="sr-only">Trang trước</span>
               </button>
               <span>
                 Trang {history.page} /{" "}
@@ -332,10 +368,13 @@ export function SubmissionPanel({
               </span>
               <button
                 type="button"
+                aria-label="Trang sau"
+                title="Trang sau"
                 disabled={history.page * history.size >= history.total}
                 onClick={() => void controller.loadHistory(history.page + 1)}
               >
-                Trang sau
+                <Icon name="chevronRight" />
+                <span className="sr-only">Trang sau</span>
               </button>
             </nav>
           </>

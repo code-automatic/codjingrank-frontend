@@ -8,6 +8,7 @@ import { brandIntroInitializationScript } from "@/lib/ui/brand-intro-init";
 import "./theme.css";
 import "./styles.css";
 import "./motion.css";
+import "./refinements.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:

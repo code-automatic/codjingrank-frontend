@@ -1,4 +1,10 @@
 const PATHS = {
+  eyeOff:
+    "m3 3 18 18M10.6 5.1 12 5c6.5 0 10 7 10 7s-1.2 2.4-3.5 4.4M6.2 6.2C3.5 8.2 2 12 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.8-1.3M10 10a3 3 0 0 0 4 4",
+  sparkles:
+    "m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3M20 2v4m-2-2h4",
+  calendar:
+    "M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2M7 2v4m10-4v4M3 9h18M7 13h2m4 0h2m-8 4h2",
   flame: "M12 2c1 5 6 7 6 12a6 6 0 0 1-12 0c0-3 2-6 4-8 0 4 2 5 2 5s3-3 0-9z",
   circle: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0",
   lock: "M5 10h14v11H5zM8 10V6a4 4 0 0 1 8 0v4",
@@ -37,6 +43,7 @@ const PATHS = {
   check: "m5 12 4 4L19 6",
   history: "M3 11a9 9 0 1 1 2.5 7M3 4v7h7m2-4v5l3 2",
 } as const;
+export type IconName = keyof typeof PATHS;
 export function Icon({
   name,
   size = 16,

@@ -9,6 +9,7 @@ import "./login-prototype.css";
 import { AuthMotion } from "./AuthMotion";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { validateRegistration } from "./validation";
+import { Icon } from "@/lib/ui/Icon";
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const { store, status, loggingOut } = useSession();
@@ -163,11 +164,17 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
                       }
                       aria-pressed={showPassword}
+                      title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? "Ẩn" : "Hiện"}
+                      <Icon name={showPassword ? "eyeOff" : "eye"} size={20} />
                     </button>
                   </div>
+                  {mode === "login" && (
+                    <div className="auth-recovery-link">
+                      <Link href="/forgot-password">Quên mật khẩu?</Link>
+                    </div>
+                  )}
                   {mode === "register" && (
                     <small id="password-hint">
                       8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.

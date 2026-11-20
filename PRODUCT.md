@@ -13,3 +13,5 @@ Bối cảnh được ghi nhận từ yêu cầu của Thịnh; các lựa chọ
 - Không thêm state library, không sửa backend; không merge/push khi chưa được yêu cầu.
 
 - Ngày 19/11/2026: bổ sung landing page công khai tại `/` theo yêu cầu của Thịnh, nhận diện trắng/xanh riêng; theme Latte/Mocha và flow auth/ứng dụng giữ nguyên. CTA đăng ký hoặc vào kho bài theo phiên. Không có testimonial, khách hàng hoặc số liệu người dùng giả.
+
+- Ngày 20/11/2026: nâng cấp UI auth/lịch/search/pagination/submission/AI và các control dùng chung theo yêu cầu, không push/merge. Khôi phục mật khẩu có UI và tích hợp API được bảo vệ bằng cờ tắt mặc định; backend/token/email còn thiếu theo contract. Kết quả ở docs/UI_UX_REFINEMENT_2026_11_20.md.

@@ -234,7 +234,14 @@ export function ForumPage() {
                 ))}
               </select>
             </div>
-            <button type="submit">Tìm</button>
+            <button
+              type="submit"
+              className="icon-button"
+              aria-label="Tìm bài viết"
+              title="Tìm bài viết"
+            >
+              <Icon name="search" size={18} />
+            </button>
           </form>
 
           {state.phase === "loading" && (
@@ -286,6 +293,8 @@ export function ForumPage() {
                 <div>
                   <button
                     type="button"
+                    aria-label="Trang trước"
+                    title="Trang trước"
                     disabled={query.page <= 1}
                     onClick={() =>
                       router.push(
@@ -296,7 +305,8 @@ export function ForumPage() {
                       )
                     }
                   >
-                    Trước
+                    <Icon name="chevronLeft" />
+                    <span className="sr-only">Trang trước</span>
                   </button>
                   {pageNumbers.map((page) => (
                     <button
@@ -316,6 +326,8 @@ export function ForumPage() {
                   ))}
                   <button
                     type="button"
+                    aria-label="Trang sau"
+                    title="Trang sau"
                     disabled={query.page >= pages}
                     onClick={() =>
                       router.push(
@@ -326,7 +338,8 @@ export function ForumPage() {
                       )
                     }
                   >
-                    Sau
+                    <Icon name="chevronRight" />
+                    <span className="sr-only">Trang sau</span>
                   </button>
                 </div>
               </nav>

@@ -393,7 +393,7 @@ describe("SSR rendering and security", () => {
     expect(html).toContain("&lt;b&gt;XSS Title&lt;/b&gt;");
     expect(html).toContain("&lt;img src=x onerror=alert(1)&gt;");
     expect(html).not.toContain("<script>alert");
-    expect(html).toContain("Verdict: Accepted");
+    expect(html).toContain("Accepted</span>");
     expect(html).toContain("Độc lập với điểm AI &amp; xếp hạng");
   });
 
@@ -419,7 +419,7 @@ describe("SSR rendering and security", () => {
       }),
     );
 
-    expect(htmlAccepted).toContain("Xem đánh giá AI →");
+    expect(htmlAccepted).toContain("Xem đánh giá AI");
     expect(htmlAccepted).toContain(
       `/submissions/${encodeURIComponent(acceptedSub.id)}/ai-review`,
     );
@@ -448,7 +448,7 @@ describe("SSR rendering and security", () => {
       }),
     );
 
-    expect(htmlFailed).not.toContain("Xem đánh giá AI →");
+    expect(htmlFailed).not.toContain("Xem đánh giá AI");
   });
 });
 

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/lib/ui/Icon";
+import { IconButton } from "@/lib/ui/IconButton";
 import { useEffect, useRef, type ReactNode } from "react";
 import {
   describeLevelCard,
@@ -138,23 +140,32 @@ export function CatalogSearchBar({
       <div className="catalog-filter-grid">
         <div className="field catalog-field-search">
           <label htmlFor={id}>{label}</label>
-          <input
-            ref={inputRef}
-            id={id}
-            name="q"
-            type="search"
-            defaultValue={value}
-            placeholder={placeholder}
-          />
+          <div className="catalog-search-control">
+            <Icon name="search" size={18} />
+            <input
+              ref={inputRef}
+              id={id}
+              name="q"
+              type="search"
+              defaultValue={value}
+              placeholder={placeholder}
+            />
+            <button
+              type="submit"
+              className="catalog-search-submit icon-button"
+              aria-label={label}
+              title={label}
+              disabled={busy}
+            >
+              <Icon name="search" size={18} />
+            </button>
+          </div>
         </div>
         {children}
       </div>
 
       <div className="catalog-filter-footer">
         <div className="actions catalog-actions">
-          <button type="submit" disabled={busy}>
-            Tìm / Áp dụng
-          </button>
           {hasActiveFilters && (
             <button
               type="button"
@@ -186,7 +197,9 @@ export function PackagesGrid({ packages }: { packages: PackageModel[] }) {
       {packages.map((pkg) => (
         <li key={pkg.id} className="panel package-card">
           <div className="package-card-body">
-            <span className="eyebrow">Gói #{pkg.displayOrder + 1}</span>
+            <span className="package-topic-icon" aria-hidden="true">
+              <Icon name="layers" size={22} />
+            </span>
             <h2 className="package-card-title">{pkg.name}</h2>
             <p className="muted package-card-desc">
               {pkg.description?.trim()
@@ -203,7 +216,7 @@ export function PackagesGrid({ packages }: { packages: PackageModel[] }) {
               className="btn-primary-link"
               aria-label={`Xem 3 cấp độ của gói ${pkg.name}`}
             >
-              Xem 3 cấp độ →
+              Mở lộ trình <Icon name="chevronRight" />
             </Link>
           </div>
         </li>
@@ -241,14 +254,12 @@ export function PackageLevelsSection({
             Trạng thái mở khóa và hoàn thành được tính trực tiếp từ máy chủ.
           </p>
         </div>
-        <button
-          type="button"
-          className="button-secondary"
+        <IconButton
+          icon="reset"
+          label="Cập nhật tiến độ cấp"
           disabled={refreshing}
           onClick={onRefreshLevels}
-        >
-          {refreshing ? "Đang cập nhật…" : "↻ Cập nhật tiến độ cấp"}
-        </button>
+        />
       </div>
 
       {refreshError && (
@@ -507,26 +518,26 @@ export function CatalogPaginationBar({
         <button
           type="button"
           className="button-secondary"
+          aria-label="Trang trước"
+          title="Trang trước"
           disabled={busy || !meta.hasPrev}
           onClick={() =>
             onChangePage(Math.min(meta.totalPages, Math.max(1, meta.page - 1)))
           }
         >
-          ← Trước
+          <Icon name="chevronLeft" />
         </button>
 
         <span className="pagination-page-indicator" aria-live="polite">
           Trang {meta.page} / {meta.totalPages}
         </span>
 
-        <button
-          type="button"
-          className="button-secondary"
+        <IconButton
+          icon="chevronRight"
+          label="Trang sau"
           disabled={busy || !meta.hasNext}
           onClick={() => onChangePage(Math.min(meta.totalPages, meta.page + 1))}
-        >
-          Sau →
-        </button>
+        />
       </div>
     </div>
   );
