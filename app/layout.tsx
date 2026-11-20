@@ -17,6 +17,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
+        <link rel="preload" href="/brand/codjingrank-mark.png" as="image" />
+        <link rel="preload" href="/brand/codjingrank-wordmark.png" as="image" />
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{ __html: themeInitializationScript }}

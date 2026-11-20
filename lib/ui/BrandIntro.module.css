@@ -8,13 +8,22 @@
   pointer-events: none;
 }
 
+:global(html[data-brand-intro="pending"]) .intro,
 :global(html[data-brand-intro="active"]) .intro {
   display: grid;
+}
+
+:global(html[data-brand-intro="active"]) .intro {
   animation: intro-exit 2000ms var(--motion-feedback) both;
 }
 
 .logo {
   width: min(560px, calc(100vw - 48px));
+  visibility: hidden;
+}
+
+:global(html[data-brand-intro="active"]) .logo {
+  visibility: visible;
   animation: logo-reveal 1200ms linear both;
 }
 
@@ -59,6 +68,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :global(html[data-brand-intro="pending"]) .intro,
   :global(html[data-brand-intro="active"]) .intro {
     display: none;
   }
