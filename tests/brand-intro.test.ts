@@ -1,49 +1,64 @@
 import { describe, expect, it } from "vitest";
 import { runInNewContext } from "node:vm";
-import {
-  brandIntroInitializationScript,
-  BRAND_INTRO_SESSION_KEY,
-} from "@/lib/ui/brand-intro-init";
+import { brandIntroInitializationScript } from "@/lib/ui/brand-intro-init";
 
-function visit(storage: Map<string, string>, reduced = false, blocked = false) {
+function visit(reduced = false, complete = false) {
   const dataset: Record<string, string> = {};
-  let finish: (() => void) | undefined;
+  const timers = new Map<number, { callback: () => void; delay: number }>();
+  const events = new Map<string, () => void>();
+  let id = 0;
   runInNewContext(brandIntroInitializationScript, {
-    sessionStorage: {
-      getItem: (key: string) => {
-        if (blocked) throw Error("Storage denied");
-        return storage.get(key);
-      },
-      setItem: (key: string, value: string) => storage.set(key, value),
-    },
     window: {
       matchMedia: () => ({ matches: reduced }),
-      setTimeout: (callback: () => void) => {
-        finish = callback;
+      addEventListener: (name: string, callback: () => void) =>
+        events.set(name, callback),
+      removeEventListener: (name: string) => events.delete(name),
+      clearTimeout: (key: number) => timers.delete(key),
+      setTimeout: (callback: () => void, delay: number) => {
+        timers.set(++id, { callback, delay });
+        return id;
       },
     },
-    document: { documentElement: { dataset } },
+    document: {
+      documentElement: { dataset },
+      readyState: complete ? "complete" : "loading",
+    },
   });
-  return { dataset, finish };
+  return { dataset, timers, load: () => events.get("load")?.() };
 }
 
-describe("brand intro session lifecycle", () => {
-  it("runs once per tab session and clears without hydration", () => {
-    const storage = new Map<string, string>();
-    const first = visit(storage);
-    expect(first.dataset.brandIntro).toBe("active");
-    expect(storage.get(BRAND_INTRO_SESSION_KEY)).toBe("seen");
-    first.finish?.();
-    expect(first.dataset.brandIntro).toBeUndefined();
-    expect(visit(storage).dataset.brandIntro).toBeUndefined();
-    expect(visit(new Map()).dataset.brandIntro).toBe("active");
+describe("brand intro after document loading", () => {
+  it("waits through a slow load before starting its full animation budget", () => {
+    const page = visit();
+    expect(page.dataset.brandIntro).toBe("pending");
+    expect([...page.timers.values()].map((t) => t.delay)).toEqual([30000]);
+    page.load();
+    expect(page.dataset.brandIntro).toBe("active");
+    expect([...page.timers.values()].map((t) => t.delay)).toEqual([2200]);
+    [...page.timers.values()][0].callback();
+    expect(page.dataset.brandIntro).toBeUndefined();
   });
-  it("skips motion and records the reduced-motion visit", () => {
-    const storage = new Map<string, string>();
-    expect(visit(storage, true).finish).toBeUndefined();
-    expect(visit(storage).dataset.brandIntro).toBeUndefined();
+  it("runs on each full document visit without requiring session storage or a query", () => {
+    expect(visit(false, true).dataset.brandIntro).toBe("active");
+    expect(visit(false, true).dataset.brandIntro).toBe("active");
   });
-  it("leaves the page available when session storage is blocked", () => {
-    expect(visit(new Map(), false, true).dataset.brandIntro).toBeUndefined();
+  it("does not restart on duplicate load events", () => {
+    const page = visit();
+    page.load();
+    const timer = [...page.timers.keys()][0];
+    page.load();
+    expect([...page.timers.keys()]).toEqual([timer]);
+  });
+  it("fails open if a resource never finishes loading", () => {
+    const page = visit();
+    [...page.timers.values()][0].callback();
+    expect(page.dataset.brandIntro).toBeUndefined();
+    page.load();
+    expect(page.dataset.brandIntro).toBeUndefined();
+  });
+  it("skips the overlay for reduced motion", () => {
+    const page = visit(true);
+    expect(page.dataset.brandIntro).toBeUndefined();
+    expect(page.timers.size).toBe(0);
   });
 });
