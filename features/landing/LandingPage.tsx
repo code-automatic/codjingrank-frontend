@@ -7,6 +7,8 @@ import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { Icon } from "@/lib/ui/Icon";
 import { useSession } from "@/features/auth/session";
 import styles from "./landing.module.css";
+import { HeroWave } from "./HeroWave";
+import { LearningJourney } from "./LearningJourney";
 
 const chapters = [
   {
@@ -23,7 +25,7 @@ const chapters = [
     description:
       "Đọc nhận xét AI theo từng lượt nộp, xem điểm cần cải thiện. Kết quả chấm bài luôn được tính độc lập.",
     image: "/landing/ai-review.png",
-    alt: "Màn hình AI review Codjingrank hiển thị nhận xét và mã nguồn",
+    alt: "Màn hình đánh giá AI Codjingrank với nhận xét và điểm chất lượng mã",
     href: "/problems",
     action: "Bắt đầu giải bài",
   },
@@ -44,90 +46,29 @@ export function LandingPage() {
   const [active, setActive] = useState(0);
   const [pointerChange, setPointerChange] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
   const page = useRef<HTMLDivElement>(null);
   const hero = useRef<HTMLElement>(null);
-  const ambient = useRef<HTMLDivElement>(null);
-  const warmLight = useRef<HTMLSpanElement>(null);
   const signedIn = status === "authenticated";
 
   useEffect(() => {
-    const surface = hero.current;
-    const light = ambient.current;
-    const warm = warmLight.current;
-    if (!surface || !light || !warm) return;
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const element = header.current;
+    if (!element) return;
     let frame = 0;
-    let previous = 0;
-    let x = 0;
-    let y = 0;
-    let vx = 0;
-    let vy = 0;
-    let targetX = 0;
-    let targetY = 0;
-    const paint = () => {
-      light.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      warm.style.transform = `translate3d(${-x * 0.65}px, ${y * 0.45}px, 0)`;
+    const update = () => {
+      const scrolled = String(window.scrollY > 24);
+      if (element.dataset.scrolled !== scrolled)
+        element.dataset.scrolled = scrolled;
+      frame = 0;
     };
-    const tick = (time: number) => {
-      const dt = Math.min((time - (previous || time - 16)) / 1000, 0.032);
-      previous = time;
-      vx += ((targetX - x) * 100 - vx * 10) * dt;
-      vy += ((targetY - y) * 100 - vy * 10) * dt;
-      x += vx * dt;
-      y += vy * dt;
-      paint();
-      if (
-        Math.abs(targetX - x) +
-          Math.abs(targetY - y) +
-          Math.abs(vx) +
-          Math.abs(vy) >
-        0.1
-      ) {
-        frame = requestAnimationFrame(tick);
-      } else {
-        x = targetX;
-        y = targetY;
-        paint();
-        frame = 0;
-        previous = 0;
-      }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
     };
-    const start = () => {
-      if (!frame) frame = requestAnimationFrame(tick);
-    };
-    const stop = () => {
-      cancelAnimationFrame(frame);
-      frame = previous = x = y = vx = vy = targetX = targetY = 0;
-      paint();
-    };
-    const reset = () => {
-      targetX = targetY = 0;
-      if (motion.matches || !pointer.matches || document.hidden) stop();
-      else start();
-    };
-    const move = (event: PointerEvent) => {
-      if (motion.matches || !pointer.matches || event.pointerType !== "mouse")
-        return;
-      const bounds = surface.getBoundingClientRect();
-      targetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 300;
-      targetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 170;
-      start();
-    };
-    surface.addEventListener("pointermove", move, { passive: true });
-    surface.addEventListener("pointerleave", reset);
-    motion.addEventListener("change", reset);
-    pointer.addEventListener("change", reset);
-    document.addEventListener("visibilitychange", stop);
-    window.addEventListener("blur", stop);
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      stop();
-      surface.removeEventListener("pointermove", move);
-      surface.removeEventListener("pointerleave", reset);
-      motion.removeEventListener("change", reset);
-      pointer.removeEventListener("change", reset);
-      document.removeEventListener("visibilitychange", stop);
-      window.removeEventListener("blur", stop);
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -139,11 +80,12 @@ export function LandingPage() {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             entry.target.setAttribute("data-revealed", "true");
-            observer.unobserve(entry.target);
+          } else {
+            entry.target.setAttribute("data-revealed", "false");
           }
         }
       },
-      { threshold: 0.12 },
+      { threshold: 0, rootMargin: "-8% 0px -8% 0px" },
     );
     root
       .querySelectorAll("[data-reveal]")
@@ -152,11 +94,31 @@ export function LandingPage() {
   }, []);
 
   return (
-    <div className={styles.page} ref={page}>
+    <div
+      className={styles.page}
+      ref={page}
+      onClick={(event) => {
+        if (
+          !event.detail ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+        const anchor = (event.target as Element).closest<HTMLAnchorElement>(
+          'a[href^="#"]',
+        );
+        const id = anchor?.getAttribute("href")?.slice(1);
+        const target = id ? document.getElementById(id) : null;
+        if (!anchor || !target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.history.replaceState(window.history.state, "", anchor.hash);
+      }}
+    >
       <a className={styles.skip} href="#landing-main">
         Chuyển đến nội dung
       </a>
       <header
+        ref={header}
         className={styles.header}
         onKeyDown={(event) => {
           if (event.key === "Escape" && menuOpen) {
@@ -231,22 +193,15 @@ export function LandingPage() {
           aria-labelledby="landing-title"
           data-enter
         >
-          <div
-            ref={ambient}
-            className={styles.heroAmbient}
-            aria-hidden="true"
-          />
-          <span
-            ref={warmLight}
-            className={styles.heroWarm}
-            aria-hidden="true"
-          />
+          <HeroWave />
           <div className={`${styles.wrap} wrap`}>
             <div className={styles.heroCopy}>
               <h1 id="landing-title">
                 Mỗi bài giải,
                 <br />
-                một <span>bước tiến.</span>
+                <span className={styles.heroSerif}>
+                  một <span>bước tiến.</span>
+                </span>
               </h1>
               <p>
                 Luyện giải với Python, C++ và Java.
@@ -267,38 +222,17 @@ export function LandingPage() {
                 </a>
               </div>
             </div>
-            <div className={styles.heroStage}>
-              <div className={styles.screenBar}>
-                <span>
-                  <BrandLogo compact />
-                  Workspace của bạn
-                </span>
-                <span className={styles.demoLabel}>
-                  Ảnh giao diện · dữ liệu demo
-                </span>
-              </div>
-              <Image
-                src="/landing/workspace-current.png"
-                width={2880}
-                height={1800}
-                alt="Workspace Codjingrank: đọc đề ở bên trái, viết code và xem kết quả ở bên phải"
-                priority
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className={styles.heroScreen}
-              />
-            </div>
-            <div className={styles.heroFoot}>
-              <span>Đọc đề. Viết code. Chạy mẫu. Nộp bài.</span>
-              <a
-                href="#khong-gian"
-                aria-label="Cuộn tới phần không gian luyện tập"
-              >
-                <span>Khám phá tiếp</span>
-                <Icon name="collapse" />
-              </a>
-            </div>
+          </div>
+          <div className={styles.heroFoot}>
+            <span>Đọc đề. Viết code. Chạy mẫu. Nộp bài.</span>
+            <a href="#lo-trinh" aria-label="Cuộn tới lộ trình luyện tập">
+              <span>Khám phá tiếp</span>
+              <Icon name="collapse" />
+            </a>
           </div>
         </section>
+
+        <LearningJourney />
 
         <section
           id="khong-gian"
@@ -380,7 +314,9 @@ export function LandingPage() {
                   id={`landing-panel-${index}`}
                   role="tabpanel"
                   aria-labelledby={`landing-tab-${index}`}
-                  hidden={active !== index}
+                  aria-hidden={active !== index}
+                  inert={active !== index}
+                  data-active={active === index}
                   className={styles.chapterPanel}
                   data-pointer={pointerChange}
                   tabIndex={0}
@@ -398,77 +334,6 @@ export function LandingPage() {
                   </Link>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="lo-trinh"
-          className={styles.journey}
-          aria-labelledby="journey-title"
-          data-reveal
-        >
-          <div className={`${styles.wrap} wrap`}>
-            <div className={styles.sectionTop}>
-              <h2 id="journey-title">
-                Có lộ trình.
-                <br />
-                <span>Có bước tiếp theo.</span>
-              </h2>
-              <div>
-                <p>
-                  Chọn gói bài theo chủ đề, luyện qua từng cấp độ và theo dõi
-                  tiến độ. Mỗi bài hoàn thành giúp bạn nhìn rõ mình đã đi đến
-                  đâu.
-                </p>
-                <Link className={styles.textLink} href="/packages">
-                  Khám phá gói bài tập
-                  <Icon name="arrowUpRight" />
-                </Link>
-              </div>
-            </div>
-            <ol className={styles.steps}>
-              <li>
-                <span className={styles.stepNumber}>01</span>
-                <h3>Tạo tài khoản</h3>
-                <p>Một nơi lưu tiến độ và bản nháp của bạn.</p>
-                <Link href="/register">
-                  Đăng ký
-                  <Icon name="arrowUpRight" />
-                </Link>
-              </li>
-              <li>
-                <span className={styles.stepNumber}>02</span>
-                <h3>Chọn một bài</h3>
-                <p>Tìm chủ đề phù hợp, bắt đầu từ cấp đang mở.</p>
-                <Link href="/problems">
-                  Tìm bài tập
-                  <Icon name="arrowUpRight" />
-                </Link>
-              </li>
-              <li>
-                <span className={styles.stepNumber}>03</span>
-                <h3>Thử cách giải</h3>
-                <p>Viết code, chạy mẫu, nộp và đọc kết quả.</p>
-                <Link href="/problems/sum-two">
-                  Mở bài mẫu
-                  <Icon name="arrowUpRight" />
-                </Link>
-              </li>
-              <li>
-                <span className={styles.stepNumber}>04</span>
-                <h3>Nhìn lại tiến bộ</h3>
-                <p>Xem bài đã giải và vị trí trên bảng xếp hạng.</p>
-                <Link href="/leaderboard">
-                  Xem thứ hạng
-                  <Icon name="arrowUpRight" />
-                </Link>
-              </li>
-            </ol>
-            <div className={styles.journeyStatement}>
-              <span>Một bài hôm nay.</span>
-              <span>Một cách nghĩ mới ngày mai.</span>
-              <Icon name="code" size={44} />
             </div>
           </div>
         </section>
@@ -519,19 +384,39 @@ export function LandingPage() {
           aria-labelledby="close-title"
           data-reveal
         >
+          <Image
+            src="/landing/ocean-waves.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className={styles.closeLandscape}
+          />
           <div className={`${styles.wrap} wrap`}>
-            <h2 id="close-title">
-              Lời giải tiếp theo
-              <br />
-              bắt đầu từ <span>bạn.</span>
-            </h2>
-            <Link
-              className={styles.darkButton}
-              href={signedIn ? "/problems" : "/register"}
-            >
-              Bắt đầu luyện tập
-              <Icon name="arrowUpRight" />
-            </Link>
+            <div className={styles.closeStart}>
+              <h2 id="close-title">
+                Lời giải tiếp theo
+                <br />
+                bắt đầu từ bạn.
+              </h2>
+              <Link
+                className={styles.darkButton}
+                href={signedIn ? "/problems" : "/register"}
+              >
+                Bắt đầu luyện tập
+                <Icon name="arrowUpRight" />
+              </Link>
+            </div>
+            <div className={styles.closeCommunity}>
+              <h3>Cùng nhau tiến bộ.</h3>
+              <p className={styles.closeDescription}>
+                Chia sẻ cách giải. Khám phá góc nhìn mới cùng cộng đồng
+                Codjingrank.
+              </p>
+              <Link className={styles.secondary} href="/forum">
+                Ghé thăm cộng đồng
+                <Icon name="arrowUpRight" />
+              </Link>
+            </div>
           </div>
         </section>
       </main>
@@ -562,6 +447,14 @@ export function LandingPage() {
               rel="noopener noreferrer"
             >
               Ảnh phong cảnh: Luca Bravo / Unsplash
+              <Icon name="arrowUpRight" size={13} />
+            </a>
+            <a
+              href="https://unsplash.com/photos/turquoise-ocean-waves-crashing-with-white-foam-czqdB_i4aSA"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ảnh biển: Polina Kuzovkova / Unsplash
               <Icon name="arrowUpRight" size={13} />
             </a>
           </div>

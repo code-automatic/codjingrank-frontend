@@ -69,3 +69,31 @@ Ngày 19/11/2026: CTA pill tối, secondary viền mảnh, hover đổi xanh r�
 ## Tinh chỉnh thao tác — 20/11/2026
 
 Theo yêu cầu mới, nhãn email/password hiển thị rõ và có icon mắt, liên kết Quên mật khẩu. Hai route khôi phục được chuẩn bị, mặc định thông báo chưa sẵn sàng do contract backend chưa triển khai; không mô phỏng email thành công. Lịch bỏ badge tháng cũ, dùng icon lịch, giữ UTC và dữ liệu thật, phân biệt ngày bằng ring/đĩa/dot cùng nhãn. IconButton/CopyButton và refinements.css thống nhất control; tìm kiếm nằm sát input, phân trang icon. Kết quả nộp có metrics và CTA AI ngay cạnh Accepted, metadata phụ có copy; breadcrumb AI rõ và giữ draft khi quay lại. Motion phản hồi ngắn, chỉ animate đổi tháng với chuột; không animate code/kết quả. Theme và logo giữ nguyên. Chi tiết file/giới hạn: docs/UI_UX_REFINEMENT_2026_11_20.md.
+
+## Landing — bố cục hero theo ảnh mới, 20/11/2026
+
+Theo yêu cầu mới, header full-width trong nền hero, title Manrope dòng đầu và Noto Serif dòng sau, nội dung/CTA căn giữa, khoảng trắng rộng, góc khung teal và hai nút pill. Giữ logo và copy Codjingrank; không sao chép nội dung tuyển dụng hay social proof HackerRank. Workspace preview chuyển sang section bên dưới để hero riêng một màn hình. Noto Serif subset Việt/Latin tự host và có OFL. Theme sau đăng nhập không đổi. Chi tiết nghiệm thu: docs/LANDING_PAGE_REVIEW.md.
+
+## Landing — motion theo video thao tác, 20/11/2026
+
+Header fixed đổi nền khi cuộn; các tab tính năng crossfade 240ms không remount, inactive inert/aria-hidden; keyboard đổi tức thì. Section text/visual có nhịp 80ms, anchor chuột cuộn mượt; reduced-motion giữ tĩnh. Section cuối dùng phong cảnh đã có nguồn và panel CTA sáng. Nội dung, logo và theme ứng dụng giữ nguyên. Video nguồn thaotac.mp4; Chrome HackerRank bị Access Denied, dùng video làm chuẩn tương tác. Chi tiết kiểm tra trong docs/LANDING_PAGE_REVIEW.md.
+
+Header landing sau phản hồi mới: cố định nhưng trong suốt ở mọi vị trí cuộn, không tự phủ nền trắng hoặc shadow. Menu mobile khi mở vẫn có bề mặt riêng để đọc rõ.
+
+Header landing — quy tắc hiện hành sau ảnh chồng chữ: trong suốt tại đầu trang, khi cuộn quá 24px dùng nền #f9fcfa opaque và separator mảnh để chữ nội dung không lẫn menu; vẫn fixed. Chuyển 180ms, tắt với reduced-motion.
+
+## Hero wave refinement — 21/11/2026
+
+Hero giữ nguyên typography/CTA và dùng mesh WebGL tự viết, sắc ivory–mint–teal, ánh sáng theo pháp tuyến bề mặt. Pointer chỉ tác động vùng lân cận, không nghiêng nội dung. Chuyển động giới hạn khoảng 30fps, DPR tối đa 1.5, dừng ngoài viewport/tab ẩn; có pause, reduced-motion và fallback SVG. CTA cuối trang dùng ảnh biển thực, panel sáng lệch trái, chữ serif nhấn thương hiệu. Không thay các section trung gian hoặc giao diện sau đăng nhập.
+
+## Lộ trình trượt ngang — 21/11/2026
+
+Theo video tham chiếu dải logo trượt ngang: bỏ preview workspace riêng, đưa lộ trình ngay sau hero. Dải 4 bước nối tiếp lặp 42s, hover/focus dừng để đọc/thao tác; bản sao aria-hidden và không nằm trong tab order. Reduced-motion hiện 4 bước tĩnh theo grid responsive. Hero tự chạy, không còn nút pause theo yêu cầu. Observer reset khi section ra ngoài vùng nhìn, cho phép phát lại entrance khi cuộn tới; không scroll-jacking.
+
+## Thẻ lộ trình và CTA liền ảnh — 21/11/2026
+
+Thẻ lộ trình là liên kết toàn thẻ, nền trắng/teal nhạt, góc 16px; hover nâng 12px và giảm opacity thẻ khác còn .45, rời chuột khôi phục. Dải vẫn lặp 42s và dừng khi hover. Focus bàn phím có nền/outline rõ và làm dịu thẻ xung quanh, không nâng động; reduced-motion bỏ chuyển động. CTA cuối trang là một panel mờ chung hai nhóm luyện tập/cộng đồng, không đường chia, nền ảnh biển hòa trắng ở mép trên, Noto Serif 400 cho tiêu đề.
+
+## Chốt marquee theo video Trusted by — 21/11/2026
+
+Dải chỉ gồm 4 nội dung lộ trình lặp vô hạn sang trái, tốc độ tuyến tính 48s/vòng (khoảng 26px/s desktop), khung tối đa 1200px để không hở cuối vòng. Hai mép có mask mờ. Mặc định chạy khi hiển thị, chuột trên khoảng trống không dừng; chỉ trỏ vào thẻ hoặc focus mới dừng để chọn. Giữ lift/dim từ yêu cầu trước và reduced-motion.

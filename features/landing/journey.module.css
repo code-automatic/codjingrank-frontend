@@ -1,0 +1,401 @@
+.journey {
+  padding: 112px 0 56px;
+  background: #f7faf6;
+  overflow: hidden;
+  color: #172c2b;
+  scroll-margin-top: 80px;
+}
+.introduction {
+  width: min(1200px, calc(100% - 96px));
+  margin: 0 auto 64px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 96px;
+  align-items: end;
+}
+.introduction h2 {
+  font-size: clamp(38px, 4.5vw, 64px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  margin: 0;
+}
+.introduction h2 span {
+  color: #087f78;
+}
+.journey .introduction p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #50645a;
+  max-width: 40ch;
+  margin: 0 0 20px;
+}
+.discover {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+.viewport {
+  overflow: hidden;
+  border-block: 1px solid #d6e3db;
+}
+.track {
+  display: flex;
+  width: max-content;
+}
+.sequence {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+}
+.sequence li {
+  flex: 0 0 320px;
+  width: 320px;
+  padding: 32px 32px 26px;
+  border-right: 1px solid #d6e3db;
+  box-sizing: border-box;
+}
+.marker {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #087f78;
+}
+.marker span {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.marker > svg:last-child {
+  margin-left: auto;
+  color: #789b8c;
+}
+.sequence h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin: 32px 0 12px;
+}
+.journey .sequence p {
+  font-size: 14px;
+  color: #50645a;
+  line-height: 1.8;
+  max-width: 28ch;
+  margin: 0 0 16px;
+}
+.sequence a {
+  display: inline-flex;
+  gap: 16px;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.foot {
+  width: min(1200px, calc(100% - 96px));
+  margin: 28px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 12px;
+  color: #50645a;
+}
+.journey a:focus-visible {
+  outline: 2px solid #087f78;
+  outline-offset: 5px;
+  border-radius: 3px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .track {
+    animation: journey-loop 48s linear infinite;
+    animation-play-state: running;
+  }
+  .journey[data-revealed="true"] .track {
+    animation-play-state: running;
+  }
+  .journey .viewport:focus-within .track {
+    animation-play-state: paused;
+    transform: none;
+    animation: none;
+  }
+  .journey[data-revealed="true"] .introduction {
+    animation: journey-enter 600ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .journey[data-revealed="true"] .viewport {
+    animation: rail-enter 700ms 100ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  @keyframes journey-loop {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes journey-enter {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes rail-enter {
+    from {
+      opacity: 0;
+      transform: translateX(48px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .journey .viewport:has(.card:hover) .track {
+    animation-play-state: paused;
+  }
+  .sequence a:hover,
+  .discover:hover {
+    color: #087f78;
+  }
+}
+@media (max-width: 850px) {
+  .journey {
+    padding-top: 80px;
+  }
+  .introduction {
+    width: calc(100% - 48px);
+    gap: 32px;
+    grid-template-columns: 1fr;
+    margin-bottom: 40px;
+  }
+  .sequence li {
+    flex-basis: 288px;
+    width: 288px;
+    padding: 28px 24px;
+  }
+  .foot {
+    width: calc(100% - 48px);
+  }
+}
+@media (max-width: 540px) {
+  .journey {
+    padding-top: 64px;
+  }
+  .introduction h2 {
+    font-size: 38px;
+  }
+  .foot {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .viewport {
+    overflow-x: auto;
+  }
+  .track {
+    width: 100%;
+  }
+  .sequence {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .sequence li {
+    width: auto;
+    min-width: 0;
+    padding: 24px;
+  }
+  .sequence[aria-hidden="true"] {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 850px) {
+  .sequence {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 540px) {
+  .sequence {
+    grid-template-columns: 1fr;
+  }
+}
+
+.viewport {
+  border: 0;
+  padding: 24px 0 40px;
+}
+.sequence {
+  gap: 20px;
+  padding-right: 20px;
+}
+.sequence li {
+  flex-basis: 292px;
+  width: 292px;
+  padding: 0;
+  border: 0;
+  position: relative;
+}
+.sequence .card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 28px;
+  min-height: 280px;
+  height: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px #163d3210;
+  color: #172c2b;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.marker {
+  justify-content: space-between;
+}
+.marker span {
+  font-size: 12px;
+  color: #52766b;
+}
+.marker > svg:last-child {
+  margin-left: 0;
+  color: #087f78;
+}
+.sequence h3 {
+  font-size: 21px;
+  margin: 28px 0 12px;
+}
+.journey .sequence p {
+  margin: 0 0 24px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.cardAction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  min-height: 28px;
+  color: #08756d;
+  font-size: 13px;
+  font-weight: 700;
+}
+.sequence .card:focus-visible {
+  outline: 2px solid #087f78;
+  outline-offset: 4px;
+}
+.track:has(.card:focus-visible) li:not(:focus-within) {
+  opacity: 0.5;
+}
+.sequence li:focus-within {
+  z-index: 2;
+}
+.sequence .card:focus-visible {
+  background: #e6f4ee;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sequence li {
+    transition: opacity 200ms var(--lp-ease);
+  }
+  .sequence .card {
+    transition:
+      transform 240ms var(--lp-ease),
+      box-shadow 240ms var(--lp-ease),
+      background-color 200ms ease;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .track:has(li:hover) li:not(:hover) {
+    opacity: 0.45;
+  }
+  .sequence li:hover {
+    z-index: 2;
+  }
+  .sequence li:hover .card {
+    transform: translateY(-12px);
+    background: #eff9f3;
+    box-shadow: 0 18px 30px #163d3222;
+  }
+}
+@media (max-width: 850px) {
+  .sequence li {
+    flex-basis: 272px;
+    width: 272px;
+  }
+  .sequence .card {
+    min-height: 276px;
+    padding: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .sequence {
+    padding: 0 24px;
+    gap: 20px;
+  }
+  .sequence li {
+    width: auto;
+    padding: 0;
+  }
+  .sequence .card {
+    min-height: 280px;
+  }
+  .sequence li:hover .card {
+    transform: none;
+  }
+}
+
+.viewport {
+  width: min(1200px, calc(100% - 96px));
+  margin-inline: auto;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 32px,
+    #000 calc(100% - 32px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 32px,
+    #000 calc(100% - 32px),
+    transparent
+  );
+}
+@media (prefers-reduced-motion: no-preference) {
+  .journey[data-revealed="false"] .track {
+    animation-play-state: paused;
+  }
+}
+@media (max-width: 850px) {
+  .viewport {
+    width: calc(100% - 40px);
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 16px,
+      #000 calc(100% - 16px),
+      transparent
+    );
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .viewport {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}

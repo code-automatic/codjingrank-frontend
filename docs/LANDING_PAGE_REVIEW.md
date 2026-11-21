@@ -94,3 +94,57 @@ Trang /login báo không kết nối dịch vụ do mock API cổng 4010 chưa c
 ## Thay ảnh sản phẩm còn logo nâu cũ — 20/11/2026
 
 Logo nâu người dùng thấy nằm trong screenshot cũ, không phải BrandLogo đang render. Đã chụp mới workspace và forum trên app production, theme sáng, mật độ 2x (2880x1800), giữ dữ liệu demo và logo xanh ngọc hiện tại. Landing dùng workspace-current.png/community-current.png ở hero, tab sản phẩm và phần cộng đồng; xóa hai asset cũ khỏi public/landing và dùng URL mới tránh cache ảnh cũ. AI review đã kiểm tra, ảnh không có logo nâu. Header/footer tiếp tục dùng BrandLogo chung; không thay theme hoặc bố cục landing. Nguồn đã cập nhật trong public/landing/SOURCES.md. Chưa commit/push/merge.
+
+## Landing layout theo ảnh tham chiếu — 20/11/2026
+
+Header trải ngang trên nền hero, tiêu đề hai dòng căn giữa (Manrope + Noto Serif hỗ trợ tiếng Việt), khung góc và hai CTA pill. Hero chiếm trọn viewport; screenshot workspace được giữ nguyên nhưng chuyển xuống vùng preview riêng bên dưới. Nền teal/mint nhạt giữ pointer spring và reduced-motion. Không thay logo, nội dung thực tế, CTA auth hay theme ứng dụng. Noto Serif tự host hai subset Việt/Latin, tổng khoảng 20 KB, SIL OFL trong public/landing/NOTO-SERIF-LICENSE.txt.
+
+Production build, lint và hai test landing pass. Chrome kiểm tra 1440/1024/768/390/320px không overflow, hero trọn 900px ở viewport 900px và preview dưới fold. Menu mobile/Escape, nền theo chuột và reduced-motion pass, không runtime exception. Ảnh trước: landing-layout-before.png; ảnh sau: landing-layout-1440.png, -1024.png, -768.png, -390.png, -320.png và landing-layout-report.json trong visualization của phiên. Bản thay đổi này chưa push/merge.
+
+Kiểm tra thiết kế tự động bổ sung: Taste gate trả GATE: FAIL 41 (round 1). Các finding gồm quy tắc nav phải cùng lề content (trái với header trải rộng của ảnh tham chiếu), hero bị coi nhiều khoảng trống/thiếu visual (ảnh yêu cầu hero chữ), heuristic copy tiếng Anh trên nội dung tiếng Việt và một số bố cục section cũ. Không tuyên bố toàn trang đã pass gate; giữ nội dung và hướng bố cục người dùng yêu cầu, không mở rộng sang thay copy hoặc thiết kế lại các section ngoài phạm vi. Báo cáo chi tiết nằm trong .taste-skill/gate.json (local, ignored).
+
+## Motion theo video thaotac.mp4 — 20/11/2026
+
+Đã đọc trang https://www.hackerrank.com/ bằng web tool; Chrome trực tiếp bị Access Denied trong môi trường kiểm tra, nên video người dùng là chuẩn tương tác. Không lấy code, nội dung tuyển dụng, logo hoặc asset sản phẩm của HackerRank.
+
+- Header fixed trên hero; khi scrollY > 32 chuyển sang nền trắng 180ms bằng thuộc tính trực tiếp, scroll listener passive/rAF, không render React theo mỗi pixel.
+- Ba tab tính năng giữ mounted trong cùng grid cell; active crossfade opacity/translateY 8px/scale .985 trong 240ms. Inactive có aria-hidden/inert, không nhận focus/click. Transition retarget khi bấm nhanh; phím Arrow/Home/End đổi ngay, reduced-motion không chạy transition.
+- Ảnh tính năng crop cover/top-left để screenshot AI dạng dọc không bị letterbox rộng. Không chỉnh màu hoặc nội dung ảnh.
+- Phần giới thiệu vào theo nhịp chữ trước, hình sau 80ms; section hiện một lần, nội dung vẫn có default khi không JS. Click anchor bằng chuột cuộn mượt, bàn phím/reduced-motion dùng hành vi tức thì; URL hash giữ nguyên state router.
+- Section cuối dùng ảnh phong cảnh own-asset đã có nguồn, CTA trên panel trắng nhẹ theo bố cục kết trang trong video; hover ảnh 1.025 chỉ trên chuột, reduced-motion tắt.
+
+Build production, lint, hai test landing và detector trên hai file pass. Chrome production xác nhận đổi tab nhanh, inactive inert, keyboard immediate, panel fit, header top=0 khi cuộn; 1440/1024/768/390/320 không overflow, reduced-motion pass, không runtime exception. Video dựng từ screencast thực tế: landing-motion/codjingrank-motion.mp4; ảnh feature-ai.png, feature-community.png, closing-scene.png, feature-mobile.png và report.json ở thư mục visualization. Không thay theme sau đăng nhập. Chưa push/merge đợt landing này. Taste gate toàn trang còn các finding được ghi ở phần trước, không khẳng định đã pass toàn bộ bộ kiểm tra đó.
+
+Cập nhật header theo phản hồi mới: giữ position fixed nhưng bỏ nền trắng và shadow khi cuộn; xóa scroll listener/data-scrolled không còn cần thiết. Production build pass. Chrome trên localhost:3000 sau khi cuộn xác nhận top=0, position=fixed, background rgba(0,0,0,0), box-shadow none. Ảnh header-transparent-scroll.png trong visualization. Quy tắc này thay thế mô tả đổi nền header phía trên.
+
+Header readable theo ảnh chồng chữ mới: thay quy tắc trong suốt mọi vị trí bằng trong suốt ở đầu trang, nền #f9fcfa kín hoàn toàn khi scrollY > 24px và đường phân cách 1px. Transition 180ms, reduced-motion bỏ transition. Listener passive/rAF chỉ đổi data-scrolled khi trạng thái đổi. Chrome desktop/mobile xác nhận header fixed top=0 và nền rgb(249,252,250) khi cuộn; không runtime exception. Production build pass; ảnh header-readable-scroll.png. Quy tắc này thay thế yêu cầu header luôn trong suốt trước đó để loại chữ xuyên qua menu.
+
+Theo yêu cầu tiếp theo, đã hoàn tác riêng đợt landing sáng + showcase tối, khôi phục UI ngay trước đợt đó: preview workspace sáng riêng, ba tab trên nền phong cảnh, lộ trình bốn bước và CTA phong cảnh. Giữ hero Noto Serif và header fixed có nền opaque khi cuộn quá 24px. Bỏ NetworkVisual và section AI mới; không ảnh hưởng UI sau đăng nhập. Bản bị hủy được giữ ngoài nguồn ứng dụng trong .taste-skill/reverted-light-dark để phục hồi nếu cần.
+
+## Hero sóng và CTA biển — 21/11/2026
+
+Thêm HeroWave.tsx và hero-wave.module.css, tích hợp vào LandingPage.tsx thay nền gradient theo chuột. Mesh WebGL có độ cao đa sóng, ánh sáng và gợn cục bộ; không thêm thư viện. Canvas không nhận focus/pointer; nút pause riêng có aria-label, title và aria-pressed. Cleanup shader/buffer/observer/rAF; lỗi context chuyển về SVG tĩnh. CTA thay ảnh ocean-waves.jpg, typography và khoảng cách mới; nguồn ảnh ghi trong SOURCES.md và footer.
+
+Production kiểm tra Chrome tại 1440/1024/768/390/320px không overflow; animation chạy, Enter pause và hình nền đứng yên khi pause; reduced-motion tĩnh/ẩn control; giả lập mất WebGL hiển thị fallback; header cuộn nền đặc; ảnh CTA tải thật; không runtime exception. Desktop/mobile là kiểm tra emulation, chưa đo FPS trên điện thoại vật lý hoặc Safari. Không tuyên bố đối chiếu từng frame với video tham chiếu. Các section khác và app sau đăng nhập không đổi. Video/ảnh trong visualization hero-wave-after; ảnh trước landing-restored.png. Chưa push/merge.
+
+Kiểm tra cuối: lint pass, 7 tests landing/intro pass, production build pass. Impeccable detect 4 source files không có regex finding; không phải kiểm định đầy đủ contrast. Browser production report tất cả mục pass, không runtime exception.
+
+## Điều chỉnh theo video dải trượt — 21/11/2026
+
+Video người dùng dài 1,43s cho thấy dải logo dịch ngang. Áp dụng chuyển động nối tiếp cho nội dung 4 bước thật của Codjingrank bằng LearningJourney.tsx và journey.module.css. Xóa section preview workspace dưới hero, bỏ lộ trình cũ, thứ tự mới hero → lộ trình → tính năng → cộng đồng → CTA. Không còn nút pause/resume trên hero; vẫn giữ reduced-motion, dừng canvas ngoài viewport/tab ẩn và fallback SVG. Entrance các section phát lại khi cuộn tới, giữ nội dung hiển thị nếu không có JS.
+
+Kiểm tra production Chrome: thứ tự đúng, không preview/pause, dải tự dịch chuyển, focus bàn phím dừng animation, reduced-motion tĩnh, section reveal lại; 320–1440px không overflow, không runtime exception. Bản sao dải ẩn khỏi accessibility tree/tab order nhưng liên kết vẫn dùng được bằng chuột. Ảnh/video: visualization journey-slide-after. Chưa kiểm tra máy mobile vật lý; chưa push/merge.
+
+## Thẻ nâng khi chọn và CTA theo ảnh — 21/11/2026
+
+Chỉnh LearningJourney.tsx, journey.module.css, LandingPage.tsx và landing.module.css: liên kết phủ toàn thẻ; hover dừng marquee, nâng thẻ 12px, thẻ khác opacity .45; keyboard focus giữ rail tĩnh và có outline. CTA bỏ eyebrow, thay panel trái bằng panel mờ liền khối hai nhóm hành động, không đường chia; typography Noto Serif, ảnh biển giữ nguồn cũ. Không thêm thư viện hoặc sửa app sau đăng nhập.
+
+Production Chrome 320/390/768/1024/1440px không overflow. Hover nâng -12px, opacity .45, rail paused; mouseleave khôi phục; focus dừng; reduced-motion tĩnh; CTA 2 liên kết, border 0. Không runtime exception. Lint, 7 tests và build pass. Ảnh/video trong visualization journey-cards-after. Chưa push/merge.
+
+Xác minh production cuối: backdrop-filter CTA blur(14px), border 0px, đủ 2 liên kết; kiểm tra lại hover/mobile/reduced-motion đều pass, không runtime exception.
+
+## Sửa chuyển động marquee mặc định — 21/11/2026
+
+Đối chiếu video 20261121-0351-43.4289149.mp4: dải logo trôi ngang đều, mép mờ. Chỉ sửa journey.module.css: chạy mặc định, chuột trên khoảng trống không dừng, giới hạn khung <= chiều rộng một nhóm để không hở vòng, mask hai mép, chu kỳ 48s. Thẻ/nội dung/CTA giữ nguyên. Giữ hover chọn nổi/dim, focus bàn phím tĩnh, reduced-motion và pause ngoài viewport.
+
+Production build pass. Chrome xác minh dải chạy khi chuột ở khoảng trống, hover/focus dừng đúng, lift -12px/opacity .45, vòng 48s không hở (nhóm 1248px, viewport 1200px), mask có hiệu lực. 320–1440px không overflow, reduced-motion pass, không runtime exception. Artifact journey-marquee-final; chưa push/merge.
