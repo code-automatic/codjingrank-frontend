@@ -15,3 +15,7 @@ Bối cảnh được ghi nhận từ yêu cầu của Thịnh; các lựa chọ
 - Ngày 19/11/2026: bổ sung landing page công khai tại `/` theo yêu cầu của Thịnh, nhận diện trắng/xanh riêng; theme Latte/Mocha và flow auth/ứng dụng giữ nguyên. CTA đăng ký hoặc vào kho bài theo phiên. Không có testimonial, khách hàng hoặc số liệu người dùng giả.
 
 - Ngày 20/11/2026: nâng cấp UI auth/lịch/search/pagination/submission/AI và các control dùng chung theo yêu cầu, không push/merge. Khôi phục mật khẩu có UI và tích hợp API được bảo vệ bằng cờ tắt mặc định; backend/token/email còn thiếu theo contract. Kết quả ở docs/UI_UX_REFINEMENT_2026_11_20.md.
+
+- Ngày 20/11/2026: chỉnh riêng layout landing theo ảnh HackerRank mới: header trải rộng, hero toàn màn hình, mixed typography hỗ trợ tiếng Việt, preview workspace ở section sau; giữ thương hiệu và copy thật. Chưa push/merge đợt chỉnh layout.
+
+- Ngày 20/11/2026: bổ sung motion landing theo thaotac.mp4: fixed header, tab crossfade, scroll reveal/smooth anchor cho chuột, scenic CTA; giữ accessibility/reduced-motion và theme ứng dụng. Chưa push/merge.
