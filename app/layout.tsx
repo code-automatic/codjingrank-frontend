@@ -3,6 +3,7 @@ import { SessionProvider } from "@/features/auth/session";
 import { themeInitializationScript } from "@/lib/ui/theme";
 import { ThemeSync } from "@/lib/ui/ThemeSync";
 import { AppChrome } from "@/features/platform/AppChrome";
+import { AuthTransition } from "@/lib/ui/AuthTransition";
 import { BrandIntro } from "@/lib/ui/BrandIntro";
 import { brandIntroInitializationScript } from "@/lib/ui/brand-intro-init";
 import "./theme.css";
@@ -33,7 +34,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         <BrandIntro />
         <ThemeSync />
         <SessionProvider>
-          <AppChrome>{children}</AppChrome>
+          <AuthTransition>
+            <AppChrome>{children}</AppChrome>
+          </AuthTransition>
         </SessionProvider>
       </body>
     </html>

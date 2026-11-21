@@ -97,3 +97,11 @@ Thẻ lộ trình là liên kết toàn thẻ, nền trắng/teal nhạt, góc 1
 ## Chốt marquee theo video Trusted by — 21/11/2026
 
 Dải chỉ gồm 4 nội dung lộ trình lặp vô hạn sang trái, tốc độ tuyến tính 48s/vòng (khoảng 26px/s desktop), khung tối đa 1200px để không hở cuối vòng. Hai mép có mask mờ. Mặc định chạy khi hiển thị, chuột trên khoảng trống không dừng; chỉ trỏ vào thẻ hoặc focus mới dừng để chọn. Giữ lift/dim từ yêu cầu trước và reduced-motion.
+
+## Chuyển cảnh vào auth — 21/11/2026
+
+Chuyển cảnh rạch chéo teal/ivory bằng hai mảng SVG răng cưa, mở tách về hai phía để lộ form. Chỉ áp dụng click cùng origin vào login/register từ ngoài nhóm auth; không chạy khi đổi login/register, quên/reset mật khẩu, mở trực tiếp, modifier click hoặc reduced-motion. Cover 160ms, mở 850ms sau route commit, fail-open 2400ms, Escape/tab ẩn bỏ qua. Âm thanh noise-filter swoosh tự tạo Web Audio (~650ms), chỉ khởi tạo trong user gesture, không dùng video/âm thanh tham chiếu làm asset; lỗi audio không ảnh hưởng điều hướng. Không đổi form/theme/brand intro.
+
+## Chém sáng và khói lan — 21/11/2026
+
+Theo phản hồi mới, thay hình ảnh tear phẳng bằng shader WebGL riêng: nền khói domain-warp/fBm, lõi sáng trắng-cyan, quầng sáng và hạt lóe quanh biên, mép mở biến dạng theo noise, haze tan vào form. Canvas render tối đa 1100px rộng, khoảng 30fps trong chuyển cảnh, dọn shader/buffer/rAF khi kết thúc. SVG tách mảng giữ làm fallback. Thời gian mở 1400ms, fail-open 3200ms; reduced-motion/Escape và audio gesture giữ nguyên. Không dùng footage video tham chiếu làm asset.
