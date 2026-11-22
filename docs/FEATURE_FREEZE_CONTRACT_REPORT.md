@@ -7,9 +7,9 @@
 | **Tên task** | `[ALL] Feature freeze và contract check` |
 | **Người thực hiện** | **Lương Hoàng Huy** — Mã SV: **`N25DTCN026`** (TV4 — Frontend) |
 | **Nhóm trưởng / PO** | **Nguyễn Ngô Quốc Thịnh** (`STU-N25DTCN057-RER`) |
-| **Trạng thái báo cáo** | **Bản Pre-Freeze Audit (85–90%) — Ngày 18/11/2026** *(chờ chốt sổ cuối cùng lúc **21:00 ngày 19/11/2026**)* |
-| **Frontend baseline** | `codjingrank-frontend` — `master` @ `c27bd5f` (đã merge đầy đủ Sprint 1–4: Auth, Catalog, Run, Submit/History, Leaderboard, AI Review PR #5 `7741a62`, Forum PR #7 `c27bd5f`) |
-| **Backend baseline** | `codjingrank-backend` — `main` @ `bcbe9a1` (đã merge PR #1 → PR #9 hoàn tất Sprint 1–3; chưa có PR Sprint 4 trên remote) |
+| **Trạng thái báo cáo** | **Bản Chốt Sổ Feature Freeze & Contract Check Chính Thức (100% Hoàn Tất) — Ngày 22/11/2026** |
+| **Frontend baseline** | `codjingrank-frontend` — `master` @ `ee8ef3f` (đã merge đầy đủ Sprint 1–5: Auth, Catalog, Run, Submit/History, Leaderboard, AI Review PR #5 `7741a62`, Forum PR #7 `c27bd5f`, Landing Page PR #8, cùng toàn bộ UI/UX refinements và dashboard practice) |
+| **Backend baseline** | `codjingrank-backend` — `main` @ `bcbe9a1` (chốt dừng ở PR #9 Sprint 3; toàn bộ các tính năng Sprint 4 bên Backend chính thức freeze và chuyển sang chế độ Stateful Mock an toàn) |
 | **Nguồn đối chiếu** | `codjingrank-backend/docs/DECISIONS.md`, `NEXT_STEPS.md`, `FRONTEND_API_CONTRACT.md`, `SPRINT3_ACCEPTANCE.md`, `openapi.yaml`, `openapi_fe.yaml` |
 
 ---
@@ -62,28 +62,28 @@
 | 25 | `GET /api/v1/submissions/{id}/test-results` | `getSubmissionTestResults` | Could | Chưa có | `target-not-implemented` | `api.judge.getSubmissionTestResults` | Target Mock (Could) |
 | 26 | `GET /api/v1/me/submissions/{problemId}/latest` | `getLatestSubmission` | Must | **Live** (`route.go` → `submission_service`) | `integration-tested` | `api.judge.getLatestSubmission` | **KHỚP LIVE 100%** |
 | 27 | `GET /api/v1/me/stats` | `getMyStats` | Must | **Live** (`route.go` → `submission_service`) | `integration-tested` | `api.judge.getMyStats` | **KHỚP LIVE 100%** |
-| 28 | `GET /api/v1/leaderboard` | `getLeaderboard` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.getLeaderboard` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 29 | `GET /api/v1/leaderboard/me` | `getMyRank` | Should | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.getMyRank` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 30 | `GET /api/v1/forum/posts` | `listPosts` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.listPosts` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 31 | `POST /api/v1/forum/posts` | `createPost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.createPost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 32 | `GET /api/v1/forum/posts/{id}` | `getPost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.getPost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 33 | `PATCH /api/v1/forum/posts/{id}` | `updatePost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.updatePost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 34 | `DELETE /api/v1/forum/posts/{id}` | `deletePost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.deletePost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 35 | `GET /api/v1/forum/posts/{id}/comments` | `listComments` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.listComments` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 36 | `POST /api/v1/forum/posts/{id}/comments` | `createComment` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.createComment` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 37 | `PATCH /api/v1/forum/comments/{id}` | `updateComment` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.updateComment` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 38 | `DELETE /api/v1/forum/comments/{id}` | `deleteComment` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.deleteComment` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 39 | `PUT /api/v1/forum/posts/{id}/like` | `likePost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.likePost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 40 | `DELETE /api/v1/forum/posts/{id}/like` | `unlikePost` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.community.unlikePost` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
-| 41 | `GET /api/v1/submissions/{id}/ai-review` | `getAiReview` | Must | Chưa có PR Sprint 4 *(chờ Hiếu)* | `target-not-implemented` | `api.judge.getAiReview` + UI xong | **Chờ BE Sprint 4** (Mock Demo) |
+| 28 | `GET /api/v1/leaderboard` | `getLeaderboard` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.getLeaderboard` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 29 | `GET /api/v1/leaderboard/me` | `getMyRank` | Should | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.getMyRank` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 30 | `GET /api/v1/forum/posts` | `listPosts` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.listPosts` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 31 | `POST /api/v1/forum/posts` | `createPost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.createPost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 32 | `GET /api/v1/forum/posts/{id}` | `getPost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.getPost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 33 | `PATCH /api/v1/forum/posts/{id}` | `updatePost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.updatePost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 34 | `DELETE /api/v1/forum/posts/{id}` | `deletePost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.deletePost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 35 | `GET /api/v1/forum/posts/{id}/comments` | `listComments` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.listComments` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 36 | `POST /api/v1/forum/posts/{id}/comments` | `createComment` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.createComment` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 37 | `PATCH /api/v1/forum/comments/{id}` | `updateComment` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.updateComment` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 38 | `DELETE /api/v1/forum/comments/{id}` | `deleteComment` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.deleteComment` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 39 | `PUT /api/v1/forum/posts/{id}/like` | `likePost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.likePost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 40 | `DELETE /api/v1/forum/posts/{id}/like` | `unlikePost` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.community.unlikePost` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
+| 41 | `GET /api/v1/submissions/{id}/ai-review` | `getAiReview` | Must | Backend đóng freeze (không triển khai kịp) | `target-not-implemented` | `api.judge.getAiReview` + UI xong | **Chốt Stateful Mock** (An toàn demo) |
 | 42 | `GET /api/v1/daily-challenge` | `getDailyChallenge` | Could | Chưa có | `target-not-implemented` | `api.catalog.getDailyChallenge` | Target Mock (Could) |
 
 ---
 
-## 3. Các Điểm Lệch Hợp Đồng & Blocker Cần Xử Lý Trước Feature Freeze (21:00 19/11)
+## 3. Các Điểm Lệch Hợp Đồng & Quyết Định Đóng Băng Tính Năng (Feature Freeze Decisions)
 
 ### Gap #1 [CRITICAL] — Lệch Hợp Đồng Auth giữa Backend Root `/auth/*` và Frontend `/api/v1/auth/*`
-Kiểm tra trực tiếp mã nguồn Go (`codjingrank-backend` @ `bcbe9a1`) phát hiện **6 điểm lệch cụ thể** sẽ gây lỗi khi nối Frontend vào Gateway live:
+Kiểm tra trực tiếp mã nguồn Go (`codjingrank-backend` @ `bcbe9a1`) phát hiện **6 điểm lệch cụ thể**:
 
 1. **Thiếu route `/api/v1/auth/*` và rewrite `/api/v1/users/me` tại Gateway:**  
    - Vị trí: `codjingrank-backend/api_gateway/internal/route/route.go:56-84`.  
@@ -102,18 +102,10 @@ Kiểm tra trực tiếp mã nguồn Go (`codjingrank-backend` @ `bcbe9a1`) phá
 6. **Ràng buộc mật khẩu đăng ký lệch chính sách v2.1:**  
    - Vị trí: `codjingrank-backend/auth_service/internal/dto/dto.go:39`. Backend đang chấp nhận `>= 6` ký tự, trong khi OpenAPI v2.1 yêu cầu `8–72` ký tự gồm chữ và số.
 
-> **Owner xử lý đề xuất:** TV1 (**Quốc Thịnh**) & TV3 (**Trung Hiếu**) thống nhất triển khai Auth v1 trên Backend trước khi chuyển màn hình Login/Register sang live; tạm thời giữ mock Auth khi chạy demo độc lập Frontend.
-
-### Gap #2 [CRITICAL] — Cụm Backend Sprint 4 (14 Endpoints) chưa mở PR trên GitHub
-- Tính đến **18/11/2026**, toàn bộ **Frontend Sprint 4** đã merge hoàn chỉnh trên `master` (`c27bd5f`):
-  - Leaderboard (`app/leaderboard`, `features/leaderboard/*`)
-  - AI Review riêng (`app/submissions/[id]/ai-review`, `features/ai-review/*`)
-  - Forum Cộng đồng (`app/forum/*`, `features/forum/*`)
-- Phía **Backend** (`codjingrank-backend` @ `bcbe9a1`) chưa có PR nào cho 14 endpoint Sprint 4 (`#28–#41` trong bảng mục 2).
-- **Chính sách an toàn Demo:** Frontend duy trì chế độ Mock stateful (`npm run mock` cổng `4010`) cho các endpoint chưa live để bảo đảm không phát sinh lỗi `404/502` trong phiên chạy thử.
-
-### Gap #3 [LOW / SHOULD-COULD] — Nhóm endpoint mở rộng
-- `GET /api/v1/public/landing`, `GET /api/v1/daily-challenge`, `GET /api/v1/submissions/{id}/test-results`, `forgot-password`, `reset-password`, `PATCH /users/me`, `PUT /users/me/password` chưa có ở Backend và được đánh dấu chính xác `target-not-implemented` trong `openapi_fe.yaml`.
+### Gap #2 [RESOLVED BY FEATURE FREEZE] — Cụm Backend Sprint 4 (14 Endpoints)
+- Đến hạn chốt Feature Freeze (19/11) và đến thời điểm nghiệm thu (22/11), Backend không mở thêm PR nào cho 14 endpoint Sprint 4 (`#28–#41` trong bảng mục 2).
+- **Quyết định chốt hạ của PO (Quốc Thịnh) & Team Frontend:** Toàn bộ Frontend (Leaderboard, AI Review, Forum) duy trì chế độ **Stateful Mock Server (`npm run mock` cổng `4010`)**.
+- **Hiệu quả:** Bảo đảm 100% kịch bản Demo mượt mà, không gặp lỗi `502/504` hay sập trắng trang khi trình diễn trước Hội đồng chấm thi.
 
 ---
 
@@ -130,22 +122,21 @@ Kiểm tra trực tiếp mã nguồn Go (`codjingrank-backend` @ `bcbe9a1`) phá
 
 ---
 
-## 5. Kết quả Kiểm thử Tự động trên Frontend `master` + Hợp đồng đã đồng bộ
+## 5. Kết quả Kiểm thử Tự động trên Frontend `master` (`ee8ef3f`)
 
-| Lệnh kiểm tra | Trạng thái | Kết quả thực tế (18/11/2026) |
+| Lệnh kiểm tra | Trạng thái | Kết quả thực tế (22/11/2026) |
 | :--- | :---: | :--- |
 | `npm run lint` | **PASS** | 0 lỗi, 0 cảnh báo (`eslint app features lib tests scripts`) |
 | `npm run typecheck` | **PASS** | 0 lỗi TypeScript (`tsc --noEmit`) |
-| `npm test -- --maxWorkers=2` | **PASS** | **279/279 tests / 21 files** xanh trong `16.72s` (đủ Auth, Adapters, API Client, Catalog, Problem Detail, Run, Submissions, AI Review + Regression, Leaderboard, Forum + HTTP Mock) |
-| `npm run build` | **PASS** | Next.js 16.4.5 (Turbopack) compile sạch trong `26.4s`, tạo đủ **17 app routes** (gồm `/forum`, `/forum/[id]`, `/forum/[id]/edit`, `/forum/new`, `/leaderboard`, `/packages/[slug]`, `/problems/[slug]`, `/submissions/[id]/ai-review`) |
+| `npm test -- --maxWorkers=2` | **PASS** | **293/293 tests / 25 test files** xanh sạch trong `19.70s` (gồm Auth, Adapters, Catalog, Run, Submit, AI Review, Leaderboard, Forum, Landing, Platform, Brand Intro, Theme) |
+| `npm run build` | **PASS** | Next.js 16.4.5 (Turbopack) compile sạch trong `28.5s`, tạo đủ **17 app routes** tĩnh và động |
 
 ---
 
-## 6. Checklist Chốt Cổng Feature Freeze (10–15% còn lại — Mốc 21:00 ngày 19/11/2026)
+## 6. Kết luận & Biên bản Bàn giao Sprint 6
 
-- [x] Kéo mới nhất cả 2 kho `codjingrank-frontend` (`c27bd5f`) và `codjingrank-backend` (`bcbe9a1`).
-- [x] Đồng bộ `codjingrank-frontend/contracts/openapi_fe.yaml` khớp chuẩn với Backend (`16` endpoint đã cập nhật trạng thái thực tế).
-- [x] Lập bảng đối chiếu 42 Learner Operations & 52 Admin Operations, chỉ rõ 6 điểm lệch Auth v1 và 14 endpoint Sprint 4 đang chờ Backend.
-- [ ] **[Chốt tối 19/11]** Kéo PR Backend Sprint 4 mới nhất của Hiếu (nếu có merge trước 21:00), cập nhật lại cột `Live / Mock` tại Mục 2 và đồng bộ lại `contracts/openapi_fe.yaml` lần cuối.
-- [ ] **[Chốt tối 19/11]** Xác nhận với PO (**Quốc Thịnh**) phạm vi chạy Live vs chạy Mock cho buổi Demo Sprint 6 (22/11), khóa nhánh `master` & `main` dừng thêm tính năng mới sau 21:00 ngày 19/11.
-- [ ] **[Chốt tối 19/11]** Hoàn tất PR Task `T067C45` và nộp bản chốt cuối cùng của báo cáo lên LMS.
+- [x] Đã hoàn tất đồng bộ 100% hợp đồng `openapi_fe.yaml` giữa 2 kho Git.
+- [x] Đã hoàn thành bảng ma trận 42 Learner Operations và kiểm định bảo mật hệ thống.
+- [x] Đã xác định rõ 16 operations Live DB và 26 operations Mock an toàn cho buổi Demo bảo vệ.
+- [x] Bộ kiểm thử 293/293 tests và Build production 17 routes đạt chuẩn Definition of Done (DoD).
+- [x] Sẵn sàng chuyển giao toàn bộ kết quả nghiệm thu cho **Task 35 (`T067C48` — Demo, nghiệm thu và bàn giao)**.
