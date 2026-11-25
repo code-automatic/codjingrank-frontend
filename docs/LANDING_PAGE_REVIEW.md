@@ -148,3 +148,15 @@ Xác minh production cuối: backdrop-filter CTA blur(14px), border 0px, đủ 2
 Đối chiếu video 20261121-0351-43.4289149.mp4: dải logo trôi ngang đều, mép mờ. Chỉ sửa journey.module.css: chạy mặc định, chuột trên khoảng trống không dừng, giới hạn khung <= chiều rộng một nhóm để không hở vòng, mask hai mép, chu kỳ 48s. Thẻ/nội dung/CTA giữ nguyên. Giữ hover chọn nổi/dim, focus bàn phím tĩnh, reduced-motion và pause ngoài viewport.
 
 Production build pass. Chrome xác minh dải chạy khi chuột ở khoảng trống, hover/focus dừng đúng, lift -12px/opacity .45, vòng 48s không hở (nhóm 1248px, viewport 1200px), mask có hiệu lực. 320–1440px không overflow, reduced-motion pass, không runtime exception. Artifact journey-marquee-final; chưa push/merge.
+
+## Tăng sức sống nền hero — 23/11/2026
+
+HeroWave.tsx tăng biên độ các lớp sóng, nhịp pha gấp khoảng 3 lần, thêm lớp gợn nhỏ và hai tần số gợn quanh con trỏ. Đổi normal/light/sheens, thêm ribbon/rim sáng, tăng phản hồi pointer và giữ mask dịu giữa chữ. Vertex/fragment dùng cùng precision highp để uniform uTime liên kết đúng; thử browser đã xác nhận shader chạy, không chỉ fallback. Không thêm thư viện hoặc tải asset.
+
+Production build/lint pass. Chrome: uTime tự tăng, pointer strength >.6 khi rê chuột, 320/390/768/1024/1440px không overflow; reduced-motion dừng thời gian; ra khỏi viewport dừng; không runtime exception. Ảnh/video/report ở visualization hero-wave-vivid, trước thay đổi xem hero-wave-after/hero-desktop.png. Mobile là emulation, chưa đo trên máy vật lý. Chưa push/merge.
+
+## Giảm hiệu ứng, ưu tiên sóng gập ghềnh mềm — 23/11/2026
+
+Theo phản hồi bản vivid quá lố: chỉ sửa HeroWave.tsx. Xóa ribbon/rim và lớp gợn nhỏ dồn dập, giảm tốc pha gần một nửa, dùng ba nếp sóng rộng, normal .72, vật liệu nhạt và sheen .055. Pointer chuyển sang gợn cục bộ nhẹ, không vòng xoáy mạnh. Giữ bảo vệ vùng chữ, reduced-motion và dừng ngoài viewport. Build/lint pass; artifact hero-wave-refined. Chưa push/merge.
+
+Theo yêu cầu tăng tốc ngày 23/11/2026: WAVE_SPEED=1.8, chỉ tăng nhịp thời gian; không tăng cường độ ánh sáng/biên độ hay thêm lớp hiệu ứng.

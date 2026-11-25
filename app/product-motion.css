@@ -1,0 +1,229 @@
+:root {
+  --motion-card: 200ms;
+}
+:is(.platform, .workspace-prototype, .ai-review-main)
+  :is(button, a, summary):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+.platform
+  :is(
+    .package-card,
+    .level-card,
+    .platform-feature,
+    .platform-plan
+  ):focus-within {
+  border-color: var(--ui-accent);
+}
+.platform
+  :is(
+    .platform-package-links a,
+    .platform-account-grid a,
+    .platform-sidebar nav a,
+    .platform-mobile-popover a
+  ) {
+  border-radius: 8px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(.platform, .workspace-prototype, .ai-review-main)
+    :is(
+      button:not(:disabled):not([aria-disabled="true"]),
+      a:not([aria-disabled="true"]),
+      summary
+    ) {
+    transition:
+      transform var(--motion-fast) var(--motion-feedback),
+      background-color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease,
+      box-shadow var(--motion-fast) ease,
+      color var(--motion-fast) ease;
+  }
+  .platform :is(.package-card, .level-card, .platform-feature, .platform-plan) {
+    transition:
+      transform var(--motion-card) var(--motion-feedback),
+      border-color var(--motion-fast) ease,
+      box-shadow var(--motion-card) var(--motion-feedback);
+  }
+  .platform
+    :is(
+      .platform-feature > svg,
+      .platform-feature span svg,
+      .platform-package-links a > svg,
+      .platform-section-head a svg
+    ) {
+    transition:
+      transform var(--motion-card) var(--motion-feedback),
+      opacity var(--motion-fast) ease;
+  }
+  .platform
+    :is(
+      .platform-feed li,
+      .platform-package-links a,
+      .problem-row,
+      .platform-problem-table tr
+    ) {
+    transition:
+      background-color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease;
+  }
+  .platform :is(.platform-problem-table, .problem-table) :is(th, td) {
+    transition: background-color var(--motion-fast) ease;
+  }
+  :is(.platform, .workspace-prototype, .ai-review-main)
+    :is(
+      button:not(:disabled):not([aria-disabled="true"]),
+      a:is(
+          .platform-primary,
+          .btn-primary-link,
+          .btn-secondary-link,
+          .button-secondary,
+          .platform-feature
+        ):not([aria-disabled="true"])
+    ):active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+  .platform
+    :is(
+      .practice-calendar-grid button,
+      .platform-notice-tabs button,
+      [role="tab"]
+    ):active:not(:focus-visible) {
+    transform: scale(0.96);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .platform
+    :is(
+      .platform-package-links a,
+      .platform-account-grid a,
+      .platform-sidebar nav a,
+      .platform-mobile-popover a
+    ):hover {
+    background: var(--ui-accent-surface);
+  }
+  .platform
+    :is(
+      .platform-feed li:has(a:hover),
+      .problem-row:not(.problem-row--locked):hover
+    ) {
+    background: color-mix(in srgb, var(--ui-accent) 5%, var(--ui-surface));
+  }
+  .platform
+    :is(
+      .package-card,
+      .level-card:not(.level-card--locked),
+      .platform-feature,
+      .platform-plan
+    ):hover {
+    border-color: var(--ui-accent);
+    box-shadow: 0 8px 20px var(--ui-shadow);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :is(.platform, .workspace-prototype, .ai-review-main)
+    button:not(:disabled):not([aria-disabled="true"]):hover:not(
+      :focus-visible
+    ) {
+    transform: translateY(-1px);
+  }
+  .platform
+    :is(
+      .platform-primary,
+      .btn-primary-link,
+      .btn-secondary-link,
+      .button-secondary
+    ):hover:not(:focus-visible) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px var(--ui-shadow);
+  }
+  .platform
+    :is(
+      .package-card,
+      .level-card:not(.level-card--locked),
+      .platform-feature,
+      .platform-plan
+    ):hover:not(:focus-within) {
+    transform: translateY(-3px);
+  }
+  .platform .platform-feature:hover > svg {
+    transform: translateY(-3px) rotate(-4deg);
+    opacity: 0.8;
+  }
+  .platform .platform-feature:hover span svg,
+  .platform .platform-section-head a:hover svg {
+    transform: translate(2px, -2px);
+  }
+  .platform .platform-package-links a:hover > svg {
+    transform: translateX(3px);
+  }
+  .platform
+    :is(
+      .platform-feature,
+      .platform-primary,
+      .btn-primary-link,
+      .btn-secondary-link,
+      .button-secondary
+    ):active:not(:focus-visible),
+  .platform button:active:not(:disabled):not(:focus-visible),
+  .workspace-prototype button:active:not(:disabled):not(:focus-visible),
+  .ai-review-main button:active:not(:disabled):not(:focus-visible) {
+    transform: scale(0.98);
+  }
+}
+:is(.platform, .workspace-prototype, .ai-review-main)
+  :is(button, a, summary):focus-visible {
+  transition: none !important;
+  transform: none;
+}
+.platform :is(button:disabled, [aria-disabled="true"], .level-card--locked) {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.platform, .workspace-prototype, .ai-review-main)
+    :is(
+      button,
+      a,
+      summary,
+      .package-card,
+      .level-card,
+      .platform-feature,
+      .platform-plan,
+      .platform-feature > svg
+    ) {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+.platform button:disabled:hover,
+.platform [aria-disabled="true"]:hover,
+.workspace-prototype button:disabled:hover,
+.ai-review-main button:disabled:hover {
+  transform: none !important;
+  box-shadow: none;
+  transition: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .workspace-prototype
+    .workspace-primary-actions
+    .run-actions
+    > button:not(:disabled):active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  :is(.workspace-prototype, .ai-review-main)
+    a:is(.button-secondary, .submission-ai-link):hover:not(:focus-visible) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px var(--ui-shadow);
+  }
+  :is(.workspace-prototype, .ai-review-main)
+    a:is(.button-secondary, .submission-ai-link):active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(.workspace-prototype, .ai-review-main)
+    a:is(.button-secondary, .submission-ai-link):active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+}
