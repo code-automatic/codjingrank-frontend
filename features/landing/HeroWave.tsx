@@ -3,20 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./hero-wave.module.css";
 
+const WAVE_SPEED = 1.8;
+
 const vertexSource = `
 attribute vec2 aPosition;
 uniform float uTime;
 uniform vec2 uPointer;
 uniform float uStrength;
 varying vec3 vNormal;
-varying float vHeight;
 varying vec2 vUv;
 float heightAt(vec2 p) {
-  float h = sin(p.x * 5.2 + p.y * 3.0 + uTime * .24) * .16;
-  h += sin(p.y * 7.8 - p.x * 2.6 - uTime * .18) * .105;
-  h += cos(p.x * 9.0 + p.y * 4.4 + uTime * .12) * .045;
+  float h = sin(p.x * 4.2 + p.y * 2.7 + uTime * .38) * .21;
+  h += sin(p.y * 6.0 - p.x * 2.1 - uTime * .27) * .12;
+  h += cos(p.x * 7.2 + p.y * 3.6 + uTime * .18) * .04;
   vec2 d = p - uPointer;
-  h += exp(-dot(d,d) * 4.5) * sin(length(d) * 12.0 - uTime * .7) * uStrength * .10;
+  h += exp(-dot(d,d) * 4.0) * (.055 + sin(length(d) * 8.0 - uTime * .9) * .018) * uStrength;
   return h;
 }
 void main() {
@@ -24,28 +25,28 @@ void main() {
   float h = heightAt(p);
   float dx = (heightAt(p + vec2(.006,0.0)) - heightAt(p - vec2(.006,0.0))) / .012;
   float dy = (heightAt(p + vec2(0.0,.006)) - heightAt(p - vec2(0.0,.006))) / .012;
-  vNormal = normalize(vec3(-dx * .62,-dy * .62,1.0));
-  vHeight = h;
+  vNormal = normalize(vec3(-dx * .72,-dy * .72,1.0));
   vUv = p;
   float depth = 1.0 + p.y * .12;
-  gl_Position = vec4(p.x / depth, (p.y + h * .34) / depth, 0.0, 1.0);
+  gl_Position = vec4(p.x / depth, (p.y + h * .28) / depth, 0.0, 1.0);
 }`;
 
 const fragmentSource = `
-precision mediump float;
+precision highp float;
+uniform float uTime;
 varying vec3 vNormal;
-varying float vHeight;
 varying vec2 vUv;
 void main() {
   vec3 n = normalize(vNormal);
-  float light = max(dot(n, normalize(vec3(-.65,.8,1.25))),0.0);
-  float sheen = pow(max(dot(reflect(normalize(vec3(.65,-.8,-1.25)),n),vec3(0.0,0.0,1.0)),0.0),18.0);
-  vec3 mint = mix(vec3(.64,.84,.77),vec3(.91,.96,.86),smoothstep(-1.0,1.0,vUv.x));
-  vec3 color = mint * (.73 + light * .32) + sheen * .09;
+  vec3 lamp = normalize(vec3(-.65 + sin(uTime * .12) * .08,.8 + cos(uTime * .1) * .06,1.25));
+  float light = max(dot(n, lamp),0.0);
+  float sheen = pow(max(dot(reflect(-lamp,n),vec3(0.0,0.0,1.0)),0.0),12.0);
+  vec3 mint = mix(vec3(.65,.84,.78),vec3(.92,.96,.88),smoothstep(-1.0,1.0,vUv.x));
+  vec3 color = mint * (.76 + light * .28) + vec3(.82,.96,.90) * sheen * .055;
   float center = exp(-pow(vUv.x * 1.65,2.0) - pow((vUv.y + .06) * 2.1,2.0));
-  color = mix(color,vec3(.985,.992,.975),center * .93);
+  color = mix(color,vec3(.985,.992,.975),center * .96);
   float bottom = smoothstep(.25,1.0,-vUv.y);
-  color = mix(color,vec3(1.0),bottom * .96);
+  color = mix(color,vec3(1.0),bottom * .97);
   gl_FragColor = vec4(color,1.0);
 }`;
 
@@ -154,7 +155,7 @@ export function HeroWave() {
       if (!allowed()) return;
       const delta = now - previous;
       if (delta >= 32) {
-        time += Math.min(delta, 64) / 1000;
+        time += (Math.min(delta, 64) / 1000) * WAVE_SPEED;
         previous = now;
         x += (targetX - x) * 0.09;
         y += (targetY - y) * 0.09;

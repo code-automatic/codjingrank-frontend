@@ -10,6 +10,7 @@ import "./theme.css";
 import "./styles.css";
 import "./motion.css";
 import "./refinements.css";
+import "./product-motion.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:

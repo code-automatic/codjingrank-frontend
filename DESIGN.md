@@ -105,3 +105,17 @@ Chuyển cảnh rạch chéo teal/ivory bằng hai mảng SVG răng cưa, mở t
 ## Chém sáng và khói lan — 21/11/2026
 
 Theo phản hồi mới, thay hình ảnh tear phẳng bằng shader WebGL riêng: nền khói domain-warp/fBm, lõi sáng trắng-cyan, quầng sáng và hạt lóe quanh biên, mép mở biến dạng theo noise, haze tan vào form. Canvas render tối đa 1100px rộng, khoảng 30fps trong chuyển cảnh, dọn shader/buffer/rAF khi kết thúc. SVG tách mảng giữ làm fallback. Thời gian mở 1400ms, fail-open 3200ms; reduced-motion/Escape và audio gesture giữ nguyên. Không dùng footage video tham chiếu làm asset.
+
+## Hero sinh động hơn — 23/11/2026
+
+Theo yêu cầu tăng chuyển động: 4 lớp sóng với biên độ/nhịp tăng, hai lớp gợn lan quanh pointer, normal nổi hơn, ánh sáng di chuyển, vệt phản sáng và rim highlight. Giữ vùng giữa dịu cho chữ/CTA, màu teal/mint/ivory, không thêm control. Giữ cap khoảng 30fps, DPR <=1.5, dừng ngoài viewport/tab ẩn và reduced-motion. Chỉ sửa HeroWave.tsx, không đổi layout/app/âm thanh chuyển cảnh.
+
+## Hero tinh chỉnh sau phản hồi — 23/11/2026
+
+Bản hiện hành thay bản vivid ở trên: bỏ ribbon/rim và lớp gợn tần số cao; ba lớp nếp sóng rộng, nhịp vừa phải (.38/.27/.18), vật liệu mint/ivory nhạt, phản sáng mềm .055. Pointer chỉ tạo gợn cục bộ nhẹ thay cho hai vòng lan mạnh. Giữ chuyển động liên tục nhưng tránh cảm giác bóng/chói/xoáy. Không đổi typography, CTA, layout hay luồng auth.
+
+Điều chỉnh tiếp ngày 23/11/2026: tăng tốc thời gian sóng lên 1.8 lần so với bản refined; giữ hình dạng nếp sóng, biên độ, màu và độ phản sáng dịu.
+
+## Phản hồi thao tác toàn app — 23/11/2026
+
+Dùng app/product-motion.css cho UI sau đăng nhập: control hover nâng 1px, press scale .98, thẻ điều hướng nâng 3px và bóng nhẹ, icon phản hồi 2–3px; không đổi màu nhận diện. CSS modules bổ sung cho thẻ forum/ranking. Hàng bài/bảng xếp hạng không dịch chuyển, chỉ phản hồi nền. Disabled/locked giữ tĩnh; bàn phím có focus rõ, transition tắt khi focus-visible; reduced-motion tắt chuyển động. Scope platform/workspace/AI, không áp dụng vào landing/auth intro.

@@ -1476,3 +1476,52 @@
     left: calc(50% - 38px);
   }
 }
+@media (prefers-reduced-motion: no-preference) {
+  .practiceCard {
+    transition:
+      transform 200ms var(--motion-feedback),
+      box-shadow 200ms var(--motion-feedback);
+  }
+  .cardArrow {
+    transition:
+      transform var(--motion-fast) var(--motion-feedback),
+      background-color var(--motion-fast) ease;
+  }
+  .table tbody :is(th, td),
+  .compactList li,
+  .podiumEntry {
+    transition:
+      background-color var(--motion-fast) ease,
+      border-color var(--motion-fast) ease;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .practiceCard:hover:not(:focus-visible) {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 22px var(--ui-shadow);
+  }
+  .practiceCard:hover .cardArrow {
+    transform: translate(2px, -2px);
+  }
+  .practiceCard:active:not(:focus-visible) {
+    transform: scale(0.99);
+  }
+}
+.practiceCard:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 4px;
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .practiceCard,
+  .cardArrow,
+  .table tbody :is(th, td),
+  .compactList li,
+  .podiumEntry {
+    transition: none;
+  }
+  .practiceCard:hover,
+  .practiceCard:active {
+    transform: none;
+  }
+}

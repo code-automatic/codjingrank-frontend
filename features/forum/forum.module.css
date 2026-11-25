@@ -1226,3 +1226,69 @@
   align-items: center;
   gap: 6px;
 }
+@media (prefers-reduced-motion: no-preference) {
+  .featureLinks > a {
+    transition:
+      transform 200ms var(--motion-feedback),
+      border-color var(--motion-fast) ease,
+      box-shadow 200ms var(--motion-feedback);
+  }
+  .postList .postCard {
+    transition:
+      border-color var(--motion-fast) ease,
+      background-color var(--motion-fast) ease;
+  }
+}
+.postList .postCard:hover {
+  transform: none;
+}
+.featureLinks > a:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 4px;
+  transition: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .featureLinks > a:hover {
+    border-color: var(--ui-accent);
+    box-shadow: 0 8px 20px var(--ui-shadow);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .featureLinks > a:hover:not(:focus-visible) {
+    transform: translateY(-3px);
+  }
+  .featureLinks > a:active:not(:focus-visible) {
+    transform: scale(0.99);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .featureLinks > a,
+  .postList .postCard {
+    transition: none;
+  }
+  .featureLinks > a:hover,
+  .featureLinks > a:active {
+    transform: none;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .primaryAction:hover:not(:focus-visible) {
+    transform: translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .primaryAction:active:not(:focus-visible) {
+    transform: scale(0.98);
+  }
+}
+.primaryAction:focus-visible {
+  transition: none;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction:hover,
+  .primaryAction:active {
+    transform: none;
+    transition: none;
+  }
+}
