@@ -5,9 +5,11 @@ let themeChangeRevision = 0;
 export function readThemePreference(): ThemePreference {
   try {
     const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return saved === "light" || saved === "dark" ? saved : "system";
+    return saved === "light" || saved === "dark" || saved === "system"
+      ? saved
+      : "light";
   } catch {
-    return "system";
+    return "light";
   }
 }
 export function applyTheme(preference: ThemePreference, persist = false) {
@@ -23,9 +25,7 @@ export function applyTheme(preference: ThemePreference, persist = false) {
   document.documentElement.dataset.themePreference = preference;
   if (persist) {
     try {
-      if (preference === "system")
-        window.localStorage.removeItem(THEME_STORAGE_KEY);
-      else window.localStorage.setItem(THEME_STORAGE_KEY, preference);
+      window.localStorage.setItem(THEME_STORAGE_KEY, preference);
     } catch {
       /* A blocked storage must not disable the current-page choice. */
     }
@@ -68,4 +68,4 @@ export function watchThemePreference() {
   };
 }
 /** Trusted static script in the head: resolves preference before the body is painted. */
-export const themeInitializationScript = `(function(){var p="system";try{var s=localStorage.getItem("codjingrank-theme");if(s==="light"||s==="dark")p=s;}catch(e){}var d=p==="system"?(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):p;document.documentElement.dataset.theme=d;document.documentElement.dataset.themePreference=p;})();`;
+export const themeInitializationScript = `(function(){var p="light";try{var s=localStorage.getItem("codjingrank-theme");if(s==="light"||s==="dark"||s==="system")p=s;}catch(e){}var d=p==="system"?(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):p;document.documentElement.dataset.theme=d;document.documentElement.dataset.themePreference=p;})();`;

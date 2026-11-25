@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { Icon } from "@/lib/ui/Icon";
 import { PracticeAside } from "./PracticeAside";
+import { PracticeStats } from "./PracticeStats";
 
 export function DashboardPage() {
   const router = useRouter();
@@ -77,6 +78,7 @@ export function DashboardPage() {
           và cộng đồng đang được cung cấp từ môi trường mô phỏng.
         </p>
       )}
+      <PracticeStats variant="summary" />
       <div className="platform-dashboard-layout">
         <div>
           <div className="platform-feature-grid">

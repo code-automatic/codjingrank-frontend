@@ -1,0 +1,654 @@
+:is(.platform, .workspace-prototype, .ai-review-main) {
+  --product-radius: 16px;
+  --product-control-radius: 12px;
+  --product-control-height: 44px;
+}
+.platform {
+  background: var(--ui-canvas);
+}
+.platform .platform-header {
+  min-height: 64px;
+  padding-inline: 28px;
+  border-bottom-color: var(--ui-border);
+}
+.platform .platform-search {
+  min-height: 40px;
+  border-radius: 12px;
+  background: var(--ui-surface);
+}
+.platform .platform-search input {
+  font-size: 13px;
+}
+.platform .platform-tools {
+  gap: 10px;
+}
+.platform :is(.platform-icon-button, .platform-avatar, .platform-store-link) {
+  border-radius: 12px;
+}
+.platform :is(.platform-popover, .platform-store-dialog) {
+  border-radius: 18px;
+  border: 1px solid var(--ui-border);
+  box-shadow: 0 14px 36px var(--ui-shadow);
+}
+.platform .platform-account-grid {
+  gap: 8px;
+}
+.platform .platform-account-grid a {
+  min-height: 76px;
+  border-radius: 12px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+}
+.platform .platform-notice-tabs {
+  padding: 4px;
+  gap: 4px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ui-surface);
+}
+.platform .platform-notice-tabs button {
+  flex: 1;
+  border-radius: 9px;
+}
+.platform .platform-notice-tabs button[aria-pressed="true"] {
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+}
+.platform .platform-route-main {
+  width: min(1280px, 100%);
+  padding: 36px 32px 64px;
+}
+.platform :is(.platform-route-main, .catalog-main) h1 {
+  font-size: clamp(26px, 2.3vw, 32px);
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+}
+.platform .platform-welcome {
+  align-items: center;
+  margin-bottom: 24px;
+}
+.platform .platform-welcome p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.platform .platform-demo-banner {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+.platform .platform-dashboard-layout {
+  grid-template-columns: minmax(0, 1fr) 288px;
+  gap: 24px;
+}
+.platform .platform-feature-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.platform a.platform-feature {
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  padding: 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--product-radius);
+  background: var(--ui-surface);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--ui-shadow) 32%, transparent);
+}
+.platform a.platform-feature:first-child {
+  background: var(--ui-accent-surface);
+  border-color: color-mix(in srgb, var(--ui-accent) 18%, var(--ui-border));
+}
+.platform .platform-feature h2 {
+  font-size: 21px;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  padding-right: 42px;
+}
+.platform .platform-feature p {
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 32ch;
+  margin: 0 0 22px;
+}
+.platform .platform-feature > svg {
+  top: 22px;
+  right: 20px;
+  bottom: auto;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--ui-surface);
+  opacity: 1;
+}
+.platform .platform-feature span {
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 700;
+}
+.platform
+  :is(
+    .platform-primary,
+    .btn-primary-link,
+    .btn-secondary-link,
+    .button-secondary,
+    button:not(.u416-tab):not(.u008-btn)
+  ) {
+  min-height: var(--product-control-height);
+  border-radius: var(--product-control-radius);
+  font-size: 13px;
+  font-weight: 650;
+}
+.platform :is(.platform-primary, .btn-primary-link) {
+  padding: 11px 18px;
+  background: var(--ui-button);
+  color: var(--ui-button-text);
+  border: 1px solid transparent;
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--ui-shadow) 35%, transparent);
+}
+.platform :is(.btn-secondary-link, .button-secondary) {
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-control-border);
+}
+.platform .icon-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 10px;
+}
+.platform .platform-section-head {
+  margin-bottom: 12px;
+}
+.platform .platform-section-head h2 {
+  font-size: 18px;
+  font-weight: 650;
+}
+.platform :is(.platform-package-links, .platform-feed) {
+  padding: 0 16px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+}
+.platform :is(.platform-package-links li, .platform-feed li) {
+  padding: 18px 0;
+}
+.platform :is(.platform-package-links li, .platform-feed li):last-child {
+  border-bottom: 0;
+}
+.platform .platform-feed-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--ui-accent-surface);
+  border-radius: 11px;
+}
+.platform .platform-package-links p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.platform .platform-feed h3 {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.platform .practice-calendar {
+  background: var(--ui-surface);
+  padding: 20px 16px 12px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+}
+.platform .practice-calendar-top {
+  margin-bottom: 18px;
+}
+.platform .practice-calendar-badge {
+  background: var(--ui-accent-surface);
+  border: 0;
+  border-radius: 13px;
+  box-shadow: none;
+}
+.platform .practice-calendar .practice-calendar-grid button {
+  min-height: 34px;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+.platform .practice-calendar-month button {
+  min-height: 34px;
+  width: 34px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface-muted);
+  border-radius: 10px;
+}
+.platform .practice-calendar-details {
+  padding: 12px 0;
+  font-size: 12px;
+}
+.platform .platform-aside-community {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.platform .platform-library {
+  grid-template-columns: 208px minmax(0, 1fr) 272px;
+  gap: 24px;
+  padding: 24px;
+}
+.platform .platform-sidebar {
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  border-radius: 16px;
+  padding: 12px;
+  align-self: start;
+}
+.platform .platform-sidebar nav a {
+  padding: 12px;
+  min-height: 44px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+.platform .platform-sidebar-note {
+  margin-top: 20px;
+  padding: 16px 8px 8px;
+  border-top: 1px solid var(--ui-border);
+}
+.platform .platform-library-content > main {
+  padding: 0;
+}
+.platform .catalog-filter-panel {
+  padding: 18px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+  box-shadow: none;
+  margin-bottom: 24px;
+}
+.platform .catalog-filter-grid {
+  gap: 14px;
+  align-items: end;
+}
+.platform .catalog-filter-grid label {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.platform .catalog-search-control {
+  border-radius: 12px;
+  min-height: 46px;
+  background: var(--ui-canvas);
+  border-color: var(--ui-control-border);
+  gap: 8px;
+  padding: 3px 4px 3px 12px;
+}
+.platform .catalog-search-control input {
+  background: transparent;
+  font-size: 13px;
+  min-width: 0;
+}
+.platform .catalog-search-control button {
+  min-width: 38px;
+  width: 38px;
+  min-height: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 0;
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+}
+.platform
+  :is(
+    .catalog-filter-grid select,
+    .platform-profile-form input,
+    .platform-profile-form textarea
+  ) {
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 13px;
+  background: var(--ui-canvas);
+}
+.platform .catalog-filter-footer:empty {
+  display: none;
+}
+.platform .catalog-filter-footer {
+  margin-top: 0;
+}
+.platform .catalog-filter-footer:has(button, [role="status"]) {
+  margin-top: 12px;
+}
+.platform .package-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.platform .package-card {
+  padding: 22px;
+  border-radius: 16px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  box-shadow: none;
+}
+.platform .package-card-body {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  padding: 0 0 20px;
+}
+.platform .package-topic-icon {
+  display: grid;
+  place-items: center;
+  grid-row: 1/3;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border-radius: 13px;
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+}
+.platform .package-card-title {
+  margin: 0 0 7px;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.platform .package-card-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.platform .package-card-footer {
+  padding-top: 16px;
+  margin-top: 0;
+  border-top: 1px solid var(--ui-border);
+  gap: 12px;
+}
+.platform .package-card .btn-primary-link {
+  min-width: 0;
+}
+.platform .levels-grid {
+  gap: 16px;
+}
+.platform .level-card {
+  border-radius: 16px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+.platform .level-card--active {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 1px var(--ui-accent);
+}
+.platform .level-card-title {
+  font-size: 18px;
+  margin: 18px 0;
+}
+.platform .level-helper {
+  font-size: 13px;
+  line-height: 1.7;
+  flex: 1;
+}
+.platform .level-card > button {
+  width: 100%;
+  margin-top: 18px;
+}
+.platform .catalog-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.platform .catalog-pagination-bar,
+.platform .pagination-bar {
+  padding: 16px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  border-radius: 16px;
+  box-shadow: none;
+  gap: 16px;
+}
+.platform .pagination-size-select {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+.platform .platform-table-scroll {
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  padding: 8px;
+  background: var(--ui-surface);
+}
+.platform .platform-problem-table {
+  border-spacing: 0;
+}
+.platform .platform-problem-table :is(td, th) {
+  padding: 13px 12px;
+}
+.platform .platform-problem-table tbody td {
+  font-size: 13px;
+  border-bottom: 1px solid var(--ui-border);
+}
+.platform .platform-problem-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.platform .platform-problem-table tbody tr:nth-child(odd) td {
+  background: var(--ui-surface);
+}
+.platform .platform-profile-layout {
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 28px;
+}
+.platform .platform-profile-card {
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+}
+.platform .platform-profile-form {
+  padding: 24px;
+  max-width: 760px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+}
+.platform .platform-profile-form label:first-child {
+  margin-top: 0;
+}
+.platform .platform-profile-form :is(input, textarea):disabled {
+  background: var(--ui-surface-muted);
+  color: var(--ui-text-muted);
+}
+.platform .platform-profile-form textarea {
+  min-height: 124px;
+}
+.platform .platform-plan {
+  padding: 28px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+}
+.platform .platform-plan:nth-child(2) {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent-surface);
+}
+.workspace-prototype .editor-toolbar {
+  min-height: 46px;
+  padding: 6px 12px;
+  gap: 10px;
+}
+.workspace-prototype
+  :is(
+    .editor-toolbar select,
+    .workspace-topbar button,
+    .editor-toolbar button,
+    .workspace-toolbar button
+  ) {
+  border-radius: 9px;
+}
+.workspace-prototype .workspace-result-tabs.u416 {
+  padding: 8px 12px;
+  background: var(--ui-surface);
+  border-bottom: 1px solid var(--ui-border);
+  width: 100%;
+  max-width: 100%;
+}
+.workspace-prototype .workspace-result-tabs.u416 .u416-tl {
+  max-width: 100%;
+}
+.workspace-prototype .submission-panel .submission-metrics {
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  gap: 0;
+  overflow: hidden;
+  background: var(--ui-surface);
+}
+.workspace-prototype .submission-panel .submission-metrics > div {
+  padding: 12px;
+  background: transparent;
+  border-radius: 0;
+}
+.workspace-prototype .submission-panel .submission-ai-link {
+  border-radius: 12px;
+  min-height: 44px;
+}
+.ai-review-main .ai-review-page-header {
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+.ai-review-main .ai-review-section {
+  border: 1px solid var(--ui-border);
+  padding: 22px;
+  border-radius: 16px;
+  background: var(--ui-surface);
+  box-shadow: none;
+}
+.ai-review-main :is(.button-secondary, button) {
+  min-height: 44px;
+  border-radius: 12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .platform :is(.platform-primary, .btn-primary-link):hover {
+    background: var(--ui-button-hover);
+    color: var(--ui-button-text);
+  }
+  .platform :is(.btn-secondary-link, .button-secondary):hover {
+    background: var(--ui-surface-muted);
+    color: var(--ui-text);
+    border-color: var(--ui-accent);
+  }
+}
+@media (max-width: 1250px) {
+  .platform .platform-library {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+  .platform .platform-library-aside {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .platform .platform-dashboard-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 20px;
+  }
+  .platform .platform-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .platform a.platform-feature {
+    min-height: 190px;
+  }
+}
+@media (max-width: 800px) {
+  .platform .platform-route-main {
+    padding: 24px 20px 48px;
+  }
+  .platform .platform-dashboard-layout,
+  .platform .platform-profile-layout {
+    grid-template-columns: 1fr;
+  }
+  .platform .platform-dashboard-aside {
+    grid-template-columns: 1fr 1fr;
+  }
+  .platform .platform-header {
+    padding-inline: 16px;
+  }
+  .platform .platform-library {
+    display: block;
+    padding: 16px;
+  }
+  .platform .platform-sidebar {
+    margin-bottom: 20px;
+  }
+  .platform .platform-sidebar nav {
+    display: flex;
+    overflow-x: auto;
+  }
+  .platform .platform-sidebar nav a {
+    flex: 0 0 auto;
+  }
+  .platform .platform-sidebar-note {
+    display: none;
+  }
+  .platform .platform-profile-card {
+    padding: 20px;
+  }
+  .platform .platform-profile-form {
+    padding: 20px;
+  }
+}
+@media (max-width: 540px) {
+  .platform .platform-feature-grid,
+  .platform .platform-dashboard-aside {
+    grid-template-columns: 1fr;
+  }
+  .platform .platform-route-main {
+    padding-inline: 16px;
+  }
+  .platform .platform-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .platform a.platform-feature {
+    min-height: 190px;
+  }
+  .platform .platform-feature h2 {
+    max-width: none;
+    font-size: 21px;
+  }
+  .platform .platform-welcome .platform-primary {
+    width: 100%;
+    justify-content: center;
+  }
+  .platform .catalog-filter-panel {
+    padding: 14px;
+  }
+  .platform .package-card {
+    padding: 18px;
+  }
+  .platform .package-card-footer {
+    flex-wrap: wrap;
+  }
+  .platform .catalog-filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .platform .platform-store-link {
+    display: none;
+  }
+  .platform .platform-plan {
+    padding: 22px;
+  }
+  .workspace-prototype .workspace-result-tabs.u416 {
+    padding: 6px 8px;
+  }
+  .workspace-prototype .workspace-result-tabs.u416 .u416-tl {
+    width: 100%;
+  }
+  .workspace-prototype .workspace-result-tabs.u416 .u416-tab {
+    flex: 1;
+  }
+}

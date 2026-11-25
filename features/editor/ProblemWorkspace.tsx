@@ -7,6 +7,7 @@ import { WorkspaceSeparator } from "./WorkspaceSeparator";
 import { WorkspaceTools } from "./WorkspaceTools";
 import { useEffect, useState, type CSSProperties } from "react";
 import { Icon } from "@/lib/ui/Icon";
+import { SegmentedControl } from "@/lib/ui/SegmentedControl";
 import "./workspace-prototype.css";
 import { RunPanel } from "@/features/problem-run/RunPanel";
 import { SubmissionPanel } from "@/features/submissions/SubmissionPanel";
@@ -502,61 +503,37 @@ function WorkspaceReady({
             id="workspace-results"
             aria-label="Kết quả thực thi"
           >
-            <div
+            <SegmentedControl
               className="workspace-result-tabs"
-              role="tablist"
-              aria-label="Kết quả"
-            >
-              {(["samples", "run", "submission"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  role="tab"
-                  id={`result-tab-${tab}`}
-                  aria-controls={`result-panel-${tab}`}
-                  aria-selected={resultTab === tab}
-                  tabIndex={resultTab === tab ? 0 : -1}
-                  onClick={() => setResultTab(tab)}
-                  onKeyDown={(event) => {
-                    if (
-                      ["ArrowLeft", "ArrowRight", "Home", "End"].includes(
-                        event.key,
-                      )
-                    ) {
-                      event.preventDefault();
-                      const tabs = ["samples", "run", "submission"] as const;
-                      const index = tabs.indexOf(tab);
-                      const next =
-                        event.key === "Home"
-                          ? "samples"
-                          : event.key === "End"
-                            ? "submission"
-                            : tabs[
-                                (index + (event.key === "ArrowLeft" ? 2 : 1)) %
-                                  3
-                              ];
-                      setResultTab(next);
-                      document.getElementById(`result-tab-${next}`)?.focus();
-                    }
-                  }}
-                >
-                  <Icon
-                    name={
-                      tab === "samples"
-                        ? "code"
-                        : tab === "run"
-                          ? "check"
-                          : "history"
-                    }
-                  />
-                  {tab === "samples"
-                    ? "Test mẫu"
-                    : tab === "run"
-                      ? "Kết quả chạy"
-                      : "Bài nộp"}
-                </button>
-              ))}
-            </div>
+              label="Kết quả"
+              value={resultTab}
+              onChange={(value) =>
+                setResultTab(value as "samples" | "run" | "submission")
+              }
+              options={[
+                {
+                  value: "samples",
+                  label: "Test mẫu",
+                  icon: "code",
+                  id: "result-tab-samples",
+                  controls: "result-panel-samples",
+                },
+                {
+                  value: "run",
+                  label: "Kết quả chạy",
+                  icon: "check",
+                  id: "result-tab-run",
+                  controls: "result-panel-run",
+                },
+                {
+                  value: "submission",
+                  label: "Bài nộp",
+                  icon: "history",
+                  id: "result-tab-submission",
+                  controls: "result-panel-submission",
+                },
+              ]}
+            />
             <div
               className="workspace-console-panel workspace-testcases"
               id="result-panel-samples"

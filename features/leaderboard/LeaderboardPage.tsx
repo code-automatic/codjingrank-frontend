@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon } from "@/lib/ui/Icon";
+import { SegmentedControl } from "@/lib/ui/SegmentedControl";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useEffect,
@@ -226,30 +227,25 @@ function Results({
       </aside>
       <section className={styles.board} aria-labelledby="ranking-heading">
         <div className={styles.viewBar}>
-          <div
+          <SegmentedControl
             className={styles.viewSwitch}
-            role="group"
-            aria-label="Chọn nội dung xếp hạng"
-          >
-            <button
-              type="button"
-              lang="en"
-              aria-pressed={panel === "ranking"}
-              aria-controls="global-ranking-results"
-              onClick={() => onPanel("ranking")}
-            >
-              Ranking
-            </button>
-            <button
-              type="button"
-              lang="en"
-              aria-pressed={panel === "me"}
-              aria-controls="personal-rank-panel"
-              onClick={() => onPanel("me")}
-            >
-              My Ranking
-            </button>
-          </div>
+            kind="toggle"
+            label="Chọn nội dung xếp hạng"
+            value={panel}
+            onChange={(value) => onPanel(value as "ranking" | "me")}
+            options={[
+              {
+                value: "ranking",
+                label: "Ranking",
+                controls: "global-ranking-results",
+              },
+              {
+                value: "me",
+                label: "My Ranking",
+                controls: "personal-rank-panel",
+              },
+            ]}
+          />
           {expanded && (
             <button
               type="button"

@@ -215,6 +215,7 @@ export function createForumDemo(spec, now = () => new Date()) {
       postType: post.postType,
       status: "published",
       title: post.title,
+      excerpt: post.contentMd.slice(0, 1000),
       likeCount: post.likes.size,
       viewCount: post.viewCount,
       commentCount: items.length,

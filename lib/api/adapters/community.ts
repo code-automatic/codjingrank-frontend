@@ -142,6 +142,9 @@ export function adaptForumPostSummary(
     postType,
     status: assertEnum(r.status, FORUM_POST_STATUSES, `${field}.status`),
     title: assertNonEmptyString(r.title, `${field}.title`),
+    ...(r.excerpt === undefined
+      ? {}
+      : { excerpt: assertString(r.excerpt, `${field}.excerpt`) }),
     likeCount: assertInt(r.likeCount, `${field}.likeCount`, 0),
     viewCount: assertInt(r.viewCount, `${field}.viewCount`, 0),
     commentCount: assertInt(r.commentCount, `${field}.commentCount`, 0),

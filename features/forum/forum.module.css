@@ -1,4 +1,8 @@
 .page {
+  --forum-question-ink: #9a4d15;
+  --forum-question-fill: #fff0d9;
+  --forum-solution-ink: #126847;
+  --forum-solution-fill: #e1f4e9;
   min-height: 100vh;
   background:
     radial-gradient(
@@ -8,6 +12,36 @@
     ),
     var(--ui-canvas);
   color: var(--ui-text);
+}
+:global(:root[data-theme="dark"]) .page {
+  --forum-question-ink: #f9e2af;
+  --forum-question-fill: #443c33;
+  --forum-solution-ink: #a6e3a1;
+  --forum-solution-fill: #293d36;
+}
+
+:global(.platform) .page {
+  background: transparent;
+}
+:global(.platform)
+  .page
+  :is(.toolbar, .postList, .trending, .article, .comments, .editor, .message),
+:global(.platform) .featureLinks > a {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px) saturate(125%);
+}
+:global(.platform) .page :is(.article, .comments, .editor) {
+  background: var(--glass-dense);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:global(.platform) .page .primaryAction {
+  background: var(--ui-accent);
+  color: var(--ui-on-accent);
+  box-shadow: var(--glass-rim);
 }
 
 .navbar {
@@ -1057,6 +1091,11 @@
   .toolbar > div:first-child {
     grid-column: 1/-1;
   }
+  .toolbar > button {
+    grid-column: auto;
+    align-self: end;
+    width: 44px;
+  }
 }
 @media (max-width: 800px) {
   .forumLayout {
@@ -1290,5 +1329,548 @@
   .primaryAction:active {
     transform: none;
     transition: none;
+  }
+}
+.main {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 32px;
+}
+.forumLayout {
+  grid-template-columns: minmax(0, 1fr) 272px;
+  gap: 24px;
+}
+.featureLinks {
+  gap: 16px;
+  max-width: none;
+  margin-bottom: 24px;
+}
+.featureLinks > a {
+  min-height: 160px;
+  padding: 24px;
+  border-radius: 16px;
+}
+.featureLinks strong {
+  font-size: 22px;
+}
+.codeArt {
+  font-size: 64px;
+  right: 20px;
+  bottom: 10px;
+}
+.stepArt {
+  transform: scale(0.8) skewY(-12deg);
+  transform-origin: right bottom;
+}
+.toolbar {
+  padding: 16px;
+  box-shadow: none;
+  border-radius: 16px;
+  background: var(--ui-surface);
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 120px 140px 44px;
+}
+.toolbar :is(input, select) {
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ui-canvas);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.toolbar label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-text-muted);
+  margin: 0 0 8px;
+}
+.postList {
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  padding: 0 20px;
+  background: var(--ui-surface);
+}
+.postList .postCard {
+  padding: 22px 0;
+}
+.postList .postCard:last-child {
+  border-bottom: 0;
+}
+.postCard h2 {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.primaryAction {
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 12px;
+}
+.trending {
+  border-radius: 16px;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+}
+.page :is(.article, .comments, .editor, .message) {
+  border-radius: 16px;
+  box-shadow: none;
+}
+.page :is(.commentForm, .editForm) textarea {
+  border-radius: 12px;
+  background: var(--ui-canvas);
+  padding: 14px;
+}
+.featureLinks > a {
+  min-height: 92px;
+  padding: 14px 20px;
+}
+.featureLinks strong {
+  font-size: 17px;
+  line-height: 1.35;
+}
+.featureLinks br {
+  display: none;
+}
+.featureKicker {
+  display: none;
+}
+.codeArt,
+.stepArt {
+  opacity: 0.28;
+}
+.heading h1 {
+  font-size: clamp(26px, 3vw, 34px);
+}
+.primaryAction {
+  gap: 8px;
+  box-shadow: 0 5px 14px -10px var(--ui-accent);
+}
+.primaryAction > span {
+  font-size: 22px;
+  line-height: 1;
+}
+.categoryTabs a[aria-current="page"] {
+  background: var(--ui-accent-surface);
+  color: var(--ui-accent);
+  box-shadow: inset 0 -2px var(--ui-accent);
+  font-weight: 700;
+}
+.quickFilters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+.quickFilters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  padding: 8px 12px;
+  min-height: 36px;
+  font-size: 12px;
+}
+.quickFilters button[aria-pressed="true"] {
+  background: var(--ui-accent-surface);
+  border-color: var(--ui-accent);
+  color: var(--ui-accent);
+}
+.quickFilters > span {
+  color: var(--ui-text-muted);
+  font-size: 11px;
+}
+.filterLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--ui-text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.toolbar {
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 5;
+}
+.filterSelect {
+  position: relative;
+  min-width: 0;
+}
+.filterSelect summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 44px;
+  border: 1px solid var(--ui-control-border);
+  background: var(--ui-surface);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.filterSelect summary::-webkit-details-marker {
+  display: none;
+}
+.filterSelect summary svg {
+  transform: rotate(180deg);
+  flex: none;
+}
+.filterSelect[open] summary svg {
+  transform: none;
+}
+.filterSelect [role="listbox"] {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 220px;
+  z-index: 10;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 10px 24px -12px var(--ui-shadow);
+}
+.filterSelect button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ui-text);
+  background: transparent;
+  text-align: left;
+  font-size: 12px;
+}
+.filterSelect button[aria-selected="true"],
+.filterSelect button:hover {
+  color: var(--ui-accent);
+  background: var(--ui-accent-surface);
+}
+:global(.platform) .page .postList {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.postList .postCard,
+.postList .postCard:last-child {
+  padding: 20px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--glass-dense);
+  box-shadow:
+    inset 0 1px 0 var(--glass-light),
+    0 5px 18px -16px var(--ui-text);
+}
+.postCard:focus-within {
+  border-color: var(--ui-accent);
+}
+.postCard h2 {
+  margin: 8px 0;
+}
+.excerpt {
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.previewFallback {
+  display: inline-block;
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+.postChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.postChips :is(span, a) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--ui-text);
+  background: var(--ui-surface-muted);
+  text-decoration: none;
+}
+.postChips a {
+  color: var(--ui-accent);
+  border-color: color-mix(in srgb, var(--ui-accent) 35%, var(--ui-border));
+  background: var(--ui-accent-surface);
+}
+.postChips .unanswered {
+  color: var(--forum-question-ink);
+  background: var(--forum-question-fill);
+}
+.typeBadge.question {
+  color: var(--forum-question-ink);
+  background: var(--forum-question-fill);
+}
+.typeBadge.solution {
+  color: var(--forum-solution-ink);
+  background: var(--forum-solution-fill);
+}
+.byline :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  min-height: 32px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  font-size: 12px;
+  color: var(--ui-text-muted);
+  text-decoration: none;
+}
+.byline :is(a, button):not(:disabled):hover {
+  color: var(--ui-accent);
+  background: var(--ui-accent-surface);
+}
+.byline button[aria-pressed="true"] {
+  color: var(--ui-accent);
+}
+.byline button[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+.byline button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.likeError {
+  color: var(--ui-danger, var(--ui-text));
+  font-size: 12px;
+}
+.filterCount {
+  font-size: 12px;
+  color: var(--ui-text-muted);
+  margin: 0 0 14px;
+}
+.feedAvatar[data-tone="0"] {
+  color: #126847;
+  background: #e1f4e9;
+}
+.feedAvatar[data-tone="1"] {
+  color: #62419b;
+  background: #efe7fa;
+}
+.feedAvatar[data-tone="2"] {
+  color: #9a4d15;
+  background: #fff0d9;
+}
+.feedAvatar[data-tone="3"] {
+  color: #245a95;
+  background: #e3effc;
+}
+.feedAvatar[data-tone="4"] {
+  color: #94395e;
+  background: #fbe6ef;
+}
+.trendingRail {
+  top: 20px;
+  align-self: start;
+  max-height: calc(100dvh - 136px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  padding: 2px;
+}
+.trendingCard,
+.railNote {
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--glass-dense);
+  padding: 20px;
+}
+.popularList {
+  list-style: none;
+  counter-reset: community-rank;
+  padding: 0;
+}
+.popularList li {
+  position: relative;
+  counter-increment: community-rank;
+  padding-left: 34px;
+}
+.popularList li::before {
+  content: counter(community-rank);
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--ui-surface-muted);
+  color: var(--ui-text);
+}
+.popularList li:nth-child(1)::before {
+  color: #825117;
+  background: #f9e7af;
+}
+.popularList li:nth-child(2)::before {
+  color: #4c4f69;
+  background: #dce0e8;
+}
+.popularList li:nth-child(3)::before {
+  color: #7e4929;
+  background: #efd4bd;
+}
+.memberList {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  list-style: none;
+}
+.memberList li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.memberList .feedAvatar {
+  margin: 0;
+}
+.feedSkeleton {
+  display: grid;
+  gap: 12px;
+}
+.feedSkeleton > div {
+  padding: 22px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+}
+.feedSkeleton :is(i, span),
+.excerptSkeleton {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--ui-surface-muted);
+  margin: 10px 0;
+}
+.feedSkeleton i {
+  width: 40%;
+}
+.feedSkeleton span:nth-child(2) {
+  width: 75%;
+  height: 18px;
+}
+.feedSkeleton span:last-child {
+  width: 55%;
+}
+.excerptSkeleton {
+  height: 36px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .postList .postCard {
+    transition:
+      transform 160ms var(--motion-feedback),
+      border-color 140ms ease,
+      box-shadow 160ms var(--motion-feedback);
+  }
+  .feedLike[aria-pressed="true"] svg {
+    animation: forum-heart 240ms var(--motion-feedback);
+  }
+  .feedSkeleton {
+    animation: forum-skeleton 1.4s ease-in-out infinite alternate;
+  }
+}
+@keyframes forum-heart {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes forum-skeleton {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .postList .postCard:hover {
+    border-color: color-mix(in srgb, var(--ui-accent) 45%, var(--ui-border));
+    box-shadow: 0 10px 24px -18px var(--ui-text);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .postList .postCard:hover:not(:focus-within) {
+    transform: translateY(-2px);
+  }
+}
+@media (max-width: 1050px) {
+  .trendingRail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (max-width: 1050px) {
+  .forumLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr) 120px 140px 44px;
+  }
+}
+@media (max-width: 640px) {
+  .main {
+    padding: 24px 16px 48px;
+  }
+  .featureLinks {
+    grid-template-columns: 1fr;
+  }
+  .featureLinks > a {
+    min-height: 86px;
+  }
+  .toolbar {
+    grid-template-columns: 1fr 1fr 44px;
+    padding: 14px;
+  }
+  .page .toolbar > button {
+    grid-column: auto;
+    align-self: end;
+    width: 44px;
+  }
+  .toolbar > div:first-child {
+    grid-column: 1/-1;
+  }
+  .postList {
+    padding-inline: 16px;
+  }
+  .postList .postCard {
+    gap: 10px;
   }
 }

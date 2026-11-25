@@ -7,9 +7,9 @@ import { useSession } from "./session";
 import { SessionNotice } from "./SessionNotice";
 import "./login-prototype.css";
 import { AuthMotion } from "./AuthMotion";
-import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { validateRegistration } from "./validation";
 import { Icon } from "@/lib/ui/Icon";
+import { BrandLogo } from "@/lib/ui/BrandLogo";
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const { store, status, loggingOut } = useSession();
@@ -74,10 +74,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         </div>
       </aside>
       <section className="auth-form-side" aria-labelledby="auth-title">
-        <div className="auth-theme-control">
-          <ThemeToggle />
-        </div>
         <div className="auth-form-content">
+          <Link
+            href="/"
+            className="auth-brand"
+            aria-label="Codjingrank — trang chủ"
+          >
+            <BrandLogo />
+          </Link>
           <header className="auth-heading">
             <h1 id="auth-title" lang="en">
               <span>{mode === "login" ? "Welcome back" : "Join us"}</span>

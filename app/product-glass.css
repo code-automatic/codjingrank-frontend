@@ -1,0 +1,177 @@
+:is(.platform, .workspace-prototype, .ai-review-main) {
+  --glass-fill: color-mix(in srgb, var(--ui-surface) 74%, transparent);
+  --glass-dense: color-mix(in srgb, var(--ui-surface) 94%, transparent);
+  --glass-control: color-mix(in srgb, var(--ui-surface) 68%, transparent);
+  --glass-line: color-mix(in srgb, var(--ui-text) 16%, transparent);
+  --glass-light: color-mix(in srgb, var(--ctp-base) 70%, white);
+  --glass-shadow: 0 12px 32px -18px color-mix(in srgb, var(--ctp-text) 24%, transparent);
+  --glass-rim: inset 0 1px 0 color-mix(in srgb, var(--glass-light) 38%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--ui-text) 6%, transparent);
+}
+:is(.platform, .workspace-prototype, .ai-review-main) {
+  position: relative;
+  isolation: isolate;
+  background: var(--ui-canvas);
+}
+:is(.platform, .workspace-prototype, .ai-review-main)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 3% 16%, color-mix(in srgb, var(--ctp-teal) 28%, transparent), transparent 48%),
+    radial-gradient(ellipse at 96% 38%, color-mix(in srgb, var(--ctp-mauve) 27%, transparent), transparent 52%),
+    radial-gradient(ellipse at 45% 110%, color-mix(in srgb, var(--ctp-lavender) 25%, transparent), transparent 58%),
+    var(--ui-canvas);
+}
+.platform .platform-header {
+  background: color-mix(in srgb, var(--ui-surface) 86%, transparent);
+  border-bottom: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim), 0 8px 24px -20px var(--ui-text);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  backdrop-filter: blur(22px) saturate(135%);
+}
+.platform :is(
+  a.platform-feature,
+  .platform-list,
+  .platform-feed,
+  .practice-calendar,
+  .platform-daily,
+  .platform-aside-community,
+  .platform-sidebar,
+  .catalog-filter-panel,
+  .package-card,
+  .level-card,
+  .platform-problem-table,
+  .platform-profile-card,
+  .platform-profile-form,
+  .platform-plan,
+  .pagination-panel
+) {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  backdrop-filter: blur(16px) saturate(125%);
+}
+.platform a.platform-feature:first-child {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ctp-mauve) 18%, transparent), color-mix(in srgb, var(--ctp-teal) 7%, transparent)), var(--glass-fill);
+}
+.platform :is(.platform-feature-art, .package-topic-icon, .practice-calendar-badge, .platform-avatar) {
+  background: color-mix(in srgb, var(--ui-accent-surface) 75%, transparent);
+  box-shadow: var(--glass-rim), 0 4px 12px -8px var(--ui-text);
+  border: 1px solid var(--glass-line);
+}
+.platform :is(.platform-popover, .platform-store-dialog, .platform-mobile-nav) {
+  background: var(--glass-dense);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim), 0 20px 60px -24px var(--ui-text);
+  -webkit-backdrop-filter: blur(24px) saturate(135%);
+  backdrop-filter: blur(24px) saturate(135%);
+}
+.platform :is(.platform-search, .catalog-search-control, .platform-account-grid a) {
+  background: var(--glass-control);
+  border-color: var(--glass-line);
+  box-shadow: var(--glass-rim);
+}
+.platform :is(input:not([type="radio"]):not([type="checkbox"]), textarea, select) {
+  background-color: var(--glass-dense);
+  color: var(--ui-text);
+}
+.platform :is(.platform-search, .catalog-search-control) input {
+  background: transparent;
+}
+.platform select option {
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+.platform :is(.platform-primary, .btn-primary-link, .platform-profile-form button[type="submit"]) {
+  color: var(--ui-on-accent);
+  background: linear-gradient(155deg, color-mix(in srgb, var(--ui-accent) 87%, var(--ui-surface)), var(--ui-accent));
+  border: 1px solid color-mix(in srgb, var(--ui-accent) 70%, var(--ui-text));
+  box-shadow: var(--glass-rim), 0 6px 16px -10px var(--ui-accent);
+}
+.platform :is(.platform-secondary, .btn-secondary, .platform-icon-button, .platform-store-link, .practice-calendar-month button, .pagination-controls button) {
+  background: var(--glass-control);
+  color: var(--ui-text);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim);
+}
+.platform :is(.platform-nav a[aria-current="page"], .platform-mobile-nav a[aria-current="page"]) {
+  color: var(--ui-accent);
+}
+.platform :is(.platform-list-row, .platform-feed-item, .package-card-footer) {
+  border-color: var(--glass-line);
+}
+.platform .platform-demo-banner {
+  background: color-mix(in srgb, var(--ui-warning-surface) 86%, transparent);
+  box-shadow: var(--glass-rim);
+}
+:is(.platform, .workspace-prototype) .u416 > .u416-tl {
+  background: var(--glass-control);
+  box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-rim);
+}
+:is(.platform, .workspace-prototype) .u416 .u416-th {
+  background: var(--glass-dense);
+  box-shadow: var(--glass-rim), 0 3px 8px -5px var(--ui-text);
+}
+.workspace-prototype :is(.workspace-topbar, .workspace-pane-bar, .workspace-result-tabs.u416) {
+  background: var(--glass-fill);
+  border-color: var(--glass-line);
+  box-shadow: var(--glass-rim);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.workspace-prototype :is(.workspace-statement-panel, .editor-panel, .workspace-console),
+.ai-review-main :is(.panel, .ai-finding-card) {
+  background: var(--glass-dense);
+  border-color: var(--glass-line);
+  box-shadow: var(--glass-rim), var(--glass-shadow);
+}
+.workspace-prototype .u008 .u008-btn {
+  background: var(--glass-control);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim);
+}
+@media (hover: hover) and (pointer: fine) {
+  .platform :is(a.platform-feature, .package-card, .level-card, .platform-plan):hover {
+    background-color: color-mix(in srgb, var(--ui-surface) 87%, transparent);
+    border-color: color-mix(in srgb, var(--ui-accent) 45%, var(--glass-line));
+    box-shadow: var(--glass-rim), 0 18px 38px -23px color-mix(in srgb, var(--ui-text) 45%, transparent);
+  }
+  .platform :is(.platform-primary, .btn-primary-link, .platform-profile-form button[type="submit"]):hover:not(:disabled) {
+    background: var(--ui-accent-hover);
+    color: var(--ui-on-accent);
+  }
+}
+@media (max-width: 800px) {
+  .platform :is(a.platform-feature, .platform-list, .platform-feed, .practice-calendar, .platform-daily, .platform-aside-community, .catalog-filter-panel, .package-card, .level-card) {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(.platform, .workspace-prototype, .ai-review-main) {
+    --glass-fill: var(--ui-surface);
+    --glass-dense: var(--ui-surface);
+    --glass-control: var(--ui-surface-muted);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :is(.platform, .workspace-prototype, .ai-review-main) {
+    --glass-fill: var(--ui-surface);
+    --glass-dense: var(--ui-surface);
+    --glass-control: var(--ui-surface-muted);
+  }
+  :is(.platform, .workspace-prototype, .ai-review-main)::before {
+    display: none;
+  }
+  .platform .platform-header {
+    background: var(--ui-surface);
+  }
+}
+@media (forced-colors: active) {
+  :is(.platform, .workspace-prototype, .ai-review-main)::before {
+    display: none;
+  }
+}
