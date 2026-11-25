@@ -60,6 +60,14 @@ afterAll(async () => {
 });
 
 describe("forum over real mock HTTP", () => {
+  it("returns excerpts without increasing view counts when listing", async () => {
+    const first = await guestApi.community.listPosts({ page: 1, size: 20 });
+    const second = await guestApi.community.listPosts({ page: 1, size: 20 });
+    const before = first.items.find((post) => post.id === SEED_POST);
+    const after = second.items.find((post) => post.id === SEED_POST);
+    expect(before.excerpt).toBeTruthy();
+    expect(after.viewCount).toBe(before.viewCount);
+  });
   it("lists only published posts for a guest and applies filters", async () => {
     const list = await guestApi.community.listPosts({ page: 1, size: 20 });
     expect(list.total).toBe(3);

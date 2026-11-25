@@ -5,7 +5,11 @@ import { useApiClient } from "@/lib/api/useApiClient";
 import { type UserStatsModel, errorText } from "@/lib/api";
 import { Icon } from "@/lib/ui/Icon";
 import Link from "next/link";
-export function PracticeStats() {
+export function PracticeStats({
+  variant = "popover",
+}: {
+  variant?: "popover" | "summary";
+}) {
   const { status, user } = useSession();
   const api = useApiClient();
   const [stats, setStats] = useState<UserStatsModel | null>(null);
@@ -27,6 +31,75 @@ export function PracticeStats() {
       });
     return () => controller.abort();
   }, [api, status, user?.id, retry]);
+  if (variant === "summary") {
+    return (
+      <section
+        className="dashboard-practice-summary"
+        aria-label="Tiến độ luyện tập"
+      >
+        {error ? (
+          <div role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={() => setRetry((value) => value + 1)}
+            >
+              Tải lại tiến độ
+            </button>
+          </div>
+        ) : stats ? (
+          <dl>
+            <div>
+              <dt>
+                <Icon name="check" size={17} />
+                Bài đã giải
+              </dt>
+              <dd>{stats.solvedCount.total}</dd>
+              <span>Tổng số bài hoàn thành</span>
+            </div>
+            <div>
+              <dt>
+                <Icon name="flame" size={17} />
+                Chuỗi hiện tại
+              </dt>
+              <dd>
+                {stats.streak.currentStreak}
+                <small> ngày</small>
+              </dd>
+              <span>Duy trì nhịp luyện tập</span>
+            </div>
+            <div>
+              <dt>
+                <Icon name="calendar" size={17} />
+                Chuỗi dài nhất
+              </dt>
+              <dd>
+                {stats.streak.maxStreak}
+                <small> ngày</small>
+              </dd>
+              <span>Kỷ lục của bạn</span>
+            </div>
+            <div>
+              <dt>
+                <Icon name="trophy" size={17} />
+                Thứ hạng
+              </dt>
+              <dd>
+                {stats.rank.currentRank ? `#${stats.rank.currentRank}` : "—"}
+              </dd>
+              <span>
+                {stats.rank.currentRank
+                  ? "Theo dữ liệu máy chủ"
+                  : "Chưa xếp hạng"}
+              </span>
+            </div>
+          </dl>
+        ) : (
+          <p role="status">Đang tải tiến độ luyện tập…</p>
+        )}
+      </section>
+    );
+  }
   return (
     <>
       <button

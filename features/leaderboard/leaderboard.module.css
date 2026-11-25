@@ -5,6 +5,22 @@
   position: relative;
   isolation: isolate;
 }
+:global(.platform) .page {
+  background: transparent;
+}
+:global(.platform) .page::before {
+  display: none;
+}
+:global(.platform) .page :is(.filters, .board, .overview, .message) {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-rim), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px) saturate(125%);
+}
+:global(.platform) .page .board {
+  background: var(--glass-dense);
+}
 .page::before {
   content: "";
   position: absolute;
@@ -1523,5 +1539,157 @@
   .practiceCard:hover,
   .practiceCard:active {
     transform: none;
+  }
+}
+.main {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 32px;
+}
+.heading {
+  padding: 8px 0 24px;
+}
+.heading h1 {
+  font-size: 32px;
+  letter-spacing: -0.035em;
+}
+.practiceCards {
+  gap: 16px;
+  max-width: 820px;
+}
+.practiceCard {
+  border-radius: 16px;
+}
+.filters {
+  padding: 18px;
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  background: var(--ui-surface);
+  gap: 16px;
+}
+.filters :is(input, select) {
+  min-height: 44px;
+  border-radius: 12px;
+  background: var(--ui-canvas);
+}
+.filters label {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.filters button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+.board {
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: none;
+}
+.viewBar {
+  gap: 16px;
+  align-items: center;
+}
+.viewSwitch:global(.u416) {
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+}
+.table {
+  border-spacing: 0;
+}
+.table :is(th, td) {
+  padding: 13px 12px;
+}
+.table tbody tr > * {
+  border-bottom: 1px solid var(--ui-border);
+}
+.table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.table tbody tr > :first-child,
+.table tbody tr > :last-child {
+  border-radius: 0;
+}
+.table tbody tr:nth-child(odd) > * {
+  background: var(--ui-surface);
+}
+.page .pagination {
+  gap: 8px;
+}
+.page .pagination button {
+  border-radius: 10px;
+  min-width: 40px;
+  min-height: 40px;
+}
+:global(:root:not([data-theme="dark"])) .practiceCard {
+  border: 1px solid #dce3eb;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 8px 22px -18px #4c4f6940;
+}
+:global(:root:not([data-theme="dark"])) .packageCard,
+:global(:root:not([data-theme="dark"])) .artworkStage {
+  --cube-tint: #d9aa68;
+  background: linear-gradient(125deg, #fff4dc, #f5dfc5);
+}
+:global(:root:not([data-theme="dark"])) .problemCard,
+:global(:root:not([data-theme="dark"])) .artworkStage[data-pair="true"] {
+  --cube-tint: #a698cf;
+  background: linear-gradient(125deg, #f1edff, #dfe5fa);
+}
+:global(:root:not([data-theme="dark"])) .cubeCompanion {
+  --cube-tint: #9faed9;
+}
+:global(:root:not([data-theme="dark"])) .artworkCube > span {
+  border-color: #ffffffed;
+  box-shadow: inset 0 0 0 2px #ffffff52;
+}
+:global(:root:not([data-theme="dark"])) .cubeRight {
+  background: linear-gradient(45deg, #88b9cf80, #abb5e680);
+}
+:global(:root:not([data-theme="dark"])) .cubeTop {
+  background: color-mix(in srgb, var(--cube-tint) 62%, #ffffff);
+}
+:global(:root:not([data-theme="dark"])) .artworkCube > .cubeCore {
+  box-shadow: 0 6px 14px -8px #4c4f6940;
+}
+:global(:root:not([data-theme="dark"])) .artworkShadow {
+  background: #4c4f691f;
+}
+:global(:root:not([data-theme="dark"])) .artworkOrbit {
+  border-color: #ffffffa6;
+  box-shadow:
+    0 24px 0 #ffffff24,
+    0 48px 0 #ffffff1a;
+}
+:global(:root:not([data-theme="dark"])) .cardTag {
+  background: #fffffff0;
+  color: #4c4f69;
+  border: 1px solid #ffffff;
+}
+:global(:root:not([data-theme="dark"])) .trophy {
+  --ctp-yellow: #e8b65f;
+  --ctp-peach: #d58b42;
+  --ctp-rosewater: #f6dfbd;
+}
+@media (max-width: 767px) {
+  .main {
+    padding: 24px 16px 48px;
+  }
+  .heading h1 {
+    font-size: 28px;
+  }
+  .filters {
+    padding: 14px;
+  }
+  .board {
+    padding: 16px;
+  }
+  .practiceCards {
+    gap: 12px;
+  }
+  .table :is(th, td) {
+    padding: 12px 8px;
   }
 }

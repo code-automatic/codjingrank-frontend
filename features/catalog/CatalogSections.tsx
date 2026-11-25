@@ -289,11 +289,17 @@ export function PackageLevelsSection({
                 <span
                   className={`catalog-badge catalog-badge--${info.statusTone}`}
                 >
-                  {info.statusTone === "locked"
-                    ? `🔒 ${info.statusLabel}`
-                    : info.statusTone === "completed"
-                      ? `✓ ${info.statusLabel}`
-                      : info.statusLabel}
+                  <Icon
+                    name={
+                      info.statusTone === "locked"
+                        ? "lock"
+                        : info.statusTone === "completed"
+                          ? "check"
+                          : "play"
+                    }
+                    size={13}
+                  />
+                  {info.statusLabel}
                 </span>
               </div>
 

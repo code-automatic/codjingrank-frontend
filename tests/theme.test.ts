@@ -31,18 +31,24 @@ describe("theme initialization before hydration", () => {
       themePreference: "dark",
     }));
   it.each([true, false])(
-    "follows system without a saved preference (%s)",
+    "defaults to light without a saved preference regardless of OS (%s)",
     (dark) =>
       expect(initialize(null, dark)).toEqual({
-        theme: dark ? "dark" : "light",
-        themePreference: "system",
+        theme: "light",
+        themePreference: "light",
       }),
   );
+  it.each([true, false])("honors an explicit system preference (%s)", (dark) =>
+    expect(initialize("system", dark)).toEqual({
+      theme: dark ? "dark" : "light",
+      themePreference: "system",
+    }),
+  );
   it("ignores invalid stored data", () =>
-    expect(initialize("sepia", true).theme).toBe("dark"));
+    expect(initialize("sepia", true).theme).toBe("light"));
   it("does not fail if storage is blocked", () =>
     expect(initialize(null, true, true)).toEqual({
-      theme: "dark",
-      themePreference: "system",
+      theme: "light",
+      themePreference: "light",
     }));
 });

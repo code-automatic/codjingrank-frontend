@@ -408,6 +408,7 @@ export type ForumPostSort = "newest" | "likes" | "views";
 export type ForumPostStatus = "published";
 
 export type ForumPostSummaryDto = {
+  excerpt?: string;
   id: UuidString;
   author: PublicUserDto;
   problemId: UuidString | null;

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useApiClient } from "@/lib/api/useApiClient";
 import { ApiError, errorText } from "@/lib/api/client";
-import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { Icon } from "@/lib/ui/Icon";
+import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { AuthMotion } from "./AuthMotion";
 import { validateRegistration } from "./validation";
 import "./login-prototype.css";
@@ -89,10 +89,14 @@ export function PasswordRecovery({ reset = false }: { reset?: boolean }) {
         </div>
       </aside>
       <section className="auth-form-side" aria-labelledby="recovery-title">
-        <div className="auth-theme-control">
-          <ThemeToggle />
-        </div>
         <div className="auth-form-content">
+          <Link
+            href="/"
+            className="auth-brand"
+            aria-label="Codjingrank — trang chủ"
+          >
+            <BrandLogo />
+          </Link>
           <Link href="/login" className="recovery-back">
             <Icon name="chevronLeft" />
             Đăng nhập

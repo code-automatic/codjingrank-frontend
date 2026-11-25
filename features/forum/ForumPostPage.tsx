@@ -290,7 +290,11 @@ function ForumPostContent({ id }: { id: string }) {
       )}
 
       {post && (
-        <section className={styles.comments} aria-labelledby="comments-heading">
+        <section
+          id="comments"
+          className={styles.comments}
+          aria-labelledby="comments-heading"
+        >
           <h2 id="comments-heading">
             Bình luận {comments ? `(${comments.total})` : ""}
           </h2>

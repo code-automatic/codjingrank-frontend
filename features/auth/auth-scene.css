@@ -1,0 +1,37 @@
+.auth-page.login-prototype {
+  position: relative;
+  isolation: isolate;
+  padding: 36px 6%;
+  gap: 7%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: var(--ui-canvas);
+}
+.auth-page .auth-story {
+  position: static;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  display: flex;
+  align-items: flex-end;
+  min-height: 620px;
+  height: calc(100svh - 72px);
+  color: #e3f2ec;
+}
+.auth-cinematic-media { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: #081d1a url('/media/auth-workspace-teal.jpg') center / cover; }
+.auth-cinematic-media video { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 35% center; }
+.auth-cinematic-shade { position: absolute; inset: 0; background: linear-gradient(90deg, #06241c3d, #071e1855 42%, #071e18b8 100%), linear-gradient(0deg,#061c18e6,transparent 65%); }
+.auth-page .auth-story-body { position: relative; inset: auto; margin: 0; padding: 28px 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+.auth-page .auth-story .auth-welcome { font-size: 16px; color: #c6e5db; }
+.auth-page .auth-story h2 { font-size: clamp(28px, 3vw, 44px); }
+.auth-page .auth-story .auth-community-accent { color: #87d7c4; }
+.auth-page .auth-story .auth-story-caption { color: #c6e5db; }
+.auth-page .auth-form-side { padding: 40px 0; }
+.auth-page .auth-form-content { background: color-mix(in srgb,var(--ui-surface) 86%,transparent); border: 1px solid color-mix(in srgb,var(--ui-accent) 38%,var(--ui-border)); backdrop-filter: blur(24px); box-shadow: inset 0 1px 0 #ffffff18,0 28px 70px -36px #00000080; }
+@media(max-width:1000px) { .auth-page.login-prototype { padding: 24px; gap: 24px; } }
+@media(max-width:760px) {
+  .auth-page.login-prototype { padding: 16px; }
+  .auth-page .auth-story { display: none; }
+  .auth-page .auth-form-side { padding: 60px 0 24px; }
+}
+@media(prefers-reduced-motion:reduce) { .auth-cinematic-media video { visibility: hidden; } }
+@media(prefers-reduced-transparency:reduce),(prefers-contrast:more) { .auth-page .auth-form-content { background: var(--ui-surface); backdrop-filter: none; } }
