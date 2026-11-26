@@ -13,6 +13,7 @@ const child = spawn(
       MOCK_EDITOR_DEMO: "1",
       MOCK_LEADERBOARD_DEMO: "1",
       MOCK_FORUM_DEMO: "1",
+      MOCK_PROFILE_DEMO: "1",
     },
   },
 );

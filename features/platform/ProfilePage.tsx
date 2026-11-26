@@ -5,11 +5,13 @@ import { useSession } from "@/features/auth/session";
 import { SessionNotice } from "@/features/auth/SessionNotice";
 import { useApiClient } from "@/lib/api/useApiClient";
 import { errorText } from "@/lib/api";
+import { UserAvatar, avatarSource } from "@/lib/ui/UserAvatar";
 
 export function ProfilePage() {
   const { status, user } = useSession();
   const router = useRouter();
   const api = useApiClient();
+  const [avatarDraft, setAvatarDraft] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +32,10 @@ export function ProfilePage() {
       <div className="platform-profile-layout">
         <aside className="platform-profile-card">
           <span className="platform-avatar">
-            {user.username.slice(0, 2).toUpperCase()}
+            <UserAvatar
+              name={user.fullName || user.username}
+              avatarUrl={avatarDraft ?? user.avatarUrl}
+            />
           </span>
           <h2>{user.fullName || user.username}</h2>
           <p>@{user.username}</p>
@@ -44,6 +49,13 @@ export function ProfilePage() {
             event.preventDefault();
             if (busy) return;
             const data = new FormData(event.currentTarget);
+            const avatarUrl = String(data.get("avatarUrl") || "").trim();
+            if (avatarUrl && !avatarSource(avatarUrl)) {
+              setError("Nhập đường dẫn ảnh HTTP hoặc HTTPS hợp lệ.");
+              setMessage("");
+              notice.current?.focus();
+              return;
+            }
             setBusy(true);
             setError("");
             setMessage("");
@@ -51,6 +63,7 @@ export function ProfilePage() {
               await api.account.updateMe({
                 fullName: String(data.get("fullName") || "").trim() || null,
                 bio: String(data.get("bio") || "").trim() || null,
+                avatarUrl: avatarUrl || null,
               });
               setMessage("Đã lưu hồ sơ của bạn.");
             } catch (error) {
@@ -62,6 +75,31 @@ export function ProfilePage() {
           }}
         >
           <fieldset disabled={busy}>
+            <div className="platform-profile-avatar-edit">
+              <label htmlFor="profile-avatar">Ảnh đại diện</label>
+              <input
+                id="profile-avatar"
+                name="avatarUrl"
+                type="url"
+                maxLength={2048}
+                placeholder="https://example.com/anh-cua-ban.jpg"
+                value={avatarDraft ?? user.avatarUrl ?? ""}
+                onChange={(event) => setAvatarDraft(event.target.value)}
+                aria-describedby="profile-avatar-help"
+              />
+              <small id="profile-avatar-help">
+                Dán đường dẫn ảnh công khai để xem trước. Ảnh chỉ được cập nhật
+                sau khi lưu. Chưa hỗ trợ tải file từ máy.
+              </small>
+              <button
+                type="button"
+                className="platform-profile-remove-avatar"
+                disabled={busy || !(avatarDraft ?? user.avatarUrl)}
+                onClick={() => setAvatarDraft("")}
+              >
+                Gỡ ảnh đại diện
+              </button>
+            </div>
             <label htmlFor="profile-email">Email</label>
             <input id="profile-email" value={user.email} readOnly />
             <small>Email được quản lý cùng tài khoản đăng nhập.</small>

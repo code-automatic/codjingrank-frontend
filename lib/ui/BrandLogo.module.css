@@ -12,8 +12,8 @@
   height: 64px;
   flex-shrink: 0;
   background: var(--brand-mark);
-  -webkit-mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
-  mask: url("/brand/codjingrank-mark.png") center / contain no-repeat;
+  -webkit-mask: url("/brand/codjingrank-cr.svg") center / contain no-repeat;
+  mask: url("/brand/codjingrank-cr.svg") center / contain no-repeat;
 }
 .wordmark {
   display: block;
@@ -43,4 +43,17 @@
     width: 26px;
     height: 26px;
   }
+}
+
+:global(html[data-brand-intro="active"]) .mark {
+  background: linear-gradient(120deg, #087f78 10%, #7eada5 32%, #e2f4ed 44%, #196b62 55%, #087f78 75%);
+  background-size: 240% 100%;
+  animation: cr-reflection 1500ms ease-out both;
+}
+@keyframes cr-reflection {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(html[data-brand-intro="active"]) .mark { animation: none; background: var(--brand-mark); }
 }

@@ -11,7 +11,7 @@ export function BrandLogo({
     <span
       className={`${styles.brand} ${compact ? styles.compact : ""} ${tone === "on-dark" ? styles.onDark : ""}`}
       role={compact ? undefined : "img"}
-      aria-label={compact ? undefined : "Codjingrank"}
+      aria-label={compact ? undefined : "CodjingRank"}
       aria-hidden={compact ? true : undefined}
     >
       <span className={styles.mark} data-brand-mark aria-hidden="true" />
@@ -21,7 +21,7 @@ export function BrandLogo({
           data-brand-wordmark
           aria-hidden="true"
         >
-          Codjingrank
+          CodjingRank
         </span>
       )}
     </span>
