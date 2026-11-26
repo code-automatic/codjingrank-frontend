@@ -70,11 +70,8 @@ export function PracticeCalendar() {
       <div className="practice-calendar-top">
         <div>
           <strong>Lịch luyện tập</strong>
-          <time dateTime={now.toISOString()}>
-            {now.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", second: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" })}
-          </time>
-          <small>Giờ Việt Nam · UTC+7</small>
-          <span aria-hidden="true">Đổi ngày luyện tập sau {countdown}</span>
+          <span aria-hidden="true">{countdown} còn lại</span>
+          <small>UTC</small>
         </div>
         <span className="practice-calendar-badge" aria-hidden="true">
           <Icon name="calendar" size={28} />
@@ -86,7 +83,7 @@ export function PracticeCalendar() {
             month: "long",
             year: "numeric",
             timeZone: "UTC",
-          })} · UTC
+          })}
         </strong>
         <div>
           <button
@@ -154,8 +151,8 @@ export function PracticeCalendar() {
             ? "Chưa tải được lịch sử hoạt động."
             : stats
               ? count
-                ? `${count} lượt nộp Accepted được ghi nhận (UTC).`
-                : "Chưa có lượt nộp Accepted trong ngày UTC này."
+                ? `${count} hoạt động luyện tập được ghi nhận.`
+                : "Chưa ghi nhận hoạt động."
               : "Đang tải hoạt động luyện tập…"}
         </p>
         {error && (
@@ -164,11 +161,10 @@ export function PracticeCalendar() {
           </button>
         )}
       </div>
-      <p className="practice-calendar-timezone-note">Lịch và chuỗi tính theo ngày UTC, đổi ngày lúc 07:00 giờ Việt Nam. Đăng nhập không được tính là hoạt động luyện tập.</p>
       <div className="practice-calendar-legend">
         <span>
           <i className="calendar-today-key" />
-          Hôm nay (UTC)
+          Hôm nay
         </span>
         <span>
           <i className="calendar-selected-key" />
@@ -192,7 +188,7 @@ export function PracticeCalendar() {
             setSelected(today);
           }}
         >
-          Hôm nay (UTC)
+          Hôm nay
         </button>
       </div>
     </section>
