@@ -2,7 +2,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { authErrorText } from "./feedback";
+import { authErrorText, authFieldErrors, type AuthFieldErrors } from "./feedback";
 import { useSession } from "./session";
 import { SessionNotice } from "./SessionNotice";
 import "./login-prototype.css";
@@ -16,6 +16,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   const alert = useRef<HTMLParagraphElement>(null);
   useEffect(() => {
     if (status === "authenticated") router.replace("/protected");
@@ -33,10 +34,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       username = String(data.get("username") ?? ""),
       fullName = String(data.get("fullName") ?? "");
     setError("");
+    setFieldErrors({});
     if (mode === "register") {
       const message = validateRegistration({ username, password, fullName });
       if (message) {
-        setError(message);
+        const field = message.startsWith("Tên") ? "username" : message.startsWith("Mật") ? "password" : "fullName";
+        setFieldErrors({ [field]: message });
         return;
       }
     }
@@ -53,7 +56,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       form.reset();
       router.replace("/protected");
     } catch (e) {
-      setError(authErrorText(e, mode));
+      const fields = authFieldErrors(e);
+      setFieldErrors(fields);
+      if (!Object.keys(fields).length) setError(authErrorText(e, mode));
     } finally {
       setBusy(false);
     }
@@ -103,13 +108,26 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </div>
           {status === "anonymous" && !loggingOut && (
             <>
-              <form onSubmit={submit} aria-busy={busy} onChange={() => { if (error) setError(""); }}>
+              <form onSubmit={submit} aria-busy={busy} onInvalid={(event) => {
+                event.preventDefault();
+                const input = event.target as unknown as HTMLInputElement;
+                const field = input.name as keyof AuthFieldErrors;
+                const message = input.validity.valueMissing ? "Vui lòng nhập thông tin này." : field === "email" ? "Email chưa đúng định dạng, ví dụ: ban@example.com." : input.validationMessage;
+                setFieldErrors((current) => ({ ...current, [field]: message }));
+                event.currentTarget.querySelector<HTMLInputElement>(":invalid")?.focus();
+              }} onChange={(event) => {
+                if (error) setError("");
+                const field = (event.target as unknown as HTMLInputElement).name;
+                setFieldErrors((current) => { const next = { ...current }; delete next[field as keyof AuthFieldErrors]; return next; });
+              }}>
                 <fieldset disabled={busy}>
                   <legend className="sr-only">Thông tin tài khoản</legend>
                   <div className="auth-field auth-field-email">
                     <label htmlFor="email">Email</label>
                     <input
                       id="email"
+                      aria-invalid={!!fieldErrors.email}
+                      aria-describedby={fieldErrors.email ? "email-error" : undefined}
                       name="email"
                       type="email"
                       autoComplete="email"
@@ -117,6 +135,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                       required
                       maxLength={mode === "register" ? 254 : undefined}
                     />
+                    {fieldErrors.email && <p id="email-error" className="auth-field-error" role="alert">{fieldErrors.email}</p>}
                   </div>
                   {mode === "register" && (
                     <>
@@ -124,16 +143,18 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         <label htmlFor="username">Tên người dùng</label>
                         <input
                           id="username"
+                          aria-invalid={!!fieldErrors.username}
                           name="username"
                           required
                           autoComplete="username"
                           pattern="[A-Za-z0-9_]{3,50}"
-                          aria-describedby="username-hint"
+                          aria-describedby={`username-hint${fieldErrors.username ? " username-error" : ""}`}
                           placeholder="Tên của bạn trên Codjingrank"
                         />
                         <small id="username-hint">
                           3–50 ký tự chữ, số hoặc dấu gạch dưới.
                         </small>
+                        {fieldErrors.username && <p id="username-error" className="auth-field-error" role="alert">{fieldErrors.username}</p>}
                       </div>
                       <div className="auth-field auth-field-name">
                         <label htmlFor="fullName">
@@ -142,11 +163,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         </label>
                         <input
                           id="fullName"
+                          aria-invalid={!!fieldErrors.fullName}
+                          aria-describedby={fieldErrors.fullName ? "fullName-error" : undefined}
                           name="fullName"
                           autoComplete="name"
                           maxLength={120}
                           placeholder="Họ tên (tuỳ chọn)"
                         />
+                        {fieldErrors.fullName && <p id="fullName-error" className="auth-field-error" role="alert">{fieldErrors.fullName}</p>}
                       </div>
                     </>
                   )}
@@ -155,6 +179,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                     <div className="login-password">
                       <input
                         id="password"
+                        aria-invalid={!!fieldErrors.password}
                         name="password"
                         type={showPassword ? "text" : "password"}
                         autoComplete={
@@ -167,7 +192,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         }
                         required
                         aria-describedby={
-                          mode === "register" ? "password-hint" : undefined
+                          [mode === "register" ? "password-hint" : "", fieldErrors.password ? "password-error" : ""].filter(Boolean).join(" ") || undefined
                         }
                       />
                       <button
@@ -186,6 +211,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         />
                       </button>
                     </div>
+                    {fieldErrors.password && <p id="password-error" className="auth-field-error" role="alert">{fieldErrors.password}</p>}
                     {mode === "register" && (
                       <small id="password-hint">
                         8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.

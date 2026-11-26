@@ -1,6 +1,17 @@
 body:has(.auth-page--login, .auth-page--register) {
   margin: 0;
 }
+.auth-page .auth-field-error {
+  color: #ffb5c3;
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.auth-page input[aria-invalid="true"] {
+  border-color: #ffb5c3;
+  box-shadow: 0 0 0 1px #ffb5c3;
+}
 .auth-page .auth-error {
   margin: 0;
   padding: 12px 14px;
