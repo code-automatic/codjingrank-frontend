@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -389,7 +390,8 @@ function PostEditorForm({
         <div className={styles.editorRow}>
           <div>
             <label htmlFor="post-type">Loại bài</label>
-            <select
+            <RoundedSelect
+              label="Loại bài"
               id="post-type"
               value={form.postType}
               onChange={(event) =>
@@ -401,11 +403,12 @@ function PostEditorForm({
                   {POST_TYPE_LABEL[type]}
                 </option>
               ))}
-            </select>
+            </RoundedSelect>
           </div>
           <div>
             <label htmlFor="post-problem">Bài tập liên quan (tùy chọn)</label>
-            <select
+            <RoundedSelect
+              label="Bài tập liên quan"
               id="post-problem"
               value={form.problemId}
               onChange={(event) => {
@@ -425,11 +428,12 @@ function PostEditorForm({
                   {problem.title}
                 </option>
               ))}
-            </select>
+            </RoundedSelect>
           </div>
           <div>
             <label htmlFor="post-language">Ngôn ngữ (tùy chọn)</label>
-            <select
+            <RoundedSelect
+              label="Ngôn ngữ bài viết"
               id="post-language"
               value={form.languageId}
               disabled={!form.problemId || languages.length === 0}
@@ -449,7 +453,7 @@ function PostEditorForm({
                   {language.displayLabel}
                 </option>
               ))}
-            </select>
+            </RoundedSelect>
           </div>
         </div>
 

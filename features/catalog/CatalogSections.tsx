@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import Link from "next/link";
 import { Icon } from "@/lib/ui/Icon";
 import { IconButton } from "@/lib/ui/IconButton";
@@ -566,7 +567,8 @@ export function CatalogPaginationBar({
         <label htmlFor={sizeSelectId} className="pagination-size-label">
           Mỗi trang
         </label>
-        <select
+        <RoundedSelect
+          label="Mỗi trang"
           id={sizeSelectId}
           className="pagination-size-select"
           value={String(meta.size)}
@@ -578,7 +580,7 @@ export function CatalogPaginationBar({
               {opt}
             </option>
           ))}
-        </select>
+        </RoundedSelect>
 
         <button
           type="button"

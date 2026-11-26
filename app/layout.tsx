@@ -17,7 +17,8 @@ import "./unified-ui.css";
 import "../features/auth/auth-scene.css";
 import "./sidebar-ui.css";
 import "./product-system.css";
-import "./calligraphy.css";
+import "./typography.css";
+import "./rounded-controls.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:
@@ -30,7 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <link rel="preload" href="/brand/codjingrank-mark.png" as="image" />
         <link
           rel="preload"
-          href="/landing/kolker-brush-regular.ttf"
+          href="/fonts/jetbrains-mono-nerd/regular.ttf"
           as="font"
           type="font/ttf"
           crossOrigin="anonymous"

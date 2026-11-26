@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import Link from "next/link";
 import { Icon } from "@/lib/ui/Icon";
 import { SegmentedControl } from "@/lib/ui/SegmentedControl";
@@ -573,7 +574,7 @@ export function LeaderboardPage() {
               <span>Luyện tập theo từng cấp độ</span>
             </span>
             <span className={styles.cardArrow} aria-hidden="true">
-              →
+              <Icon name="arrowUpRight" size={17} />
             </span>
           </Link>
           <Link
@@ -587,14 +588,15 @@ export function LeaderboardPage() {
               <span>Chọn bài và bắt đầu luyện giải</span>
             </span>
             <span className={styles.cardArrow} aria-hidden="true">
-              →
+              <Icon name="arrowUpRight" size={17} />
             </span>
           </Link>
         </nav>
         <div className={styles.filters}>
           <div>
             <label htmlFor="board-scope">Khoảng thời gian</label>
-            <select
+            <RoundedSelect
+              label="Khoảng thời gian"
               id="board-scope"
               value={query.scope}
               onChange={(event) =>
@@ -606,7 +608,7 @@ export function LeaderboardPage() {
                   {scope.label}
                 </option>
               ))}
-            </select>
+            </RoundedSelect>
           </div>
           <PackageFilter
             key={query.package}
@@ -615,7 +617,8 @@ export function LeaderboardPage() {
           />
           <div>
             <label htmlFor="board-size">Số dòng mỗi trang</label>
-            <select
+            <RoundedSelect
+              label="Số dòng mỗi trang"
               id="board-size"
               value={query.size}
               onChange={(event) => update({ size: Number(event.target.value) })}
@@ -627,7 +630,7 @@ export function LeaderboardPage() {
                     {size}
                   </option>
                 ))}
-            </select>
+            </RoundedSelect>
           </div>
         </div>
         <SessionNotice />

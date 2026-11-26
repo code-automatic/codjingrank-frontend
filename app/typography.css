@@ -1,0 +1,108 @@
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("/fonts/jetbrains-mono-nerd/regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("/fonts/jetbrains-mono-nerd/bold.ttf") format("truetype");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-ui:
+    "JetBrainsMono Nerd Font Mono", "JetBrains Mono", ui-monospace, Consolas,
+    monospace;
+}
+html body,
+html body * {
+  font-family: var(--font-ui) !important;
+  font-style: normal;
+}
+body {
+  font-size: 14px;
+}
+body :where(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+body :where(p, li) {
+  line-height: 1.7;
+}
+body :where(code, pre, textarea[aria-label^="Mã nguồn"]) {
+  letter-spacing: 0;
+  font-variant-ligatures: none;
+}
+body [data-brand-wordmark] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 32px;
+  height: auto;
+  aspect-ratio: auto;
+  background: none;
+  mask: none;
+  -webkit-mask: none;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+:root
+  body
+  .platform[data-sidebar-expanded="true"]
+  .platform-brand
+  [data-brand-wordmark] {
+  width: auto;
+  font-size: 16px;
+}
+body .platform-brand [data-brand-wordmark] {
+  font-size: 19px;
+}
+body [data-brand-intro-overlay] [data-brand-wordmark] {
+  width: auto;
+  min-width: 0;
+  height: auto;
+  font-size: clamp(24px, 10cqw, 104px);
+  padding-inline: 8px;
+  overflow: visible;
+  letter-spacing: -0.04em;
+}
+body #landing-title {
+  font-size: clamp(36px, 5.2vw, 72px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+body #landing-title span {
+  font-size: 1em;
+  line-height: inherit;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: inherit;
+}
+body
+  :where(
+    .dashboard-practice-summary dd,
+    .practice-calendar-grid button,
+    .pagination-page-indicator
+  ) {
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 600px) {
+  body #landing-title {
+    font-size: clamp(24px, 6.3vw, 36px);
+    line-height: 1.35;
+  }
+  body [data-brand-wordmark] {
+    font-size: 20px;
+  }
+  body .platform-brand [data-brand-wordmark] {
+    font-size: 18px;
+  }
+}

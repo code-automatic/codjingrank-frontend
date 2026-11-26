@@ -1,3 +1,4 @@
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import { ApiError, errorText } from "@/lib/api/client";
 import type { ProblemState } from "./resource";
 import { Statement } from "./Statement";
@@ -113,7 +114,8 @@ export function ProblemContent({
           ) : (
             <>
               <label htmlFor="problem-language">Ngôn ngữ lập trình</label>
-              <select
+              <RoundedSelect
+                label="Ngôn ngữ lập trình"
                 id="problem-language"
                 value={languageId}
                 onChange={(event) => selectLanguage(event.target.value)}
@@ -123,7 +125,7 @@ export function ProblemContent({
                     {language.displayLabel}
                   </option>
                 ))}
-              </select>
+              </RoundedSelect>
               <div aria-busy={templateStatus === "loading"}>
                 {templateStatus === "loading" && (
                   <p role="status">Đang tải mã khởi đầu…</p>

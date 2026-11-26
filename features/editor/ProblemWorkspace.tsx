@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import Link from "next/link";
 import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
@@ -355,7 +356,8 @@ function WorkspaceReady({
                 <label htmlFor="language-select" className="sr-only">
                   Ngôn ngữ
                 </label>
-                <select
+                <RoundedSelect
+                  label="Ngôn ngữ"
                   id="language-select"
                   value={snapshot.selectedLanguageId ?? ""}
                   onChange={(event) => onSelectLanguage(event.target.value)}
@@ -365,7 +367,7 @@ function WorkspaceReady({
                       {item.displayLabel}
                     </option>
                   ))}
-                </select>
+                </RoundedSelect>
               </div>
               <div className="workspace-editor-tools">
                 <span className="workspace-copy-status" role="status">

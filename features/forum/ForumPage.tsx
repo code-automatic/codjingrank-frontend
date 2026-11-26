@@ -300,7 +300,7 @@ export function ForumPage() {
             Khám phá kho bài <Icon name="arrowUpRight" size={14} />
           </span>
           <span className={styles.codeArt} aria-hidden="true">
-            &lt;/&gt;
+            <Icon name="code" size={52} />
           </span>
         </Link>
         <Link href="/packages" className={styles.explorePackages}>
