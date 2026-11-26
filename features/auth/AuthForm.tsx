@@ -2,7 +2,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { errorText } from "@/lib/api/client";
+import { authErrorText } from "./feedback";
 import { useSession } from "./session";
 import { SessionNotice } from "./SessionNotice";
 import "./login-prototype.css";
@@ -25,6 +25,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   }, [error]);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
     const form = e.currentTarget;
     const data = new FormData(form);
     const email = String(data.get("email")).trim(),
@@ -52,7 +53,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       form.reset();
       router.replace("/protected");
     } catch (e) {
-      setError(errorText(e));
+      setError(authErrorText(e, mode));
     } finally {
       setBusy(false);
     }
@@ -102,7 +103,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </div>
           {status === "anonymous" && !loggingOut && (
             <>
-              <form onSubmit={submit}>
+              <form onSubmit={submit} aria-busy={busy} onChange={() => { if (error) setError(""); }}>
                 <fieldset disabled={busy}>
                   <legend className="sr-only">Thông tin tài khoản</legend>
                   <div className="auth-field auth-field-email">
@@ -197,7 +198,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                     </div>
                   )}
                   {error && (
-                    <p ref={alert} tabIndex={-1} className="error" role="alert">
+                    <p id="auth-error" ref={alert} tabIndex={-1} className="error auth-error" role="alert">
                       {error}
                     </p>
                   )}

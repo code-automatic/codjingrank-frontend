@@ -245,3 +245,5 @@ Login/register fields now use labelled groups with compact vertical rhythm. Regi
 Auth width refinement: login/register panels now share a 640px maximum and receive 60% of the desktop grid, using the empty middle area while retaining responsive field grouping and natural keyboard overflow.
 
 Auth owner revision: restore the original single-column field order on regular screens with equal desktop scene/form columns. Enlarge the panel to 580px and use 52px controls, 28px heading and 40px horizontal padding on tall desktops. Compact short viewports retain paired registration fields to keep actions accessible.
+
+Auth feedback refinement: login 401 responses use a credential-specific message rather than the generic expired-session copy. Anonymous forms suppress the initial no-session notice. Inline alert has a contrasting fixed-dark surface; editing clears stale errors, busy forms reject duplicate submissions. Network and registration errors retain their existing mappings. Five focused feedback tests pass.

@@ -1,6 +1,16 @@
 body:has(.auth-page--login, .auth-page--register) {
   margin: 0;
 }
+.auth-page .auth-error {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--ui-danger, #f38ba8);
+  border-radius: 12px;
+  color: #ffb5c3;
+  background: #391f2a;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
 .auth-page:is(.auth-page--login, .auth-page--register) {
   min-height: 100svh;
   min-height: 100dvh;

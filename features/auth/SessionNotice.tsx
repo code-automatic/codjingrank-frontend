@@ -8,7 +8,7 @@ export function SessionNotice() {
       {status === "initializing" && !error && (
         <p role="status">Đang kiểm tra phiên…</p>
       )}
-      {expired && (
+      {expired && status !== "anonymous" && (
         <p role="status">
           Phiên đã hết hạn hoặc chưa có phiên. Vui lòng đăng nhập.
         </p>
