@@ -22,6 +22,6 @@ export function authErrorText(error: unknown, mode: "login" | "register") {
   if (mode === "register" && error instanceof ApiError && error.status === 409 && error.code === "CONFLICT")
     return "Không thể tạo tài khoản vì thông tin bị trùng. Máy chủ chưa cho biết email hay tên người dùng bị trùng; hãy kiểm tra hai trường này hoặc đăng nhập nếu đã có tài khoản.";
   if (mode === "login" && error instanceof ApiError && error.status === 401 && error.code !== "ACCOUNT_DISABLED")
-    return "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra và thử lại.";
+    return "Email hoặc mật khẩu không đúng.";
   return errorText(error);
 }

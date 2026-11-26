@@ -12,13 +12,14 @@ body:has(.auth-page--login, .auth-page--register) {
   border-color: #ffb5c3;
   box-shadow: 0 0 0 1px #ffb5c3;
 }
-.auth-page .auth-error {
+.auth-page form .auth-error {
   margin: 0;
-  padding: 12px 14px;
-  border: 1px solid var(--ui-danger, #f38ba8);
-  border-radius: 12px;
+  padding: 9px 12px;
+  border: 1px solid #ffb5c34d;
+  border-radius: 8px;
   color: #ffb5c3;
-  background: #391f2a;
+  background: #ffb5c30d;
+  font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -91,9 +92,12 @@ body:has(.auth-page--login, .auth-page--register) {
 .auth-page .auth-recovery-link {
   margin: 0;
 }
-.auth-page .login-submit {
+.auth-page form .login-submit {
   margin: 2px 0 0;
   min-height: 44px;
+}
+.auth-page form .auth-error + .login-submit {
+  margin-top: 0;
 }
 .auth-page .auth-switch {
   margin: 16px 0 0;
