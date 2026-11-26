@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description: "Một nơi để đọc đề, viết code và tiến bộ qua từng bài giải.",
     images: [
       {
-        url: "/landing/workspace-current-0c9496a30d.png",
+        url: "/landing/workspace-current-0ea190e648.png",
         alt: "Workspace luyện lập trình Codjingrank",
       },
     ],

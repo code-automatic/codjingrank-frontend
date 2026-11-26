@@ -1,6 +1,7 @@
 import { createLeaderboardDemo } from "./leaderboard-demo.mjs";
 import { createForumDemo } from "./forum-demo.mjs";
 import { createSubmissionDemo } from "./submission-demo.mjs";
+import { createProfileDemo } from "./profile-demo.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
@@ -158,6 +159,8 @@ const submissionDemo =
 
 const forumDemo =
   process.env.MOCK_FORUM_DEMO === "1" ? createForumDemo(spec) : null;
+const profileDemo =
+  process.env.MOCK_PROFILE_DEMO === "1" ? createProfileDemo(spec) : null;
 
 // Allow the normal dev port and the UI preview port; custom deployments opt in.
 const mockOrigins = process.env.MOCK_ORIGIN
@@ -200,6 +203,14 @@ const server = createServer(async (req, res) => {
     return;
   }
 
+  if (profileDemo && !req.headers.prefer) {
+    const fixture = await profileDemo(req, url);
+    if (fixture) {
+      res.writeHead(fixture.status, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(fixture.body));
+      return;
+    }
+  }
   if (leaderboardDemo && !req.headers.prefer) {
     const fixture = leaderboardDemo(req, url);
     if (fixture) {

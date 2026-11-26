@@ -229,3 +229,11 @@ Owner requests consistent rounded selection surfaces across the project. Rounded
 ## JetBrainsMono Nerd Font Mono — 26/11/2026
 
 Owner replaces all prior calligraphy with JetBrainsMono Nerd Font Mono, including shared wordmark, intro, hero, app surfaces and editor. typography.css supersedes calligraphy.css at the root; existing font assets remain for provenance, unused. Official unmodified Regular/Bold are served locally with font and patch licenses in public/fonts/jetbrains-mono-nerd. Monospace wordmark/intro/hero sizes are recalibrated to prevent clipping; symbol, palettes and motion remain. Browser tab chrome font is outside website control.
+
+## Profile avatar consistency — 26/11/2026
+
+Profile, sidebar account trigger and account menu use shared UserAvatar with the saved avatarUrl and identical full-name initials fallback. HTTP(S) image URLs have no-referrer, cover cropping, rounded clipping and a failed-image fallback. Profile supports URL preview, saving and null removal through the existing account PATCH and session replaceUser callback; no binary upload API exists. Mobile retains a compact avatar preview rather than hiding the profile card. Optional MOCK_PROFILE_DEMO provides in-memory profile updates in npm run mock, reset on mock restart, with no production persistence claim. No palette, typography or unrelated layout changes.
+
+## Approved CR identity — 26/11/2026
+
+Owner approved concept 03: open circular C with angular R. Shared BrandLogo now uses codjingrank-cr.svg and wordmark CodjingRank; ranking trophy uses the same silhouette. Favicon SVG, Apple icon and legacy PNG mark derive from the same SVG. Small marks retain semantic teal; intro adds a single 1500ms silver/teal reflection within the existing 2000ms reveal, disabled under reduced motion. Existing application layout and font remain.

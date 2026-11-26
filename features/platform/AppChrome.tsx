@@ -9,7 +9,7 @@ import { Icon, type IconName } from "@/lib/ui/Icon";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { applyTheme } from "@/lib/ui/theme";
 import { PracticeStats } from "./PracticeStats";
-import { initials } from "@/features/forum/presentation";
+import { UserAvatar } from "@/lib/ui/UserAvatar";
 import "./platform.css";
 import "./usability.css";
 
@@ -137,7 +137,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
             aria-label="Mở menu tài khoản"
           >
             <span className="platform-account-initials">
-              {initials(user?.fullName || user?.username || "Codjingrank")}
+              <UserAvatar
+                name={user?.fullName || user?.username || "Codjingrank"}
+                avatarUrl={user?.avatarUrl}
+              />
             </span>
             <span className="platform-account-name">
               {user?.fullName || user?.username || "Tài khoản"}
@@ -252,7 +255,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
         >
           <div className="platform-account-head">
             <span className="platform-avatar">
-              {initials(user?.fullName || user?.username || "Codjingrank")}
+              <UserAvatar
+                name={user?.fullName || user?.username || "Codjingrank"}
+                avatarUrl={user?.avatarUrl}
+              />
             </span>
             <div>
               <strong>

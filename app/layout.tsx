@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        <link rel="preload" href="/brand/codjingrank-mark.png" as="image" />
+        <link rel="preload" href="/brand/codjingrank-cr.svg" as="image" />
         <link
           rel="preload"
           href="/fonts/jetbrains-mono-nerd/regular.ttf"

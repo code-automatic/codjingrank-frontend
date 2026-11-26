@@ -407,6 +407,7 @@ describe("API client transport, routing, and domain endpoints", () => {
             const body = JSON.parse(String(init.body)) as {
               fullName?: string | null;
               bio?: string | null;
+              avatarUrl?: string | null;
             };
             serverUser = {
               ...serverUser,
@@ -415,6 +416,10 @@ describe("API client transport, routing, and domain endpoints", () => {
                   ? body.fullName
                   : serverUser.fullName,
               bio: body.bio !== undefined ? body.bio : serverUser.bio,
+              avatarUrl:
+                body.avatarUrl !== undefined
+                  ? body.avatarUrl
+                  : serverUser.avatarUrl,
               updatedAt: "2026-11-10T03:30:00Z",
             };
           }
@@ -439,10 +444,17 @@ describe("API client transport, routing, and domain endpoints", () => {
     const updated = await client.account.updateMe({
       fullName: "Luong Hoang Huy",
       bio: "Day 1 fix verified",
+      avatarUrl: "https://example.com/profile.png",
     });
     expect(updated.fullName).toBe("Luong Hoang Huy");
     expect(store.getSnapshot().user?.fullName).toBe("Luong Hoang Huy");
     expect(store.getSnapshot().user?.bio).toBe("Day 1 fix verified");
+    expect(store.getSnapshot().user?.avatarUrl).toBe(
+      "https://example.com/profile.png",
+    );
+    await client.account.updateMe({ avatarUrl: null });
+    expect(store.getSnapshot().user?.avatarUrl).toBeNull();
+    expect(store.getSnapshot().user?.fullName).toBe("Luong Hoang Huy");
 
     // Fix #1: invalid /users/me payload (e.g., integer id) must throw INVALID_CONTRACT_DATA
     // and keep session store uncorrupted
