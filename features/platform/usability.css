@@ -385,3 +385,6 @@
     color: var(--ui-accent);
   }
 }
+
+.practice-calendar-top time { display: block; margin-top: 8px; font-size: 12px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.practice-calendar-timezone-note { font-size: 12px; line-height: 1.6; color: var(--ui-text-muted); margin: 12px 0; }
