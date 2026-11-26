@@ -1,17 +1,21 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/features/auth/session";
 import { SessionNotice } from "@/features/auth/SessionNotice";
 import { useApiClient } from "@/lib/api/useApiClient";
 import { errorText } from "@/lib/api";
-import { UserAvatar, avatarSource } from "@/lib/ui/UserAvatar";
+import { UserAvatar } from "@/lib/ui/UserAvatar";
 
 export function ProfilePage() {
   const { status, user } = useSession();
   const router = useRouter();
   const api = useApiClient();
   const [avatarDraft, setAvatarDraft] = useState<string>();
+  const [photoPreview, setPhotoPreview] = useState<string>();
+  const fileInput = useRef<HTMLInputElement>(null);
+  useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -32,10 +36,10 @@ export function ProfilePage() {
       <div className="platform-profile-layout">
         <aside className="platform-profile-card">
           <span className="platform-avatar">
-            <UserAvatar
+            {photoPreview ? <Image unoptimized src={photoPreview} alt="Ảnh đại diện đang xem trước" width={96} height={96} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} /> : <UserAvatar
               name={user.fullName || user.username}
               avatarUrl={avatarDraft ?? user.avatarUrl}
-            />
+            />}
           </span>
           <h2>{user.fullName || user.username}</h2>
           <p>@{user.username}</p>
@@ -49,13 +53,11 @@ export function ProfilePage() {
             event.preventDefault();
             if (busy) return;
             const data = new FormData(event.currentTarget);
-            const avatarUrl = String(data.get("avatarUrl") || "").trim();
-            if (avatarUrl && !avatarSource(avatarUrl)) {
-              setError("Nhập đường dẫn ảnh HTTP hoặc HTTPS hợp lệ.");
-              setMessage("");
-              notice.current?.focus();
+            if (photoPreview) {
+              setError("Chưa thể tải ảnh lên: backend chưa cung cấp API upload ảnh đại diện. Bỏ ảnh đã chọn để lưu các thông tin khác.");
               return;
             }
+            const avatarUrl = avatarDraft ?? user.avatarUrl;
             setBusy(true);
             setError("");
             setMessage("");
@@ -79,23 +81,31 @@ export function ProfilePage() {
               <label htmlFor="profile-avatar">Ảnh đại diện</label>
               <input
                 id="profile-avatar"
-                name="avatarUrl"
-                type="url"
-                maxLength={2048}
-                placeholder="https://example.com/anh-cua-ban.jpg"
-                value={avatarDraft ?? user.avatarUrl ?? ""}
-                onChange={(event) => setAvatarDraft(event.target.value)}
+                ref={fileInput}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
                 aria-describedby="profile-avatar-help"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  setError("");
+                  setMessage("");
+                  if (!file) return;
+                  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+                    setError("Chọn ảnh JPG, PNG hoặc WebP tối đa 5 MB.");
+                    event.target.value = "";
+                    return;
+                  }
+                  setPhotoPreview(URL.createObjectURL(file));
+                }}
               />
               <small id="profile-avatar-help">
-                Dán đường dẫn ảnh công khai để xem trước. Ảnh chỉ được cập nhật
-                sau khi lưu. Chưa hỗ trợ tải file từ máy.
+                JPG, PNG hoặc WebP, tối đa 5 MB. Có thể xem trước; tải ảnh lên tài khoản đang chờ backend hỗ trợ.
               </small>
               <button
                 type="button"
                 className="platform-profile-remove-avatar"
-                disabled={busy || !(avatarDraft ?? user.avatarUrl)}
-                onClick={() => setAvatarDraft("")}
+                disabled={busy || !(photoPreview || avatarDraft || user.avatarUrl)}
+                onClick={() => { setPhotoPreview(undefined); setAvatarDraft(""); if (fileInput.current) fileInput.current.value = ""; setError(""); }}
               >
                 Gỡ ảnh đại diện
               </button>
