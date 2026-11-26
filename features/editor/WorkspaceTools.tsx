@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/lib/ui/Icon";
 import { elapsedAt, formatClock } from "./workspace-clock";
@@ -100,7 +101,8 @@ export function WorkspaceTools({
           </button>
         </header>
         <label htmlFor="workspace-font-size">Cỡ chữ</label>
-        <select
+        <RoundedSelect
+          label="Cỡ chữ"
           id="workspace-font-size"
           value={fontSize}
           onChange={(event) => onFontSize(Number(event.target.value))}
@@ -110,7 +112,7 @@ export function WorkspaceTools({
               {size} px
             </option>
           ))}
-        </select>
+        </RoundedSelect>
         <p>
           Theme dùng chung với Codjingrank. Bản nháp tự lưu theo tài khoản, bài
           và ngôn ngữ.

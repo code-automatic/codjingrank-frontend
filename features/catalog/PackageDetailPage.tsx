@@ -1,5 +1,6 @@
 "use client";
 
+import { RoundedSelect } from "@/lib/ui/RoundedSelect";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
@@ -222,7 +223,8 @@ function AuthenticatedPackageDetail({ slug }: { slug: string }) {
         >
           <div className="field">
             <label htmlFor="package-problems-difficulty">Độ khó / Cấp</label>
-            <select
+            <RoundedSelect
+              label="Độ khó / Cấp"
               id="package-problems-difficulty"
               value={queryState.difficulty}
               onChange={(event) =>
@@ -239,12 +241,13 @@ function AuthenticatedPackageDetail({ slug }: { slug: string }) {
               <option value="easy">Dễ (Cấp 1)</option>
               <option value="medium">Trung bình (Cấp 2)</option>
               <option value="hard">Khó (Cấp 3)</option>
-            </select>
+            </RoundedSelect>
           </div>
 
           <div className="field">
             <label htmlFor="package-problems-tag">Thẻ chủ đề</label>
-            <select
+            <RoundedSelect
+              label="Thẻ chủ đề"
               id="package-problems-tag"
               value={queryState.tag}
               onChange={(event) =>
@@ -266,12 +269,13 @@ function AuthenticatedPackageDetail({ slug }: { slug: string }) {
                   {tag.name}
                 </option>
               ))}
-            </select>
+            </RoundedSelect>
           </div>
 
           <div className="field">
             <label htmlFor="package-problems-solved">Trạng thái giải</label>
-            <select
+            <RoundedSelect
+              label="Trạng thái giải"
               id="package-problems-solved"
               value={queryState.solved}
               onChange={(event) =>
@@ -287,7 +291,7 @@ function AuthenticatedPackageDetail({ slug }: { slug: string }) {
               <option value="">Tất cả trạng thái</option>
               <option value="false">Chưa giải</option>
               <option value="true">Đã giải</option>
-            </select>
+            </RoundedSelect>
           </div>
         </CatalogSearchBar>
 

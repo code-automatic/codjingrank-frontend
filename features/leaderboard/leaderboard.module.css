@@ -1904,3 +1904,22 @@
 .page .podiumName > span {
   display: block;
 }
+
+.page .cardArrow {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  bottom: calc(50% - 16px);
+  line-height: 1;
+}
+.page .cardArrow svg {
+  display: block;
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+.page .filters > .rounded-select {
+  min-width: 0;
+}

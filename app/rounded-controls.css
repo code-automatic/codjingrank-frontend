@@ -1,0 +1,145 @@
+.rounded-select {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+}
+.rounded-select > select[hidden] {
+  display: none !important;
+}
+body .rounded-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--ui-control-border, #7c7f93);
+  border-radius: 12px;
+  background: var(--ui-surface, #fff);
+  color: var(--ui-text, #4c4f69);
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+}
+.rounded-select-trigger svg {
+  flex: none;
+  transform: rotate(180deg);
+}
+body .rounded-select-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+body .rounded-select-trigger:focus-visible {
+  outline: 2px solid var(--ui-focus, #087f78);
+  outline-offset: 3px;
+}
+body .rounded-select-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 5px;
+  box-sizing: border-box;
+  border: 1px solid var(--ui-border, #d6dae4);
+  border-radius: 14px;
+  background: var(--ui-surface, #fff);
+  color: var(--ui-text, #4c4f69);
+  box-shadow: 0 12px 30px -16px var(--ui-shadow, #0006);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+body .rounded-select-menu[popover] > button[role="option"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  text-align: left;
+  font-size: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+body
+  .rounded-select-menu[popover]
+  > button[role="option"]:is(:hover, [aria-selected="true"]) {
+  background: var(--ui-accent-surface, #e4f0ed);
+  color: var(--ui-accent, #087f78);
+}
+body .rounded-select-menu[popover] > button[role="option"]:focus-visible {
+  outline: 2px solid var(--ui-focus, #087f78);
+  outline-offset: -2px;
+}
+body .rounded-select-menu[popover] > button[role="option"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rounded-select-menu[data-pointer-open="true"]:popover-open {
+    animation: rounded-menu-enter 140ms var(--motion-feedback, ease-out);
+  }
+}
+@keyframes rounded-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 600px) {
+  .platform .pagination-controls .rounded-select {
+    width: 64px;
+  }
+  .platform .pagination-controls .rounded-select-trigger {
+    min-width: 0;
+    width: 64px;
+    padding-inline: 8px;
+  }
+}
+
+.platform .pagination-controls .rounded-select {
+  flex: 0 0 80px;
+  width: 80px;
+  max-width: 80px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.platform .pagination-controls .rounded-select-trigger {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+@media (max-width: 600px) {
+  .platform .pagination-controls .rounded-select {
+    width: 64px;
+    max-width: 64px;
+  }
+}
+
+body .rounded-select-menu:popover-open {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body .rounded-select-menu[popover] > button[role="option"] {
+  flex: none;
+  min-width: 0;
+  width: 100%;
+  justify-content: space-between;
+}

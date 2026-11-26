@@ -15,7 +15,7 @@ const chapters = [
     title: "Viết code trong không gian của bạn",
     description:
       "Đọc đề, đổi ngôn ngữ, lưu nháp. Chạy test mẫu rồi nộp bài ngay trong cùng một workspace.",
-    image: "/landing/workspace-current-9a665aae12.png",
+    image: "/landing/workspace-current-0c9496a30d.png",
     alt: "Trang giải bài Sum two numbers của Codjingrank với đề bài, editor và kết quả",
     href: "/problems",
     action: "Khám phá kho bài",
@@ -24,7 +24,7 @@ const chapters = [
     title: "Theo dõi từng bước tiến",
     description:
       "Chọn gói bài theo chủ đề, theo dõi số bài đã giải và luyện tập qua từng cấp độ.",
-    image: "/landing/roadmap-current-858082c51d.png",
+    image: "/landing/roadmap-current-ecdb1ccbc4.png",
     alt: "Lộ trình Codjingrank với gói Arrays và tiến độ bài đã giải",
     href: "/packages",
     action: "Khám phá lộ trình",
@@ -33,7 +33,7 @@ const chapters = [
     title: "Cùng nhau gỡ một bài khó",
     description:
       "Đặt câu hỏi, chia sẻ cách làm và trao đổi trong cộng đồng. Một góc nhìn khác có thể mở ra cách giải mới.",
-    image: "/landing/community-current-ac82400322.png",
+    image: "/landing/community-current-fd373b4629.png",
     alt: "Trang cộng đồng Codjingrank với danh sách thảo luận",
     href: "/forum",
     action: "Ghé thăm cộng đồng",
@@ -364,7 +364,7 @@ export function LandingPage() {
                 Cộng đồng · nội dung demo
               </span>
               <Image
-                src="/landing/community-current-ac82400322.png"
+                src="/landing/community-current-fd373b4629.png"
                 width={1440}
                 height={900}
                 alt="Giao diện thảo luận cộng đồng Codjingrank"
