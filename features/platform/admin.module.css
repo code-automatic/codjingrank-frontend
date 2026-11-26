@@ -1,0 +1,165 @@
+.dashboard {
+  max-width: 1280px;
+  margin-inline: auto;
+}
+.dashboard[data-admin-section="content"] section[id="operations"],
+.dashboard[data-admin-section="operations"] section[id="catalog"],
+.dashboard[data-admin-section="operations"] .metrics { display: none; }
+.dashboard[data-admin-section="content"] .columns,
+.dashboard[data-admin-section="operations"] .columns { grid-template-columns: minmax(0, 1fr); }
+.context { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-block: 12px; color: var(--ui-text-muted); font-size: 12px; }
+.context span { display: inline-flex; align-items: center; gap: 8px; }
+.filter { display: flex; align-items: center; gap: 10px; margin-block: 20px; border: 1px solid var(--ui-border); border-radius: 10px; padding-inline: 12px; background: var(--ui-canvas); }
+.filter:focus-within { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+.filter input { width: 100%; min-width: 0; border: 0; background: transparent; color: var(--ui-text); padding-block: 12px; outline: none; }
+.slug { display: block; color: var(--ui-text-muted); font-size: 11px; margin-top: 5px; }
+.difficulty { padding: 4px 8px; background: var(--ui-canvas); border-radius: 6px; font-size: 11px; }
+.boundary { display: flex; gap: 10px; align-items: flex-start; color: var(--ui-text-muted); line-height: 1.6; font-size: 12px; margin-top: 24px; }
+.boundary svg { flex-shrink: 0; margin-top: 3px; }
+.dashboard section[id] { scroll-margin-top: 20px; }
+.heading,
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.heading h1 {
+  margin: 12px 0;
+}
+.heading p {
+  color: var(--ui-text-muted);
+  line-height: 1.6;
+}
+.role,
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ui-accent);
+}
+.role {
+  font-size: 12px;
+}
+.notice {
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--ui-surface);
+  line-height: 1.6;
+  margin-block: 20px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.panel {
+  min-width: 0;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 16px;
+  padding: 24px;
+  color: var(--ui-text);
+}
+.metrics .panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.metrics .panel:hover {
+  border-color: var(--ui-accent);
+  box-shadow: 0 8px 20px #00000012;
+}
+.metrics strong {
+  font-size: clamp(22px, 3vw, 36px);
+}
+.link {
+  margin-top: auto;
+  font-size: 12px;
+}
+.columns {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  margin-top: 24px;
+}
+.panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+.list li + li {
+  border-top: 1px solid var(--ui-border);
+}
+.list a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 16px;
+  color: var(--ui-text);
+  text-decoration: none;
+}
+.list span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.list a:hover {
+  color: var(--ui-accent);
+}
+.pending {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--ui-border);
+}
+.pending small {
+  flex-shrink: 0;
+  color: var(--ui-text-muted);
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--ui-canvas);
+}
+.columns .panel > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 540px) {
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .panel {
+    padding: 18px;
+  }
+  .sectionHeading,
+  .pending {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metrics .panel {
+    transition: none;
+  }
+}

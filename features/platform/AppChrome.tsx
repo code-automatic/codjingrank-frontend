@@ -47,26 +47,41 @@ export function AppChrome({ children }: { children: ReactNode }) {
       ?.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [path]);
   const appRoute =
-    /^\/(protected|problems|packages|forum|leaderboard|store|profile)(\/|$)/.test(
+    /^\/(admin|protected|problems|packages|forum|leaderboard|store|profile)(\/|$)/.test(
       path,
     );
   const workspace = /^\/problems\/.+/.test(path);
   if (!appRoute || workspace) return children;
   const catalog = path === "/problems" || path === "/packages";
   const current = (href: string) =>
-    path === href || path.startsWith(`${href}/`);
-  const navigation = links.map(([href, label], index) => (
-    <Link
-      key={href}
-      href={href}
-      aria-current={current(href) ? "page" : undefined}
-      aria-label={label}
-      title={label}
-    >
-      <Icon name={navigationIcons[index]} size={19} />
-      <span>{label}</span>
-    </Link>
-  ));
+    path === href || (href !== "/admin" && path.startsWith(`${href}/`));
+  const navigation = (
+    <>
+      {user?.role === "admin" && !path.startsWith("/admin") && (
+        <Link
+          href="/admin"
+          aria-current={current("/admin") ? "page" : undefined}
+          aria-label="Quản trị"
+          title="Quản trị"
+        >
+          <Icon name="shield" size={19} />
+          <span>Quản trị</span>
+        </Link>
+      )}
+      {(path.startsWith("/admin") ? [["/admin", "Tổng quan quản trị"], ["/admin/content", "Nội dung"], ["/admin/operations", "Vận hành"], ["/protected", "Giao diện học viên"]] : links).map(([href, label], index) => (
+        <Link
+          key={href}
+          href={href}
+          aria-current={current(href) ? "page" : undefined}
+          aria-label={label}
+          title={label}
+        >
+          <Icon name={path.startsWith("/admin") ? (["layers", "code", "shield", "arrowUpRight"] as const)[index] : navigationIcons[index]} size={19} />
+          <span>{label}</span>
+        </Link>
+      ))}
+    </>
+  );
   return (
     <div
       className="platform"
@@ -207,7 +222,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
             >
               <Icon name="bell" size={20} />
             </button>
-            <PracticeStats key={user?.id || "guest"} />
+            {!path.startsWith("/admin") && <PracticeStats key={user?.id || "guest"} />}
           </div>
         </div>
         <div

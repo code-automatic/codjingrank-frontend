@@ -5,6 +5,9 @@ export function createProfileDemo(spec) {
     ].example.data,
   );
   let user = { ...login.user, avatarUrl: null };
+  if (process.env.MOCK_PROFILE_ROLE === "admin") {
+    user = { ...user, role: "admin", fullName: "Admin Demo" };
+  }
   const success = (data) => ({
     status: 200,
     body: { status: "success", code: 200, message: "Demo profile", data },
