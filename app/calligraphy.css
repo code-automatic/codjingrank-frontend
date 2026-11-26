@@ -1,0 +1,146 @@
+@font-face {
+  font-family: CodjingrankReading;
+  src: url("/landing/merienda-variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: CodjingrankBrush;
+  src: url("/landing/kolker-brush-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+body,
+body
+  :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    option,
+    label,
+    summary,
+    div,
+    span,
+    li,
+    dt,
+    dd,
+    th,
+    td,
+    small,
+    strong,
+    em,
+    legend,
+    time,
+    blockquote
+  ) {
+  font-family: CodjingrankReading, Georgia, serif !important;
+}
+body :where(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: 0;
+  line-height: 1.45;
+}
+body :where(p, li, label) {
+  line-height: 1.75;
+}
+body
+  :is(
+    code,
+    pre,
+    kbd,
+    samp,
+    code *,
+    pre *,
+    .code-editor,
+    .code-editor *,
+    .editor-input,
+    .editor-highlight,
+    .editor-highlight *,
+    textarea[aria-label^="Mã nguồn"],
+    .cm-editor,
+    .cm-editor *,
+    .monaco-editor,
+    .monaco-editor *
+  ) {
+  font-family: "Cascadia Code", ui-monospace, Consolas, monospace !important;
+}
+body
+  :is(
+    .dashboard-practice-summary dd,
+    .dashboard-practice-summary dd *,
+    .practice-calendar-grid button,
+    .pagination-page-indicator,
+    [role="timer"]
+  ) {
+  font-family: ui-monospace, Consolas, monospace !important;
+  font-variant-numeric: tabular-nums;
+}
+body [data-brand-wordmark] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: CodjingrankBrush, Georgia, serif !important;
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1;
+  height: auto;
+  min-height: 40px;
+  aspect-ratio: auto;
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+  white-space: nowrap;
+}
+body
+  .platform[data-sidebar-expanded="true"]
+  .platform-brand
+  [data-brand-wordmark] {
+  font-size: 42px;
+}
+body .platform-brand [data-brand-wordmark] {
+  font-size: 39px;
+}
+body [data-brand-intro-overlay] [data-brand-wordmark] {
+  font-size: clamp(64px, 14vw, 164px);
+  width: auto;
+  height: auto;
+}
+body #landing-title,
+body #landing-title span {
+  font-family: CodjingrankBrush, Georgia, serif !important;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+}
+body #landing-title {
+  font-size: clamp(94px, 10.5vw, 148px);
+}
+@media (max-width: 600px) {
+  body #landing-title {
+    font-size: clamp(64px, 16vw, 90px);
+  }
+  body [data-brand-wordmark] {
+    font-size: 40px;
+  }
+  body .platform-brand [data-brand-wordmark] {
+    font-size: 36px;
+  }
+}
+
+body [data-brand-intro-overlay] [data-brand-wordmark] {
+  font-size: clamp(40px, 24cqw, 240px);
+  min-width: 0;
+  padding-inline: 8px;
+  overflow: visible;
+}

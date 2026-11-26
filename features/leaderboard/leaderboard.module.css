@@ -1693,3 +1693,214 @@
     padding: 12px 8px;
   }
 }
+
+.page .main {
+  padding-top: 24px;
+}
+.page .heading {
+  margin-bottom: 20px;
+}
+.page .heading h1 {
+  margin: 8px 0;
+  font-size: 26px;
+}
+.page .trophy {
+  width: 76px;
+  height: 72px;
+}
+.page .trophyMark {
+  width: 16px;
+  height: 16px;
+  top: 22px;
+  left: 30px;
+}
+.page .practiceCards {
+  max-width: none;
+  margin-bottom: 24px;
+  gap: 14px;
+}
+.page .practiceCard {
+  flex-direction: row;
+  align-items: center;
+  min-height: 94px;
+}
+.page .practiceArt {
+  width: 100px;
+  height: 94px;
+  flex-shrink: 0;
+}
+.page .cardTag {
+  display: none;
+}
+.page .cardCaption {
+  flex: 1;
+  align-self: stretch;
+  justify-content: center;
+  padding: 14px 48px 14px 16px;
+}
+.page .cardArrow {
+  width: 26px;
+  height: 26px;
+  right: 12px;
+  bottom: calc(50% - 13px);
+}
+.page .filters {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.page .filters > :nth-child(2) {
+  order: 3;
+}
+.page .packageForm > p {
+  font-size: 11px;
+}
+.page .results {
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.5fr);
+  gap: 20px;
+}
+.page .results.expanded {
+  grid-template-columns: minmax(0, 1fr);
+}
+.page .podium {
+  min-height: 300px;
+  padding: 16px 0 0;
+  overflow: visible;
+  gap: 8px;
+}
+.page .podiumEntry {
+  padding-top: 0;
+}
+.page .podiumBase {
+  height: 48px;
+  flex-shrink: 0;
+}
+.page .podiumEntry[data-rank="2"] .podiumBase {
+  height: 72px;
+}
+.page .podiumEntry[data-rank="1"] .podiumBase {
+  height: 100px;
+}
+.page .podiumEntry .avatarLarge {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+.page .podiumName {
+  min-height: 82px;
+  justify-content: center;
+}
+.page .stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+.page .stats > div {
+  min-width: 0;
+  padding: 12px 6px;
+  text-align: center;
+  background: var(--ui-surface-muted);
+  border-radius: 10px;
+}
+.page .stats dd {
+  font-size: 24px;
+  margin: 8px 0 0;
+}
+.page .table thead th:nth-child(n + 3),
+.page .table tbody td:nth-child(n + 3) {
+  text-align: right;
+}
+@media (max-width: 1200px) {
+  .page .results {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .page .podium {
+    max-width: 460px;
+    margin-inline: auto;
+  }
+}
+@media (max-width: 650px) {
+  .page .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .page .practiceCards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .page .practiceArt {
+    width: 80px;
+    height: 80px;
+  }
+  .page .practiceCard {
+    min-height: 80px;
+  }
+  .page .stats {
+    gap: 6px;
+  }
+  .page .stats dt {
+    font-size: 11px;
+  }
+}
+
+.page .practiceCard .artworkStage {
+  width: 100px;
+  height: 94px;
+  flex: 0 0 100px;
+  overflow: hidden;
+  border-radius: 0;
+}
+.page .practiceCard .artworkCube {
+  transform: translate(-50%, -50%) scale(0.42);
+}
+.page .practiceCard .cubeCompanion {
+  transform: translate(-50%, -50%) scale(0.25);
+}
+.page .practiceCard .artworkOrbit {
+  display: none;
+}
+.page .cardCaption {
+  min-width: 0;
+}
+@media (max-width: 650px) {
+  .page .practiceCard .artworkStage {
+    width: 80px;
+    height: 80px;
+    flex-basis: 80px;
+  }
+}
+
+.page .practiceCard .artworkCube {
+  --cube-size: 34px;
+  top: 28px;
+  left: calc(50% - 12px);
+  transform: rotateX(-24deg) rotateY(-36deg) rotateZ(4deg);
+}
+.page .practiceCard .cubeCompanion {
+  --cube-size: 22px;
+  top: 50px;
+  left: calc(50% - 32px);
+}
+.page .practiceCard .cubeCore {
+  inset: 8px;
+}
+.page .practiceCard .cubeCompanion .cubeCore {
+  inset: 5px;
+}
+.page .practiceCard .artworkShadow {
+  top: 72px;
+  width: 58px;
+  left: calc(50% - 26px);
+  height: 10px;
+}
+
+.page .overview {
+  padding: 18px 14px;
+  border-radius: 16px;
+}
+.page .podiumName {
+  height: 90px;
+  min-height: 90px;
+}
+.page .podiumName > span {
+  display: block;
+}

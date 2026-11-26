@@ -1,5 +1,13 @@
 # Codjingrank UI — HackerRank auth / LeetCode workspace
 
+## Sidebar seam and opening motion — 26/11/2026
+
+Active navigation extends 1px into the shell to eliminate fractional gaps. Two 18px radial inverse corners replace cropped half-shadow joins; reset the legacy after-pseudo left/transform/display rules. A neutral white/Mocha left-edge gradient matches the active connection while retaining the existing glass material farther inside the shell. Remove the vertical inset rim at that seam and prevent pressed active links from moving. Pointer expansion reveals labels by 6px/opacity and connector corners by opacity over 180ms with the existing motion-feedback curve; keyboard and reduced-motion remain immediate. Logo, data and content are not scaled. Verified light/dark, collapse/expand and keyboard activation in the local browser. No push or merge.
+
+## Layout refinement — 26/11/2026
+
+Owner-requested refinement preserves the current glass materials and both theme palettes. Catalog routes now use one centered reading column capped at 1100px, without secondary navigation/calendar rails or redundant problem banners. Shared keyboard-accessible FilterSelect replaces catalog native filters, with a visible reset action. Problem tables retain one outer border, fixed column proportions and difficulty badges. Package cards show actual server progress from getPackageLevels, with a deadline and a neutral fallback on failure. Dashboard metrics share a 144px minimum height with inline units and bottom-aligned captions; two stacked introduction cards match the calendar height. Community banners are compact, heading/action/rail aligned, existing excerpts retained. Ranking uses compact practice links, balanced filters, equal personal metrics and a real-height podium; equal server ranks keep equal pedestal heights. Duplicate compact ranking rows are removed. Sidebar controls share 44px height and 10px spacing. Mobile pagination stays on one row. Validation and changed files: docs/LAYOUT_REFINEMENT_2026_11_26.md. No push or merge in this revision.
+
 ## CRM V10 application system — 25/11/2026
 
 Toolbar blending correction: shared topbar now has transparent background, no full-width inset shadow and no backdrop blur, so its background continues the content shell in both themes. Search/bell/streak retain their own translucent control surfaces. Expanded active navigation bridge is reduced from 36px to 32px after browser geometry found a 3.2px intrusion into the content shell. Verified no positive overlap, toolbar/content edges meet at y=88, and outer shell/window stay stationary while scrolling.
@@ -195,3 +203,21 @@ Bản hiện hành thay bản vivid ở trên: bỏ ribbon/rim và lớp gợn t
 ## Phản hồi thao tác toàn app — 23/11/2026
 
 Dùng app/product-motion.css cho UI sau đăng nhập: control hover nâng 1px, press scale .98, thẻ điều hướng nâng 3px và bóng nhẹ, icon phản hồi 2–3px; không đổi màu nhận diện. CSS modules bổ sung cho thẻ forum/ranking. Hàng bài/bảng xếp hạng không dịch chuyển, chỉ phản hồi nền. Disabled/locked giữ tĩnh; bàn phím có focus rõ, transition tắt khi focus-visible; reduced-motion tắt chuyển động. Scope platform/workspace/AI, không áp dụng vào landing/auth intro.
+
+## Hero lettering and underwater entrance — 26/11/2026
+
+Owner-requested hero copy now says Khơi mở tư duy, vươn xa cùng code, with language-neutral practice messaging. Custom typographic composition uses the existing licensed Manrope and italic Noto Serif assets; this is lettering styling, not a newly authored font file. Heading rises/reveals over 850ms, 12 decorative bubbles float at 6–8 second intervals (six on mobile), and emphasized lettering cycles a restrained dark teal gradient. Intro dataset pauses these effects until the logo intro finishes. Reduced motion removes bubbles and color movement. Existing hero wave, CTA routes and application UI remain.
+
+## Hero brush calligraphy — 26/11/2026
+
+Owner clarified Vietnamese brush calligraphy rather than italic serif. Both hero lines now use unmodified Kolker Brush Regular by Robert Leuschke, self-hosted locally with the SIL OFL notice in public/landing/KOLKER-BRUSH-LICENSE.txt. Google Fonts metadata confirms Vietnamese support. Scoped font sizing, normal style/weight, zero tracking and extra ink/diacritic clearance preserve natural brush forms without synthetic bold/italic. Existing bubble, color and post-intro reveal remain. Supporting copy, navigation, logo and application UI unchanged. This supersedes the Manrope/italic-serif hero lettering above; not an exclusive custom font claim.
+
+## Project-wide calligraphy — 26/11/2026
+
+Owner explicitly requested calligraphy across all UI including the logo, with larger hero lettering. Global calligraphy.css applies self-hosted Vietnamese Merienda variable to reading text, titles, navigation, forms and controls; Kolker Brush remains the hero and becomes the shared BrandLogo wordmark text, retaining the original teal symbol. Hero maximum rises to 148px, mobile 64–90px. Code/pre/editor input and summary/calendar numeric values retain monospace for character clarity. All palettes, functions and animation remain. Both fonts are licensed third-party assets, not exclusive fonts authored for Codjingrank. Licenses and provenance are kept under public/landing.
+
+## Intro wordmark clearance and scenic footer — 26/11/2026
+
+Owner reported clipped final k on reload after calligraphy change. Intro wrapper increases to 680px, brush wordmark is capped at 120px with 8px inline clearance and min-width zero; reveal ends with 20px clip clearance. Footer and CTA now share one ocean image wrapper with a progressive dark reading overlay, no divider or separate footer background. Footer has three actual route groups (practice, community, start), brand and copyright; remove visible photo credits but preserve SOURCES.md provenance. No fabricated legal/social destinations.
+
+Intro size refinement: wrapper grows to 1040px capped at viewport minus 40px, container-relative brush lettering up to 240px, mark 18%, responsive gap and ink clearance retained. Typography scales with the available intro width, not independently with the viewport.

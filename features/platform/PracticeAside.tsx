@@ -8,7 +8,11 @@ import { type DailyChallengeModel, errorText } from "@/lib/api";
 import { Icon } from "@/lib/ui/Icon";
 import { PracticeCalendar } from "./PracticeCalendar";
 
-export function PracticeAside() {
+export function PracticeAside({
+  showCalendar = true,
+}: {
+  showCalendar?: boolean;
+}) {
   const api = useApiClient();
   const { status, user } = useSession();
   const [daily, setDaily] = useState<DailyChallengeModel | null>(null);
@@ -32,7 +36,7 @@ export function PracticeAside() {
   }, [api, status, user?.id, retry]);
   return (
     <>
-      <PracticeCalendar key={user?.id || "guest"} />
+      {showCalendar && <PracticeCalendar key={user?.id || "guest"} />}
       <section className="platform-daily">
         <span className="platform-daily-icon">
           <Icon name="code" size={25} />

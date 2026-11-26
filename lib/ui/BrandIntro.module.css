@@ -18,7 +18,9 @@
 }
 
 .logo {
-  width: min(560px, calc(100vw - 48px));
+  width: min(1040px, calc(100vw - 40px));
+  container-type: inline-size;
+  padding-block: 24px;
   visibility: hidden;
 }
 
@@ -29,12 +31,12 @@
 
 .logo > span {
   display: flex;
-  gap: 12px;
+  gap: clamp(8px, 2cqw, 20px);
   color: #192b29;
 }
 
 .logo [data-brand-mark] {
-  width: 22%;
+  width: 18%;
   height: auto;
   aspect-ratio: 1;
 }
@@ -51,7 +53,7 @@
   }
   to {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-20px -20px -20px -20px);
   }
 }
 

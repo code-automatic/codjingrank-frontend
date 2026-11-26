@@ -64,7 +64,9 @@ export function ProblemTable({
                   className="platform-difficulty"
                   data-difficulty={problem.difficulty}
                 >
-                  {view.difficultyLabel}
+                  <span className="platform-difficulty-badge">
+                    {view.difficultyLabel}
+                  </span>
                 </td>
               </tr>
             );

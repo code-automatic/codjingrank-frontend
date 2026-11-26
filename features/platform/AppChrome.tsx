@@ -8,7 +8,6 @@ import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { Icon, type IconName } from "@/lib/ui/Icon";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { applyTheme } from "@/lib/ui/theme";
-import { PracticeAside } from "./PracticeAside";
 import { PracticeStats } from "./PracticeStats";
 import { initials } from "@/features/forum/presentation";
 import "./platform.css";
@@ -39,6 +38,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
   const [logoutError, setLogoutError] = useState("");
   const [ambientMotion, setAmbientMotion] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarMotion, setSidebarMotion] = useState(false);
   useEffect(() => {
     shell.current
       ?.querySelector<HTMLElement>(
@@ -72,6 +72,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
       className="platform"
       data-platform-route={path}
       data-sidebar-expanded={sidebarExpanded}
+      data-sidebar-motion={sidebarMotion}
       data-ambient-motion={ambientMotion}
       onClickCapture={(event) => {
         const trigger = (event.target as HTMLElement).closest<HTMLElement>(
@@ -95,7 +96,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
             sidebarExpanded ? "Thu gọn điều hướng" : "Mở rộng điều hướng"
           }
           aria-expanded={sidebarExpanded}
-          onClick={() => setSidebarExpanded(!sidebarExpanded)}
+          onClick={(event) => {
+            setSidebarMotion(event.detail > 0);
+            setSidebarExpanded((value) => !value);
+          }}
           title={sidebarExpanded ? "Thu gọn" : "Mở rộng"}
         >
           <Icon name={sidebarExpanded ? "chevronLeft" : "menu"} size={20} />
@@ -359,39 +363,6 @@ export function AppChrome({ children }: { children: ReactNode }) {
         </div>
         {catalog ? (
           <div className="platform-library">
-            <aside className="platform-sidebar" aria-label="Thư viện">
-              <nav>
-                <Link
-                  href="/problems"
-                  aria-current={path === "/problems" ? "page" : undefined}
-                >
-                  <Icon name="book" />
-                  Thư viện bài tập
-                </Link>
-                <Link
-                  href="/packages"
-                  aria-current={path === "/packages" ? "page" : undefined}
-                >
-                  <Icon name="layers" />
-                  Lộ trình học
-                </Link>
-                <Link href="/problems?solved=false">
-                  <Icon name="code" />
-                  Bài chưa giải
-                </Link>
-                <Link href="/problems?solved=true">
-                  <Icon name="check" />
-                  Bài đã giải
-                </Link>
-              </nav>
-              <div className="platform-sidebar-note">
-                <strong>Tiến từng bước.</strong>
-                <p>Chọn một bài, hiểu một cách giải mới.</p>
-                <Link href="/forum">
-                  Trao đổi cùng cộng đồng <Icon name="arrowUpRight" />
-                </Link>
-              </div>
-            </aside>
             <div
               id="platform-content"
               className="platform-library-content"
@@ -399,9 +370,6 @@ export function AppChrome({ children }: { children: ReactNode }) {
             >
               {children}
             </div>
-            <aside className="platform-library-aside">
-              <PracticeAside key={user?.id || "guest"} />
-            </aside>
           </div>
         ) : (
           <div id="platform-content" tabIndex={-1}>

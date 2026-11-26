@@ -122,7 +122,6 @@ function Results({
     requestAnimationFrame(() => heading.current?.focus());
   }
   const leaders = query.page === 1 ? (board.data?.items.slice(0, 3) ?? []) : [];
-  const compact = board.data?.items.slice(query.page === 1 ? 3 : 0, 10) ?? [];
   return (
     <div className={`${styles.results} ${expanded ? styles.expanded : ""}`}>
       <aside className={styles.overview} aria-labelledby="overview-heading">
@@ -153,9 +152,16 @@ function Results({
               <div
                 key={entry.userId}
                 data-rank={entry.rank}
-                className={`${styles.podiumEntry} ${index === 0 ? styles.podiumLead : ""}`}
+                className={`${styles.podiumEntry} ${entry.rank === 1 ? styles.podiumLead : ""}`}
                 style={{
-                  gridColumn: index === 0 ? 2 : index === 1 ? 1 : 3,
+                  gridColumn:
+                    leaders.filter((item) => item.rank === 1).length > 1
+                      ? index + 1
+                      : index === 0
+                        ? 2
+                        : index === 1
+                          ? 1
+                          : 3,
                   gridRow: 1,
                 }}
               >
@@ -180,35 +186,6 @@ function Results({
               </div>
             ))}
           </div>
-        )}
-        {compact.length > 0 && (
-          <ol
-            className={styles.compactList}
-            aria-label="Tóm tắt thứ hạng trang hiện tại"
-          >
-            {compact.map((entry) => (
-              <li key={entry.userId}>
-                <span className={styles.compactRank}>{entry.rank}</span>
-                <RankingAvatar
-                  key={entry.avatarUrl ?? entry.userId}
-                  entry={entry}
-                />
-                <span className={styles.compactName}>{entry.username}</span>
-                <span className={styles.compactCounts}>
-                  <span>
-                    Bài giải:{" "}
-                    <strong>{number.format(entry.solvedProblemCount)}</strong>
-                  </span>
-                  <span>
-                    Accepted:{" "}
-                    <strong>
-                      {number.format(entry.acceptedSolutionCount)}
-                    </strong>
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
         )}
         {board.phase === "ready" && !board.data?.items.length && (
           <p className={styles.subtle}>
@@ -523,7 +500,7 @@ function PackageFilter({
         onApply(value.trim());
       }}
     >
-      <label htmlFor="board-package">Gói bài (slug)</label>
+      <label htmlFor="board-package">Gói bài</label>
       <div>
         <input
           id="board-package"

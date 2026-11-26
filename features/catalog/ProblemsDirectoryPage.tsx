@@ -31,6 +31,7 @@ import {
 } from "@/features/catalog/viewModel";
 import { errorText } from "@/lib/api/client";
 import { useApiClient } from "@/lib/api/useApiClient";
+import { FilterSelect } from "@/lib/ui/FilterSelect";
 import { ProblemTable } from "@/features/platform/ProblemTable";
 
 function AuthenticatedProblemsDirectory() {
@@ -104,23 +105,8 @@ function AuthenticatedProblemsDirectory() {
         </div>
       </div>
 
-      <div className="platform-feature-grid platform-library-features">
-        <Link href="/packages" className="platform-feature">
-          <h2>
-            Học theo lộ trình.
-            <br />
-            Tiến bộ từng cấp.
-          </h2>
-          <span>Khám phá gói bài →</span>
-        </Link>
-        <Link href="/forum" className="platform-feature">
-          <h2>Gỡ bài khó cùng cộng đồng.</h2>
-          <span>Khám phá thảo luận →</span>
-        </Link>
-      </div>
       <header className="workspace-header">
         <div>
-          <p className="eyebrow">Bộ lọc bài tập</p>
           <h1>Kho bài tập luyện tập</h1>
         </div>
       </header>
@@ -171,93 +157,104 @@ function AuthenticatedProblemsDirectory() {
         }
       >
         <div className="field">
-          <label htmlFor="problems-filter-package">Gói bài</label>
-          <select
-            id="problems-filter-package"
+          <span>Gói bài</span>
+          <FilterSelect
+            label="Gói bài"
             value={queryState.package}
-            onChange={(event) =>
+            options={[
+              { value: "", label: "Tất cả gói bài" },
+              ...(!hasSelectedPackageOption
+                ? [{ value: queryState.package, label: queryState.package }]
+                : []),
+              ...state.packages.map((pkg) => ({
+                value: pkg.slug,
+                label: pkg.name,
+              })),
+            ]}
+            onChange={(value) =>
               navigateWithState(
                 updateProblemsFilter(queryState, {
-                  package: parseSlugFilterParam(event.target.value),
+                  package: parseSlugFilterParam(value),
                 }),
               )
             }
-          >
-            <option value="">Tất cả gói bài</option>
-            {!hasSelectedPackageOption && (
-              <option value={queryState.package}>{queryState.package}</option>
-            )}
-            {state.packages.map((pkg) => (
-              <option key={pkg.id} value={pkg.slug}>
-                {pkg.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
-
         <div className="field">
-          <label htmlFor="problems-filter-difficulty">Độ khó</label>
-          <select
-            id="problems-filter-difficulty"
+          <span>Độ khó</span>
+          <FilterSelect
+            label="Độ khó"
             value={queryState.difficulty}
-            onChange={(event) =>
+            options={[
+              { value: "", label: "Tất cả độ khó" },
+              { value: "easy", label: "Dễ" },
+              { value: "medium", label: "Trung bình" },
+              { value: "hard", label: "Khó" },
+            ]}
+            onChange={(value) =>
               navigateWithState(
                 updateProblemsFilter(queryState, {
-                  difficulty: parseDifficultyParam(event.target.value),
+                  difficulty: parseDifficultyParam(value),
                 }),
               )
             }
-          >
-            <option value="">Tất cả độ khó</option>
-            <option value="easy">Dễ</option>
-            <option value="medium">Trung bình</option>
-            <option value="hard">Khó</option>
-          </select>
+          />
         </div>
-
         <div className="field">
-          <label htmlFor="problems-filter-tag">Thẻ chủ đề</label>
-          <select
-            id="problems-filter-tag"
+          <span>Thẻ chủ đề</span>
+          <FilterSelect
+            label="Thẻ chủ đề"
             value={queryState.tag}
-            onChange={(event) =>
+            options={[
+              { value: "", label: "Tất cả thẻ" },
+              ...(!hasSelectedTagOption
+                ? [{ value: queryState.tag, label: queryState.tag }]
+                : []),
+              ...state.tags.map((tag) => ({
+                value: tag.slug,
+                label: tag.name,
+              })),
+            ]}
+            onChange={(value) =>
               navigateWithState(
                 updateProblemsFilter(queryState, {
-                  tag: parseSlugFilterParam(event.target.value),
+                  tag: parseSlugFilterParam(value),
                 }),
               )
             }
-          >
-            <option value="">Tất cả thẻ</option>
-            {!hasSelectedTagOption && (
-              <option value={queryState.tag}>{queryState.tag}</option>
-            )}
-            {state.tags.map((tag) => (
-              <option key={tag.id} value={tag.slug}>
-                {tag.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
-
         <div className="field">
-          <label htmlFor="problems-filter-solved">Trạng thái giải</label>
-          <select
-            id="problems-filter-solved"
+          <span>Trạng thái giải</span>
+          <FilterSelect
+            label="Trạng thái giải"
             value={queryState.solved}
-            onChange={(event) =>
+            options={[
+              { value: "", label: "Tất cả trạng thái" },
+              { value: "false", label: "Chưa giải" },
+              { value: "true", label: "Đã giải" },
+            ]}
+            onChange={(value) =>
               navigateWithState(
                 updateProblemsFilter(queryState, {
-                  solved: parseSolvedParam(event.target.value),
+                  solved: parseSolvedParam(value),
                 }),
               )
             }
-          >
-            <option value="">Tất cả trạng thái</option>
-            <option value="false">Chưa giải</option>
-            <option value="true">Đã giải</option>
-          </select>
+          />
         </div>
+        <button
+          type="button"
+          className="button-secondary catalog-clear-filters"
+          disabled={!hasFilters || state.refreshing}
+          onClick={() =>
+            navigateWithState(
+              clearProblemsFilters(queryState, { keepSize: true }),
+            )
+          }
+        >
+          Xóa lọc
+        </button>
       </CatalogSearchBar>
 
       {state.packagesTotal > state.packages.length && (

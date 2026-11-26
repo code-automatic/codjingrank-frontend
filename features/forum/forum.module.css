@@ -1493,67 +1493,6 @@
   position: relative;
   z-index: 5;
 }
-.filterSelect {
-  position: relative;
-  min-width: 0;
-}
-.filterSelect summary {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  min-height: 44px;
-  border: 1px solid var(--ui-control-border);
-  background: var(--ui-surface);
-  border-radius: 12px;
-  padding: 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.filterSelect summary::-webkit-details-marker {
-  display: none;
-}
-.filterSelect summary svg {
-  transform: rotate(180deg);
-  flex: none;
-}
-.filterSelect[open] summary svg {
-  transform: none;
-}
-.filterSelect [role="listbox"] {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  min-width: 100%;
-  width: max-content;
-  max-width: 220px;
-  z-index: 10;
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-border);
-  border-radius: 12px;
-  padding: 5px;
-  box-shadow: 0 10px 24px -12px var(--ui-shadow);
-}
-.filterSelect button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 10px;
-  border: 0;
-  border-radius: 8px;
-  color: var(--ui-text);
-  background: transparent;
-  text-align: left;
-  font-size: 12px;
-}
-.filterSelect button[aria-selected="true"],
-.filterSelect button:hover {
-  color: var(--ui-accent);
-  background: var(--ui-accent-surface);
-}
 :global(.platform) .page .postList {
   background: none;
   border: 0;
@@ -1872,5 +1811,41 @@
   }
   .postList .postCard {
     gap: 10px;
+  }
+}
+
+.page .featureLinks > a {
+  min-height: 76px;
+  padding: 14px 18px;
+  gap: 4px;
+}
+.page .featureKicker {
+  display: none;
+}
+.page .featureLinks strong {
+  font-size: 15px;
+}
+.page .featureLinks {
+  margin-bottom: 22px;
+}
+.page .heading {
+  align-items: start;
+}
+.page .heading h1 {
+  margin-top: 0;
+}
+.page .heading .primaryAction {
+  margin-top: 0;
+  align-self: start;
+}
+.page .trendingRail {
+  margin-top: 0;
+}
+@media (max-width: 600px) {
+  .page .heading {
+    flex-wrap: wrap;
+  }
+  .page .featureLinks > a {
+    min-height: 76px;
   }
 }

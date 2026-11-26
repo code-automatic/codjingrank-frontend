@@ -20,7 +20,9 @@ export function BrandLogo({
           className={styles.wordmark}
           data-brand-wordmark
           aria-hidden="true"
-        />
+        >
+          Codjingrank
+        </span>
       )}
     </span>
   );

@@ -173,7 +173,7 @@ function AuthenticatedPackagesBrowser() {
               )
             ) : (
               <>
-                <PackagesGrid packages={state.data.items} />
+                <PackagesGrid packages={state.data.items} api={api} />
                 {paginationMeta && (
                   <CatalogPaginationBar
                     meta={paginationMeta}

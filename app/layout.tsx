@@ -17,6 +17,7 @@ import "./unified-ui.css";
 import "../features/auth/auth-scene.css";
 import "./sidebar-ui.css";
 import "./product-system.css";
+import "./calligraphy.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:
@@ -27,7 +28,13 @@ export default function Layout({ children }: { children: ReactNode }) {
     <html lang="vi" suppressHydrationWarning>
       <head>
         <link rel="preload" href="/brand/codjingrank-mark.png" as="image" />
-        <link rel="preload" href="/brand/codjingrank-wordmark.png" as="image" />
+        <link
+          rel="preload"
+          href="/landing/kolker-brush-regular.ttf"
+          as="font"
+          type="font/ttf"
+          crossOrigin="anonymous"
+        />
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{ __html: themeInitializationScript }}
