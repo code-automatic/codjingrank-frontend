@@ -19,6 +19,7 @@ import "./sidebar-ui.css";
 import "./product-system.css";
 import "./typography.css";
 import "./rounded-controls.css";
+import "../features/auth/auth-fit.css";
 export const metadata = {
   title: "Codjingrank · Luyện giải lập trình",
   description:

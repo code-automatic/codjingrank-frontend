@@ -237,3 +237,11 @@ Profile, sidebar account trigger and account menu use shared UserAvatar with the
 ## Approved CR identity — 26/11/2026
 
 Owner approved concept 03: open circular C with angular R. Shared BrandLogo now uses codjingrank-cr.svg and wordmark CodjingRank; ranking trophy uses the same silhouette. Favicon SVG, Apple icon and legacy PNG mark derive from the same SVG. Small marks retain semantic teal; intro adds a single 1500ms silver/teal reflection within the existing 2000ms reveal, disabled under reduced motion. Existing application layout and font remain.
+
+## Auth viewport fit — 26/11/2026
+
+Login/register fields now use labelled groups with compact vertical rhythm. Registration has two columns from 540px; 360–539px pairs username/name while email/password span the row. Height queries reduce decoration and spacing, not input legibility; 44px inputs and 16px mobile text remain. Dynamic viewport sizing and natural overflow preserve access under keyboard/zoom/extreme short viewports. Browser verified no document overflow for registration 390×844, 375×667, 1366×768 and login 1366×768. Fixed-dark/video/palette and auth handlers unchanged.
+
+Auth width refinement: login/register panels now share a 640px maximum and receive 60% of the desktop grid, using the empty middle area while retaining responsive field grouping and natural keyboard overflow.
+
+Auth owner revision: restore the original single-column field order on regular screens with equal desktop scene/form columns. Enlarge the panel to 580px and use 52px controls, 28px heading and 40px horizontal padding on tall desktops. Compact short viewports retain paired registration fields to keep actions accessible.

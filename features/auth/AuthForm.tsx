@@ -105,84 +105,96 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               <form onSubmit={submit}>
                 <fieldset disabled={busy}>
                   <legend className="sr-only">Thông tin tài khoản</legend>
-                  <label htmlFor="email">Email</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    required
-                    maxLength={mode === "register" ? 254 : undefined}
-                  />
+                  <div className="auth-field auth-field-email">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      required
+                      maxLength={mode === "register" ? 254 : undefined}
+                    />
+                  </div>
                   {mode === "register" && (
                     <>
-                      <label htmlFor="username">Tên người dùng</label>
-                      <input
-                        id="username"
-                        name="username"
-                        required
-                        autoComplete="username"
-                        pattern="[A-Za-z0-9_]{3,50}"
-                        aria-describedby="username-hint"
-                        placeholder="Tên của bạn trên Codjingrank"
-                      />
-                      <small id="username-hint">
-                        3–50 ký tự chữ, số hoặc dấu gạch dưới.
-                      </small>
-                      <label htmlFor="fullName">
-                        Họ tên <span className="auth-optional">(tuỳ chọn)</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        name="fullName"
-                        autoComplete="name"
-                        maxLength={120}
-                        placeholder="Họ tên (tuỳ chọn)"
-                      />
+                      <div className="auth-field auth-field-username">
+                        <label htmlFor="username">Tên người dùng</label>
+                        <input
+                          id="username"
+                          name="username"
+                          required
+                          autoComplete="username"
+                          pattern="[A-Za-z0-9_]{3,50}"
+                          aria-describedby="username-hint"
+                          placeholder="Tên của bạn trên Codjingrank"
+                        />
+                        <small id="username-hint">
+                          3–50 ký tự chữ, số hoặc dấu gạch dưới.
+                        </small>
+                      </div>
+                      <div className="auth-field auth-field-name">
+                        <label htmlFor="fullName">
+                          Họ tên{" "}
+                          <span className="auth-optional">(tuỳ chọn)</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          name="fullName"
+                          autoComplete="name"
+                          maxLength={120}
+                          placeholder="Họ tên (tuỳ chọn)"
+                        />
+                      </div>
                     </>
                   )}
-                  <label htmlFor="password">Mật khẩu</label>
-                  <div className="login-password">
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete={
-                        mode === "login" ? "current-password" : "new-password"
-                      }
-                      placeholder={
-                        mode === "login"
-                          ? "Nhập mật khẩu của bạn"
-                          : "Tạo mật khẩu"
-                      }
-                      required
-                      aria-describedby={
-                        mode === "register" ? "password-hint" : undefined
-                      }
-                    />
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      aria-label={
-                        showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
-                      }
-                      aria-pressed={showPassword}
-                      title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      <Icon name={showPassword ? "eyeOff" : "eye"} size={20} />
-                    </button>
+                  <div className="auth-field auth-field-password">
+                    <label htmlFor="password">Mật khẩu</label>
+                    <div className="login-password">
+                      <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete={
+                          mode === "login" ? "current-password" : "new-password"
+                        }
+                        placeholder={
+                          mode === "login"
+                            ? "Nhập mật khẩu của bạn"
+                            : "Tạo mật khẩu"
+                        }
+                        required
+                        aria-describedby={
+                          mode === "register" ? "password-hint" : undefined
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        aria-label={
+                          showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                        }
+                        aria-pressed={showPassword}
+                        title={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <Icon
+                          name={showPassword ? "eyeOff" : "eye"}
+                          size={20}
+                        />
+                      </button>
+                    </div>
+                    {mode === "register" && (
+                      <small id="password-hint">
+                        8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.
+                      </small>
+                    )}
                   </div>
                   {mode === "login" && (
                     <div className="auth-recovery-link">
                       <Link href="/forgot-password">Quên mật khẩu?</Link>
                     </div>
-                  )}
-                  {mode === "register" && (
-                    <small id="password-hint">
-                      8–72 ký tự, có chữ và số, tối đa 72 byte UTF-8.
-                    </small>
                   )}
                   {error && (
                     <p ref={alert} tabIndex={-1} className="error" role="alert">
