@@ -106,9 +106,7 @@
 }
 :root[data-theme="dark"] .platform {
   --platform-shell-fill: linear-gradient(125deg, #181825, #1e1e2ef5);
-  --platform-shell-shadow:
-    inset 0 1px 0 #45475a80, inset 1px 0 0 #45475a40,
-    0 18px 48px -26px #000000b3;
+  --platform-shell-shadow: inset 0 1px 0 #45475a80, 0 18px 48px -26px #000000b3;
   --platform-join: #181825;
   background: linear-gradient(145deg, #242436, #11111b 55%);
   padding-top: 12px;
@@ -127,15 +125,16 @@
   overflow: clip;
   isolation: isolate;
   border-radius: 24px;
-  background: var(
-    --platform-shell-fill,
-    radial-gradient(ellipse at 12% 0%, #ffffff80, transparent 55%),
-    linear-gradient(125deg, #ffffffe3, #f8fcfad9 65%, #eef7f2e3)
-  );
+  background:
+    linear-gradient(90deg, var(--platform-join, #ffffff), transparent 80px),
+    var(
+      --platform-shell-fill,
+      radial-gradient(ellipse at 12% 0%, #ffffff80, transparent 55%),
+      linear-gradient(125deg, #ffffffe3, #f8fcfad9 65%, #eef7f2e3)
+    );
   box-shadow: var(
     --platform-shell-shadow,
     inset 0 1px 0 #ffffff,
-    inset 1px 0 0 #ffffffa6,
     0 18px 48px -26px #061e19b3
   );
 }
@@ -202,7 +201,7 @@
   .platform-nav
   a[aria-current="page"] {
   position: relative;
-  width: calc(100% + 32px);
+  width: calc(100% + 34px);
   border-radius: 14px 0 0 14px;
   box-shadow: none;
 }
@@ -215,27 +214,40 @@
   .platform-nav
   a[aria-current="page"]::after {
   content: "";
+  display: block;
   position: absolute;
   right: 0;
-  width: 16px;
-  height: 16px;
+  left: auto;
+  transform: none;
+  width: 18px;
+  height: 18px;
   pointer-events: none;
 }
 :root
   .platform[data-sidebar-expanded="true"]
   .platform-nav
   a[aria-current="page"]::before {
-  top: -16px;
-  border-bottom-right-radius: 16px;
-  box-shadow: 0 8px 0 var(--platform-join, #ffffff);
+  top: -18px;
+  border-radius: 0;
+  box-shadow: none;
+  background: radial-gradient(
+    circle at 0 0,
+    transparent 17.5px,
+    var(--platform-join, #ffffff) 18px
+  );
 }
 :root
   .platform[data-sidebar-expanded="true"]
   .platform-nav
   a[aria-current="page"]::after {
-  bottom: -16px;
-  border-top-right-radius: 16px;
-  box-shadow: 0 -8px 0 var(--platform-join, #ffffff);
+  bottom: -18px;
+  border-radius: 0;
+  box-shadow: none;
+  background: radial-gradient(
+    circle at 0 100%,
+    transparent 17.5px,
+    var(--platform-join, #ffffff) 18px
+  );
 }
 :root .platform .platform-topbar {
   border-radius: 24px 24px 0 0;
@@ -718,5 +730,466 @@
     --glass-fill: var(--ui-surface);
     --glass-dense: var(--ui-surface);
     --sidebar-fill: var(--ui-surface);
+  }
+}
+
+.product-filter-select {
+  position: relative;
+  min-width: 0;
+}
+.product-filter-select summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 44px;
+  border: 1px solid var(--ui-control-border);
+  background: var(--ui-surface);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.product-filter-select summary::-webkit-details-marker {
+  display: none;
+}
+.product-filter-select summary svg {
+  transform: rotate(180deg);
+  flex: none;
+}
+.product-filter-select[open] summary svg {
+  transform: none;
+}
+.product-filter-select [role="listbox"] {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 220px;
+  z-index: 10;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 10px 24px -12px var(--ui-shadow);
+}
+.product-filter-select button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ui-text);
+  background: transparent;
+  text-align: left;
+  font-size: 12px;
+}
+.product-filter-select button[aria-selected="true"],
+.product-filter-select button:hover {
+  color: var(--ui-accent);
+  background: var(--ui-accent-surface);
+}
+
+.platform .platform-library {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  align-self: stretch;
+  padding: 0;
+}
+.platform .platform-library-content {
+  width: 100%;
+  min-width: 0;
+}
+.platform .platform-library-content > .catalog-main {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 24px 28px;
+}
+.platform .catalog-filter-panel {
+  position: relative;
+  overflow: visible;
+  z-index: 3;
+}
+.platform .catalog-filter-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 12px;
+}
+.platform .catalog-field-search {
+  grid-column: 1 / -1;
+}
+.platform .catalog-clear-filters {
+  margin: 0;
+  min-height: 44px;
+}
+.platform .catalog-filter-grid .field > span {
+  font-size: 12px;
+  color: var(--ui-text-muted);
+}
+.platform .product-filter-select summary {
+  min-height: 44px;
+  background: var(--ui-surface);
+}
+.platform .product-filter-select [role="listbox"] {
+  max-height: 280px;
+  overflow-y: auto;
+}
+.platform .product-filter-select :is(summary, button):focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+.platform .platform-topic-chips button[aria-pressed="true"] {
+  background: #087f78;
+  color: #fff;
+  border-color: #087f78;
+}
+.platform .platform-table-scroll {
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+}
+.platform .platform-table-scroll .platform-problem-table {
+  table-layout: fixed;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.platform .platform-problem-table :is(th, td) {
+  border-inline: 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--ui-border);
+}
+.platform .platform-problem-table tr:last-child td {
+  border-bottom: 0;
+}
+.platform .platform-problem-table :is(th, td):first-child {
+  width: 40px;
+}
+.platform .platform-problem-table :is(th, td):nth-child(2) {
+  width: calc(50% - 40px);
+  overflow-wrap: anywhere;
+}
+.platform .platform-problem-table :is(th, td):nth-child(n + 3) {
+  width: 25%;
+  text-align: left;
+}
+.platform .platform-problem-table tbody tr:nth-child(odd) {
+  background: transparent;
+}
+.platform .platform-difficulty-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--ui-surface-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.platform
+  .platform-difficulty[data-difficulty="easy"]
+  .platform-difficulty-badge {
+  background: color-mix(in srgb, var(--ui-success) 15%, var(--ui-surface));
+  color: var(--ui-readable-teal);
+}
+.dashboard-practice-summary dl {
+  align-items: stretch;
+}
+.dashboard-practice-summary dl > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 144px;
+}
+.dashboard-practice-summary dd {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+.platform .dashboard-practice-summary dd small {
+  display: inline;
+  margin: 0;
+}
+.dashboard-practice-summary dl > div > span {
+  margin-top: auto;
+  padding-top: 8px;
+}
+.platform .platform-feature-grid {
+  align-items: stretch;
+}
+.platform a.platform-feature {
+  height: 100%;
+  min-height: 212px;
+}
+.platform .platform-feature > svg {
+  top: 20px;
+  right: 20px;
+  bottom: auto;
+  width: 36px;
+  height: 36px;
+}
+.platform .platform-feature h2 {
+  padding-right: 44px;
+}
+.platform .platform-feature > span {
+  margin-top: auto;
+}
+.platform .platform-feed li {
+  padding-block: 12px;
+  background: transparent;
+}
+.platform .platform-feed li:nth-child(even) {
+  background: transparent;
+}
+.platform .practice-calendar {
+  padding: 16px 14px 12px;
+}
+.platform .practice-calendar-top {
+  margin-bottom: 10px;
+}
+.platform .practice-calendar-month {
+  margin-bottom: 8px;
+}
+.platform .practice-calendar-grid {
+  gap: 2px;
+}
+.platform .practice-calendar .practice-calendar-grid button {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+}
+.platform .practice-calendar-legend {
+  font-size: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.platform .practice-calendar-summary {
+  margin-top: 10px;
+  padding-block: 8px;
+}
+.platform .package-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+.platform .package-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 32%);
+  gap: 16px 24px;
+  padding: 22px;
+}
+.platform .package-card-body {
+  padding: 0;
+  min-height: 0;
+}
+.platform .package-card-desc {
+  margin-bottom: 0;
+}
+.platform .package-card-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  padding: 14px 0 0;
+}
+.platform .package-progress {
+  align-self: center;
+  font-size: 12px;
+}
+.platform .package-progress > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.platform .package-progress progress {
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  accent-color: var(--ui-accent);
+}
+.platform .package-progress progress::-webkit-progress-bar {
+  background: var(--ui-surface-muted);
+}
+.platform .package-progress progress::-webkit-progress-value {
+  background: var(--ui-accent);
+  border-radius: 99px;
+}
+.platform .package-progress progress::-moz-progress-bar {
+  background: var(--ui-accent);
+  border-radius: 99px;
+}
+@media (min-width: 801px) {
+  .platform .platform-tools {
+    gap: 10px;
+  }
+  .platform .platform-tools > :is(button, a) {
+    min-height: 44px;
+    height: 44px;
+  }
+  .platform .platform-nav a {
+    min-height: 44px;
+    border-radius: 14px;
+  }
+}
+@media (max-width: 1050px) {
+  .platform .catalog-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .platform .catalog-clear-filters {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+}
+@media (max-width: 600px) {
+  .platform .platform-library-content > .catalog-main {
+    padding: 20px 16px;
+  }
+  .platform .package-card {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+  }
+  .platform .catalog-filter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .platform a.platform-feature {
+    height: auto;
+    min-height: 196px;
+  }
+}
+
+.platform .platform-dashboard-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 288px;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+.platform .platform-dashboard-intro .platform-feature-grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  margin-bottom: 0;
+}
+.platform .platform-dashboard-intro a.platform-feature {
+  min-height: 170px;
+  padding: 18px 22px;
+}
+.platform .platform-dashboard-intro .platform-feature h2 {
+  margin: 0 0 8px;
+}
+.platform .platform-dashboard-intro .platform-feature p {
+  max-width: 55ch;
+  margin: 0 0 12px;
+}
+.platform .platform-dashboard-intro .practice-calendar {
+  margin: 0;
+}
+@media (max-width: 800px) {
+  .platform .platform-dashboard-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .platform .package-card-footer {
+    flex-direction: row;
+    gap: 12px;
+  }
+  .platform .package-card-footer a {
+    width: auto;
+    font-size: 12px;
+  }
+  .platform .pagination-controls {
+    display: grid;
+    grid-template-columns: 64px 44px minmax(0, 1fr) 44px;
+    width: 100%;
+    gap: 6px;
+    align-items: center;
+  }
+  .platform .pagination-size-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .platform .pagination-size-select {
+    width: 64px;
+    min-width: 0;
+    margin: 0;
+  }
+  .platform .pagination-controls button {
+    width: 44px;
+    min-width: 44px;
+    padding: 8px;
+    margin: 0;
+  }
+  .platform .pagination-page-indicator {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+}
+
+:root .platform .platform-nav a[aria-current="page"] {
+  transform: none;
+  border: 0;
+}
+:root .platform .platform-nav a[aria-current="page"]:focus-visible {
+  outline-offset: -3px;
+}
+@media (min-width: 801px) and (prefers-reduced-motion: no-preference) {
+  .platform[data-sidebar-motion="true"][data-sidebar-expanded="true"]
+    .platform-nav
+    a
+    > span,
+  .platform[data-sidebar-motion="true"][data-sidebar-expanded="true"]
+    .platform-tools
+    :is(
+      .platform-account-name,
+      .platform-store-link > span,
+      .platform-appearance-trigger > span
+    ) {
+    animation: sidebar-label-reveal 180ms var(--motion-feedback) both;
+  }
+  .platform[data-sidebar-motion="true"][data-sidebar-expanded="true"]
+    .platform-nav
+    a[aria-current="page"]::before,
+  .platform[data-sidebar-motion="true"][data-sidebar-expanded="true"]
+    .platform-nav
+    a[aria-current="page"]::after {
+    animation: sidebar-join-reveal 180ms var(--motion-feedback) both;
+  }
+}
+@media (min-width: 801px) {
+  .platform[data-sidebar-expanded="true"] .platform-nav a > span {
+    display: inline-block;
+  }
+}
+@keyframes sidebar-label-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes sidebar-join-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

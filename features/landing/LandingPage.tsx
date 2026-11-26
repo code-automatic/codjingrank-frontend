@@ -15,25 +15,25 @@ const chapters = [
     title: "Viết code trong không gian của bạn",
     description:
       "Đọc đề, đổi ngôn ngữ, lưu nháp. Chạy test mẫu rồi nộp bài ngay trong cùng một workspace.",
-    image: "/landing/workspace-current.png",
+    image: "/landing/workspace-current-9a665aae12.png",
     alt: "Trang giải bài Sum two numbers của Codjingrank với đề bài, editor và kết quả",
     href: "/problems",
     action: "Khám phá kho bài",
   },
   {
-    title: "Hiểu thêm từ mỗi lời giải",
+    title: "Theo dõi từng bước tiến",
     description:
-      "Đọc nhận xét AI theo từng lượt nộp, xem điểm cần cải thiện. Kết quả chấm bài luôn được tính độc lập.",
-    image: "/landing/ai-review.png",
-    alt: "Màn hình đánh giá AI Codjingrank với nhận xét và điểm chất lượng mã",
-    href: "/problems",
-    action: "Bắt đầu giải bài",
+      "Chọn gói bài theo chủ đề, theo dõi số bài đã giải và luyện tập qua từng cấp độ.",
+    image: "/landing/roadmap-current-858082c51d.png",
+    alt: "Lộ trình Codjingrank với gói Arrays và tiến độ bài đã giải",
+    href: "/packages",
+    action: "Khám phá lộ trình",
   },
   {
     title: "Cùng nhau gỡ một bài khó",
     description:
       "Đặt câu hỏi, chia sẻ cách làm và trao đổi trong cộng đồng. Một góc nhìn khác có thể mở ra cách giải mới.",
-    image: "/landing/community-current.png",
+    image: "/landing/community-current-ac82400322.png",
     alt: "Trang cộng đồng Codjingrank với danh sách thảo luận",
     href: "/forum",
     action: "Ghé thăm cộng đồng",
@@ -194,19 +194,33 @@ export function LandingPage() {
           data-enter
         >
           <HeroWave />
+          <div className={styles.heroBubbles} aria-hidden="true">
+            {Array.from({ length: 12 }, (_, index) => (
+              <i
+                key={index}
+                style={{
+                  left: `${8 + index * 7.5}%`,
+                  width: `${8 + (index % 4) * 5}px`,
+                  height: `${8 + (index % 4) * 5}px`,
+                  animationDelay: `${index * -0.73}s`,
+                  animationDuration: `${6 + (index % 3)}s`,
+                }}
+              />
+            ))}
+          </div>
           <div className={`${styles.wrap} wrap`}>
             <div className={styles.heroCopy}>
               <h1 id="landing-title">
-                Mỗi bài giải,
+                Khơi mở tư duy,
                 <br />
                 <span className={styles.heroSerif}>
-                  một <span>bước tiến.</span>
+                  vươn <span>xa cùng code.</span>
                 </span>
               </h1>
               <p>
-                Luyện giải với Python, C++ và Java.
-                <br className={styles.desktopBreak} /> Đọc đề, chạy test mẫu và
-                theo dõi từng bài nộp.
+                Nhiều ngôn ngữ. Muôn cách giải. Một tư duy không giới hạn.
+                <br className={styles.desktopBreak} /> Chọn ngôn ngữ bạn yêu
+                thích, biến từng thử thách thành bước tiến.
               </p>
               <div className={styles.actions}>
                 <Link
@@ -350,7 +364,7 @@ export function LandingPage() {
                 Cộng đồng · nội dung demo
               </span>
               <Image
-                src="/landing/community-current.png"
+                src="/landing/community-current-ac82400322.png"
                 width={1440}
                 height={900}
                 alt="Giao diện thảo luận cộng đồng Codjingrank"
@@ -378,19 +392,20 @@ export function LandingPage() {
             </div>
           </div>
         </section>
-
+      </main>
+      <div className={styles.scenicEnd}>
+        <Image
+          src="/landing/ocean-waves.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className={styles.footerOcean}
+        />
         <section
           className={styles.close}
           aria-labelledby="close-title"
           data-reveal
         >
-          <Image
-            src="/landing/ocean-waves.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className={styles.closeLandscape}
-          />
           <div className={`${styles.wrap} wrap`}>
             <div className={styles.closeStart}>
               <h2 id="close-title">
@@ -419,47 +434,47 @@ export function LandingPage() {
             </div>
           </div>
         </section>
-      </main>
-      <footer className={styles.footer}>
-        <div className={`${styles.wrap} wrap`}>
-          <div className={styles.footerTop}>
-            <Link
-              href="/"
-              className={styles.brand}
-              aria-label="Codjingrank — trang chủ"
+        <footer className={styles.footer}>
+          <div className={`${styles.wrap} wrap`}>
+            <div className={styles.footerTop}>
+              <Link
+                href="/"
+                className={styles.brand}
+                aria-label="Codjingrank — trang chủ"
+              >
+                <BrandLogo />
+              </Link>
+              <p>Đọc đề, viết code, tiến bộ từng ngày.</p>
+            </div>
+            <nav
+              aria-label="Liên kết cuối trang"
+              className={styles.footerColumns}
             >
-              <BrandLogo />
-            </Link>
-            <p>Đọc đề, viết code, tiến bộ từng ngày.</p>
+              <div>
+                <h3>Luyện tập</h3>
+                <Link href="/problems">Kho bài tập</Link>
+                <Link href="/packages">Lộ trình học</Link>
+                <Link href="/leaderboard">Bảng xếp hạng</Link>
+              </div>
+              <div>
+                <h3>Cùng tiến bộ</h3>
+                <Link href="/forum">Cộng đồng</Link>
+                <Link href="/forum?postType=question">Hỏi đáp</Link>
+                <Link href="/forum?postType=solution">Chia sẻ lời giải</Link>
+              </div>
+              <div>
+                <h3>Bắt đầu</h3>
+                <Link href="/register">Tạo tài khoản</Link>
+                <Link href="/login">Đăng nhập</Link>
+                <Link href="/#khong-gian">Khám phá Codjingrank</Link>
+              </div>
+            </nav>
+            <div className={styles.footerBottom}>
+              <span>© {new Date().getFullYear()} Codjingrank</span>
+            </div>
           </div>
-          <nav aria-label="Liên kết cuối trang">
-            <Link href="/packages">Gói bài tập</Link>
-            <Link href="/problems">Kho bài tập</Link>
-            <Link href="/leaderboard">Bảng xếp hạng</Link>
-            <Link href="/forum">Cộng đồng</Link>
-            <Link href="/login">Đăng nhập</Link>
-          </nav>
-          <div className={styles.footerBottom}>
-            <span>© {new Date().getFullYear()} Codjingrank</span>
-            <a
-              href="https://unsplash.com/photos/brown-house-near-body-of-water-zAjdgNXsMeg"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Ảnh phong cảnh: Luca Bravo / Unsplash
-              <Icon name="arrowUpRight" size={13} />
-            </a>
-            <a
-              href="https://unsplash.com/photos/turquoise-ocean-waves-crashing-with-white-foam-czqdB_i4aSA"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Ảnh biển: Polina Kuzovkova / Unsplash
-              <Icon name="arrowUpRight" size={13} />
-            </a>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

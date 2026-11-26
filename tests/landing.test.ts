@@ -9,9 +9,12 @@ describe("public landing page", () => {
     const html = renderToStaticMarkup(
       createElement(SessionProvider, null, createElement(Home)),
     );
-    expect(html).toContain("Mỗi bài giải");
-    expect(html).toContain("workspace-current.png");
-    expect(html).toContain("community-current.png");
+    expect(html).toContain("Khơi mở tư duy");
+    expect(html).toMatch(/workspace-current-[a-f0-9]{10}\.png/);
+    expect(html).toMatch(/community-current-[a-f0-9]{10}\.png/);
+    expect(html).toMatch(/roadmap-current-[a-f0-9]{10}\.png/);
+    expect(html).not.toContain("Ảnh phong cảnh:");
+    expect(html).not.toContain("Ảnh biển:");
     expect(html).not.toContain('src="/landing/workspace.png"');
     expect(html).not.toContain('src="/landing/community.png"');
     expect(html.match(/<h1\b/g)).toHaveLength(1);

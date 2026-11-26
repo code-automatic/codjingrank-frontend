@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { Icon } from "@/lib/ui/Icon";
 import { IconButton } from "@/lib/ui/IconButton";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ApiClient } from "@/lib/api";
+import { withDeadline } from "@/lib/api/deadline";
 import {
   describeLevelCard,
   describeProblemItem,
@@ -166,7 +168,7 @@ export function CatalogSearchBar({
 
       <div className="catalog-filter-footer">
         <div className="actions catalog-actions">
-          {hasActiveFilters && (
+          {hasActiveFilters && !children && (
             <button
               type="button"
               className="button-secondary"
@@ -191,7 +193,63 @@ export function CatalogSearchBar({
   );
 }
 
-export function PackagesGrid({ packages }: { packages: PackageModel[] }) {
+function PackageProgress({ slug, api }: { slug: string; api?: ApiClient }) {
+  const [progress, setProgress] = useState<{
+    solved: number;
+    total: number;
+  } | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (!api) return;
+    let live = true;
+    const controller = new AbortController();
+    void withDeadline(
+      controller,
+      () => api.catalog.getPackageLevels(slug, { signal: controller.signal }),
+      15000,
+    )
+      .then((data) => {
+        if (live)
+          setProgress({ solved: data.solvedCount, total: data.totalCount });
+      })
+      .catch(() => {
+        if (live) setFailed(true);
+      });
+    return () => {
+      live = false;
+      controller.abort();
+    };
+  }, [api, slug]);
+  return (
+    <div className="package-progress">
+      <span>
+        Tiến độ{" "}
+        <strong>
+          {progress
+            ? `${progress.solved}/${progress.total} bài`
+            : failed
+              ? "Xem trong lộ trình"
+              : "Đang tải…"}
+        </strong>
+      </span>
+      {progress && (
+        <progress
+          aria-label={`Tiến độ gói ${slug}`}
+          max={Math.max(1, progress.total)}
+          value={progress.solved}
+        />
+      )}
+    </div>
+  );
+}
+
+export function PackagesGrid({
+  packages,
+  api,
+}: {
+  packages: PackageModel[];
+  api?: ApiClient;
+}) {
   return (
     <ul className="package-grid">
       {packages.map((pkg) => (
@@ -207,6 +265,7 @@ export function PackagesGrid({ packages }: { packages: PackageModel[] }) {
                 : "Lộ trình luyện tập 3 cấp độ theo chủ đề."}
             </p>
           </div>
+          <PackageProgress slug={pkg.slug} api={api} />
           <div className="package-card-footer">
             <span className="catalog-badge catalog-badge--neutral">
               {pkg.totalProblems} bài tập

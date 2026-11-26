@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { Icon } from "@/lib/ui/Icon";
 import { PracticeAside } from "./PracticeAside";
+import { PracticeCalendar } from "./PracticeCalendar";
 import { PracticeStats } from "./PracticeStats";
 
 export function DashboardPage() {
@@ -79,29 +80,33 @@ export function DashboardPage() {
         </p>
       )}
       <PracticeStats variant="summary" />
+      <div className="platform-dashboard-intro">
+        <div className="platform-feature-grid">
+          <Link href="/packages" className="platform-feature">
+            <h2>
+              Chọn hướng đi.
+              <br />
+              Giải từng bước.
+            </h2>
+            <p>Các gói bài sắp xếp theo cấp độ, mở khóa theo tiến độ.</p>
+            <span>
+              Khám phá lộ trình <Icon name="arrowUpRight" />
+            </span>
+            <Icon name="layers" />
+          </Link>
+          <Link href="/forum" className="platform-feature">
+            <h2>Cùng nhau tìm ra cách giải.</h2>
+            <p>Đặt câu hỏi, đọc cách làm và chia sẻ lời giải.</p>
+            <span>
+              Đến cộng đồng <Icon name="arrowUpRight" />
+            </span>
+            <Icon name="message" />
+          </Link>
+        </div>
+        <PracticeCalendar key={user.id} />
+      </div>
       <div className="platform-dashboard-layout">
         <div>
-          <div className="platform-feature-grid">
-            <Link href="/packages" className="platform-feature">
-              <h2>
-                Chọn hướng đi.
-                <br />
-                Giải từng bước.
-              </h2>
-              <p>Các gói bài sắp xếp theo cấp độ, mở khóa theo tiến độ.</p>
-              <span>
-                Khám phá lộ trình <Icon name="arrowUpRight" />
-              </span>
-              <Icon name="layers" />
-            </Link>
-            <Link href="/forum" className="platform-feature">
-              <h2>Cùng nhau tìm ra cách giải.</h2>
-              <span>
-                Đến cộng đồng <Icon name="arrowUpRight" />
-              </span>
-              <Icon name="message" />
-            </Link>
-          </div>
           <section>
             <div className="platform-section-head">
               <h2>Lộ trình cho buổi học tiếp theo</h2>
@@ -194,7 +199,7 @@ export function DashboardPage() {
           </section>
         </div>
         <aside className="platform-dashboard-aside">
-          <PracticeAside />
+          <PracticeAside showCalendar={false} />
         </aside>
       </div>
     </main>

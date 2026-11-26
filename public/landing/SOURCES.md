@@ -10,3 +10,9 @@
 - noto-serif-vietnamese.woff2 và noto-serif-latin.woff2: Noto Serif 400, Google Fonts v33, tải 20/11/2026. Nguồn CSS https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400&display=swap; binary từ fonts.gstatic.com. Self-host subset Việt/Latin (tổng 19.640 byte), SIL Open Font License, xem NOTO-SERIF-LICENSE.txt; nguồn giấy phép https://github.com/google/fonts/tree/main/ofl/notoserif.
 
 - ocean-waves.jpg: Polina Kuzovkova / Unsplash, “Turquoise ocean waves crashing with white foam”, xuất bản 25/03/2026. Trang nguồn https://unsplash.com/photos/turquoise-ocean-waves-crashing-with-white-foam-czqdB_i4aSA; CDN https://images.unsplash.com/photo-1774423864905-499e9d7ba198?auto=format&fit=crop&fm=jpg&q=82&w=1800. Giấy phép https://unsplash.com/license. Tải 21/11/2026; dùng làm bối cảnh CTA, không mô tả hoạt động hay địa điểm của dự án.
+
+Updated 26/11/2026: workspace-current.png, community-current.png and roadmap-current.png are screenshots of the current local Codjingrank UI using demo account data. The roadmap replaces the stale AI preview; no fabricated AI result.
+
+Hero brush lettering: Kolker Brush Regular, Robert Leuschke / The Kolker Brush Project Authors. Unmodified font from https://github.com/google/fonts/tree/main/ofl/kolkerbrush ; Vietnamese subset verified in METADATA.pb. License: KOLKER-BRUSH-LICENSE.txt (SIL OFL 1.1). Not an original Codjingrank-designed font.
+
+Application reading calligraphy: Merienda variable (300–900), Eduardo Tunni, unmodified from https://github.com/google/fonts/tree/main/ofl/merienda . Vietnamese support verified in METADATA.pb. SIL OFL license: MERIENDA-LICENSE.txt.
