@@ -71,7 +71,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
       {(path.startsWith("/admin")
         ? [
             ["/admin", "Tổng quan quản trị"],
+            ["/admin/users", "Tài khoản"],
             ["/admin/content", "Nội dung"],
+            ["/admin/community", "Kiểm duyệt"],
+            ["/admin/audit", "Nhật ký"],
             ["/admin/operations", "Vận hành"],
             ["/protected", "Giao diện học viên"],
           ]
@@ -87,7 +90,17 @@ export function AppChrome({ children }: { children: ReactNode }) {
           <Icon
             name={
               path.startsWith("/admin")
-                ? (["layers", "code", "shield", "arrowUpRight"] as const)[index]
+                ? (
+                    [
+                      "shield",
+                      "user",
+                      "code",
+                      "message",
+                      "history",
+                      "settings",
+                      "arrowUpRight",
+                    ] as const
+                  )[index]
                 : navigationIcons[index]
             }
             size={19}

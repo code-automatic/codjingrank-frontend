@@ -11,6 +11,7 @@ import {
   assertString,
   assertUuid,
 } from "../guards";
+import { createAdminManagement } from "./admin-management";
 
 export type AdminResource = "problems" | "packages" | "languages" | "tags";
 export type AdminItem = {
@@ -34,6 +35,7 @@ export function createAdminClient(request: Requester) {
     return `${base}/${resource}`;
   }
   return {
+    ...createAdminManagement(request),
     async list(
       resource: AdminResource,
       query: { page?: number; size?: number; q?: string; status?: string } = {},

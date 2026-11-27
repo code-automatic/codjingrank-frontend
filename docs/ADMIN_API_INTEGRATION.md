@@ -1,5 +1,15 @@
 # Admin API integration — 27/11/2026
 
+## Published-contract update
+
+Reviewed https://code-automatic.github.io/codjingrank-backend/openapi.yaml on 27/11/2026. The published specification now marks user administration, post/comment moderation, system stats and audit logs implemented-db-tested. This supersedes the older backend snapshot findings below. Submission administration and daily challenge administration remain target-not-implemented.
+
+New frontend routes: `/admin/users` (search, pagination, role/active changes with confirmation and self-change block), `/admin/community` (search, pagination, plain-text post inspection and status moderation), `/admin/audit` (actor-email filter, pagination and resource inspection). `/admin` now reads `/api/v1/admin/stats` for eight actual system counters. Existing content/runtime/tag pages remain. Backend permission checks are authoritative.
+
+Comment moderation and full catalog editors are still not exposed in this UI revision. An implementation flag in OpenAPI is not proof that the corresponding backend version is deployed on the public host. No production mutations were performed. Eight client tests cover paths, payloads, counters, UUID/role/status validation and malformed responses. Browser QA and live authenticated acceptance remain outstanding.
+
+## Earlier integration baseline
+
 Backend reviewed at `ea99de3` on `main` in code-automatic/codjingrank-backend. Frontend stays on master.
 
 ## Verified source locations
