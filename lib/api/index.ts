@@ -1,6 +1,7 @@
 import { createTransport, type Requester } from "@/lib/api/client";
 import type { UserModel } from "@/lib/api/adapters/shared";
 import { createAccountClient } from "@/lib/api/domains/account";
+import { createAdminClient } from "@/lib/api/domains/admin";
 import { createCatalogClient } from "@/lib/api/domains/catalog";
 import { createCommunityClient } from "@/lib/api/domains/community";
 import { createJudgeClient } from "@/lib/api/domains/judge";
@@ -46,6 +47,7 @@ export function createApiClient(deps: ApiClientDeps) {
       : deps.publicRequest<T>(path, init);
 
   return {
+    admin: createAdminClient(deps.authRequest),
     catalog: createCatalogClient({
       authRequest: deps.authRequest,
       publicRequest: deps.publicRequest,

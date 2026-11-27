@@ -2,6 +2,15 @@
   max-width: 1280px;
   margin-inline: auto;
 }
+.resourceTabs, .resourceFilters { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-block: 20px; }
+.resourceTabs button[aria-pressed="true"] { background: var(--ui-accent); color: var(--ui-on-accent); }
+.resourceFilters input { flex: 1; min-width: 160px; }
+.tableWrap { overflow-x: auto; }
+.resourceTable { border-collapse: collapse; width: 100%; text-align: left; }
+.resourceTable th, .resourceTable td { padding: 14px 12px; border-bottom: 1px solid var(--ui-border); vertical-align: middle; overflow-wrap: anywhere; }
+.resourceTable th { font-size: 12px; color: var(--ui-text-muted); }
+.createForm { display: grid; gap: 16px; max-width: 600px; margin-top: 20px; }
+.createForm label { display: grid; gap: 6px; }
 .dashboard[data-admin-section="content"] section[id="operations"],
 .dashboard[data-admin-section="operations"] section[id="catalog"],
 .dashboard[data-admin-section="operations"] .metrics { display: none; }
