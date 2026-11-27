@@ -232,8 +232,9 @@ export function assertForgotPasswordPayload(
 export function assertResetPasswordPayload(
   payload: ResetPasswordRequest,
 ): ResetPasswordRequest {
-  if (typeof payload.token !== "string" || payload.token.trim().length === 0) {
-    throw new ApiError(400, "VALIDATION_ERROR", { field: "token" });
+  assertForgotPasswordPayload(payload);
+  if (typeof payload.otp !== "string" || !/^\d{6}$/.test(payload.otp)) {
+    throw new ApiError(400, "VALIDATION_ERROR", { field: "otp" });
   }
   assertValidNewPassword(payload.newPassword, "newPassword");
   return payload;
