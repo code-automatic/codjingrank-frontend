@@ -8,6 +8,7 @@ import { BrandLogo } from "@/lib/ui/BrandLogo";
 import { Icon, type IconName } from "@/lib/ui/Icon";
 import { ThemeToggle } from "@/lib/ui/ThemeToggle";
 import { applyTheme } from "@/lib/ui/theme";
+import { Notifications } from "./Notifications";
 import { PracticeStats } from "./PracticeStats";
 import { UserAvatar } from "@/lib/ui/UserAvatar";
 import "./platform.css";
@@ -34,7 +35,6 @@ export function AppChrome({ children }: { children: ReactNode }) {
   const { status, user, store, loggingOut } = useSession();
   const accountPanel = useRef<HTMLDivElement>(null);
   const shell = useRef<HTMLDivElement>(null);
-  const [noticeTab, setNoticeTab] = useState("Cộng đồng");
   const [logoutError, setLogoutError] = useState("");
   const [ambientMotion, setAmbientMotion] = useState(true);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -68,7 +68,15 @@ export function AppChrome({ children }: { children: ReactNode }) {
           <span>Quản trị</span>
         </Link>
       )}
-      {(path.startsWith("/admin") ? [["/admin", "Tổng quan quản trị"], ["/admin/content", "Nội dung"], ["/admin/operations", "Vận hành"], ["/protected", "Giao diện học viên"]] : links).map(([href, label], index) => (
+      {(path.startsWith("/admin")
+        ? [
+            ["/admin", "Tổng quan quản trị"],
+            ["/admin/content", "Nội dung"],
+            ["/admin/operations", "Vận hành"],
+            ["/protected", "Giao diện học viên"],
+          ]
+        : links
+      ).map(([href, label], index) => (
         <Link
           key={href}
           href={href}
@@ -76,7 +84,14 @@ export function AppChrome({ children }: { children: ReactNode }) {
           aria-label={label}
           title={label}
         >
-          <Icon name={path.startsWith("/admin") ? (["layers", "code", "shield", "arrowUpRight"] as const)[index] : navigationIcons[index]} size={19} />
+          <Icon
+            name={
+              path.startsWith("/admin")
+                ? (["layers", "code", "shield", "arrowUpRight"] as const)[index]
+                : navigationIcons[index]
+            }
+            size={19}
+          />
           <span>{label}</span>
         </Link>
       ))}
@@ -213,16 +228,12 @@ export function AppChrome({ children }: { children: ReactNode }) {
           </form>
           <div className="platform-topbar-actions">
             {" "}
-            <button
-              type="button"
-              className="platform-icon-button"
-              title="Thông báo"
-              popoverTarget="platform-notices"
-              aria-label="Mở thông báo demo"
-            >
-              <Icon name="bell" size={20} />
-            </button>
-            {!path.startsWith("/admin") && <PracticeStats key={user?.id || "guest"} />}
+            {status === "authenticated" && user && (
+              <Notifications key={user.id} userId={user.id} />
+            )}
+            {!path.startsWith("/admin") && (
+              <PracticeStats key={user?.id || "guest"} />
+            )}
           </div>
         </div>
         <div
@@ -325,62 +336,6 @@ export function AppChrome({ children }: { children: ReactNode }) {
               {logoutError}
             </p>
           )}
-        </div>
-        <div
-          id="platform-notices"
-          popover="auto"
-          className="platform-popover platform-notices"
-        >
-          <div className="platform-panel-title">
-            <h2>Thông báo</h2>
-            <span className="platform-demo">Demo giao diện</span>
-          </div>
-          <div
-            className="platform-notice-tabs"
-            role="group"
-            aria-label="Lọc thông báo"
-          >
-            {["Cộng đồng", "Cập nhật"].map((tab) => (
-              <button
-                key={tab}
-                aria-pressed={noticeTab === tab}
-                onClick={() => setNoticeTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div className="platform-notice-item">
-            <Icon
-              name={noticeTab === "Cộng đồng" ? "message" : "code"}
-              size={25}
-            />
-            <div>
-              <strong>
-                {noticeTab === "Cộng đồng"
-                  ? "Một góc nhìn mới cho bài khó"
-                  : "Workspace sẵn sàng cho bạn"}
-              </strong>
-              <p>
-                {noticeTab === "Cộng đồng"
-                  ? "Đọc thảo luận và chia sẻ cách giải cùng mọi người."
-                  : "Đổi ngôn ngữ, chạy mẫu và xem kết quả trong cùng một màn hình."}
-              </p>
-              <Link
-                href={noticeTab === "Cộng đồng" ? "/forum" : "/problems"}
-                onClick={(event) =>
-                  event.currentTarget
-                    .closest<HTMLElement>("[popover]")
-                    ?.hidePopover()
-                }
-              >
-                Khám phá <Icon name="arrowUpRight" />
-              </Link>
-            </div>
-          </div>
-          <p className="platform-muted">
-            Thông báo minh họa, không phải hoạt động từ tài khoản thật.
-          </p>
         </div>
         {catalog ? (
           <div className="platform-library">
